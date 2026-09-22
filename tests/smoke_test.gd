@@ -111,6 +111,17 @@ func _run() -> void:
 	nib.attempt_capture(player)
 	await physics_frame
 	_check(nib.captured, "Nib precisa ser capturável")
+
+	# Wild capturado nunca deve roubar o foco de conversa de um NPC próximo.
+	player.global_position = maya.global_position + Vector2(0, 82)
+	player.velocity = Vector2.ZERO
+	nib.global_position = player.global_position + Vector2(0, 8)
+	var conversation_focus = player._find_nearest_interactable()
+	_check(conversation_focus == maya, "NPC precisa ter prioridade sobre Wild capturado no E")
+	var nib_anchor: Vector2 = player.get_companion_anchor(0)
+	var volt_anchor: Vector2 = player.get_companion_anchor(1)
+	_check(nib_anchor.distance_to(player.global_position) > 120.0, "Nib precisa abrir espaço quando há interação próxima")
+	_check(volt_anchor.distance_to(player.global_position) > 120.0, "Volt precisa abrir espaço quando há interação próxima")
 	_check(mission.stage == mission.Stage.ESCAPE_POLICE, "Captura precisa iniciar a fuga")
 	_check(wanted.wanted_level == 1, "Captura precisa disparar a perseguição")
 	wanted.clear()
@@ -142,12 +153,42 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.MISSION_2_COMPLETE, "Bruno precisa concluir a missão 2")
 	_check(game_manager.money == 350, "Missão 2 precisa pagar $200 após a compra do dispositivo")
 
+	# Arsenal da Oficina Cobalto: pistola e munição.
+	_check(InputMap.has_action("shoot"), "Ação de tiro precisa existir")
+	_check(InputMap.has_action("reload"), "Ação de recarga precisa existir")
+	workshop.interact(player)
+	_check(game_manager.pistol_unlocked, "Cobalto precisa vender a pistola após a missão 2")
+	_check(player.pistol_equipped, "Pistola comprada precisa ser equipada")
+	_check(game_manager.money == 200, "Pistola precisa custar $150")
+	_check(game_manager.pistol_magazine == 8 and game_manager.pistol_reserve == 24, "Pistola precisa vir com 8/24 munições")
+
 	# Combate liberado após a missão 2.
 	await process_frame
 	await physics_frame
 	_check(raider1.active and raider2.active, "Raiders precisam ativar após a ANOMALIA #002")
 	_check(InputMap.has_action("wild_nib"), "Ação da habilidade do Nib precisa existir")
 	_check(InputMap.has_action("wild_volt"), "Ação da habilidade do Volt precisa existir")
+
+	# Pistola: hitscan direcionado, gasto de munição e recarga.
+	player.global_position = raider1.global_position + Vector2(0, 210)
+	player.velocity = Vector2.ZERO
+	player._shoot_cooldown_left = 0.0
+	raider1.health = raider1.max_health
+	raider1._update_health_label()
+	var pistol_health_before: float = raider1.health
+	var magazine_before := game_manager.pistol_magazine
+	var shot := player.fire_pistol_at(raider1.global_position)
+	_check(shot, "Pistola precisa disparar")
+	_check(game_manager.pistol_magazine == magazine_before - 1, "Disparo precisa consumir uma munição")
+	_check(raider1.health < pistol_health_before, "Pistola precisa causar dano no Raider alinhado")
+
+	game_manager.pistol_magazine = 2
+	game_manager.pistol_reserve = 10
+	game_manager.weapon_changed.emit(true, game_manager.pistol_magazine, game_manager.pistol_reserve)
+	player._reload_left = 0.0
+	_check(player.start_reload(), "Recarga precisa iniciar com pente incompleto")
+	player._complete_reload()
+	_check(game_manager.pistol_magazine == 8 and game_manager.pistol_reserve == 4, "Recarga precisa transferir munição da reserva")
 
 	# Habilidade ativa do Nib: dano forte em um alvo + knockback.
 	raider1.health = raider1.max_health
