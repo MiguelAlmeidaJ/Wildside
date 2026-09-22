@@ -278,9 +278,12 @@ func _create_lamp(at: Vector2) -> void:
 
 
 func _create_bench(at: Vector2) -> void:
-	var node := Node2D.new()
+	var node := StaticBody2D.new()
 	node.position = at
 	node.z_index = 4
+	node.collision_layer = 1
+	node.collision_mask = 0
+	_add_rect_collision(node, Vector2(72, 28))
 
 	for y in [-8.0, 8.0]:
 		var slat := Line2D.new()
@@ -292,9 +295,12 @@ func _create_bench(at: Vector2) -> void:
 
 
 func _create_planter(at: Vector2) -> void:
-	var node := Node2D.new()
+	var node := StaticBody2D.new()
 	node.position = at
 	node.z_index = 4
+	node.collision_layer = 1
+	node.collision_mask = 0
+	_add_rect_collision(node, Vector2(42, 42))
 
 	var pot := Polygon2D.new()
 	pot.polygon = PackedVector2Array([
@@ -315,9 +321,12 @@ func _create_planter(at: Vector2) -> void:
 
 
 func _create_dumpster(at: Vector2) -> void:
-	var node := Node2D.new()
+	var node := StaticBody2D.new()
 	node.position = at
 	node.z_index = 4
+	node.collision_layer = 1
+	node.collision_mask = 0
+	_add_rect_collision(node, Vector2(62, 42))
 
 	var body := Polygon2D.new()
 	body.polygon = PackedVector2Array([
@@ -353,9 +362,12 @@ func _create_cone(at: Vector2) -> void:
 
 
 func _create_container(at: Vector2, color: Color) -> void:
-	var node := Node2D.new()
+	var node := StaticBody2D.new()
 	node.position = at
 	node.z_index = 3
+	node.collision_layer = 1
+	node.collision_mask = 0
+	_add_rect_collision(node, Vector2(106, 52))
 	var box := Polygon2D.new()
 	box.polygon = PackedVector2Array([
 		Vector2(-52, -24), Vector2(52, -24), Vector2(52, 24), Vector2(-52, 24)
@@ -369,6 +381,14 @@ func _create_container(at: Vector2, color: Color) -> void:
 		rib.default_color = color.darkened(0.22)
 		node.add_child(rib)
 	add_child(node)
+
+
+func _add_rect_collision(body: StaticBody2D, size: Vector2) -> void:
+	var collision := CollisionShape2D.new()
+	var shape := RectangleShape2D.new()
+	shape.size = size
+	collision.shape = shape
+	body.add_child(collision)
 
 
 func _create_district_signs() -> void:
