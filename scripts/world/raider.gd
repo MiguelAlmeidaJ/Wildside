@@ -8,6 +8,8 @@ extends CharacterBody2D
 @export var attack_cooldown := 0.9
 @export var reward := 35
 @export var active_after_anomaly_2 := true
+@export var activation_stage := -1
+@export var mission_key := "industrial"
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -30,14 +32,20 @@ func _ready() -> void:
 	add_to_group("hostile")
 	add_to_group("damageable")
 	GameManager.noise_emitted.connect(_on_noise_emitted)
-	_set_active(not active_after_anomaly_2)
+	if activation_stage >= 0:
+		_set_active(false)
+	else:
+		_set_active(not active_after_anomaly_2)
 
 
 func _physics_process(delta: float) -> void:
 	if dead:
 		return
-	if not active and active_after_anomaly_2 and MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE:
-		_set_active(true)
+	if not active:
+		if activation_stage >= 0 and MissionManager.stage == activation_stage:
+			_set_active(true)
+		elif activation_stage < 0 and active_after_anomaly_2 and MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE:
+			_set_active(true)
 	if not active:
 		return
 
@@ -151,7 +159,10 @@ func _die() -> void:
 	tween.tween_callback(hide)
 
 	GameManager.add_money(reward)
-	MissionManager.raider_defeated()
+	if mission_key == "blackout":
+		MissionManager.blackout_raider_defeated()
+	else:
+		MissionManager.raider_defeated()
 	if is_instance_valid(GameManager.player):
 		GameManager.player.call("show_message", "Inimigo derrotado  •  +$%d" % reward)
 
