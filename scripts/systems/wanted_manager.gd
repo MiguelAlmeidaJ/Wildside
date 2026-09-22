@@ -38,6 +38,8 @@ func _process(delta: float) -> void:
 	var old_level := wanted_level
 	heat = move_toward(heat, 0.0, 10.0 * delta)
 	_recalculate_level()
+	if wanted_level <= 0:
+		_clear_police_contact()
 	if old_level != wanted_level or is_zero_approx(heat):
 		wanted_changed.emit(wanted_level, heat)
 
@@ -87,6 +89,8 @@ func notify_vehicle_change(vehicle: Node2D) -> bool:
 func reduce_heat(amount: float) -> void:
 	heat = maxf(0.0, heat - amount)
 	_recalculate_level()
+	if wanted_level <= 0:
+		_clear_police_contact()
 	wanted_changed.emit(wanted_level, heat)
 
 
@@ -94,14 +98,18 @@ func clear() -> void:
 	heat = 0.0
 	_cooldown = 0.0
 	_gunshot_report_cooldown = 0.0
-	_police_contact_left = 0.0
 	_vehicle_swap_cooldown = 0.0
 	_last_vehicle_id = 0
 	wanted_level = 0
+	_clear_police_contact()
+	wanted_changed.emit(wanted_level, heat)
+
+
+func _clear_police_contact() -> void:
+	_police_contact_left = 0.0
 	if is_visible_to_police:
 		is_visible_to_police = false
 		pursuit_state_changed.emit(false)
-	wanted_changed.emit(wanted_level, heat)
 
 
 func reset_run() -> void:
