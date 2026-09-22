@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=6 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
@@ -29,6 +29,20 @@ content_margin_top = 12.0
 content_margin_right = 20.0
 content_margin_bottom = 12.0
 
+[sub_resource type="StyleBoxFlat" id="StyleBox_health_bg"]
+bg_color = Color(0.12, 0.15, 0.18, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBox_health_fill"]
+bg_color = Color(0.22, 0.78, 0.48, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
@@ -36,13 +50,37 @@ script = ExtResource("1_hud")
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 329.0
-offset_bottom = 107.0
+offset_bottom = 130.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.2\nWASD  Mover   SHIFT  Correr   E  Interagir\nQ  Capturar   ESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.3\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\nESPAÇO  Freio de mão"
+
+[node name="HealthPanel" type="PanelContainer" parent="."]
+offset_left = 24.0
+offset_top = 142.0
+offset_right = 329.0
+offset_bottom = 208.0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="HealthContent" type="VBoxContainer" parent="HealthPanel"]
+theme_override_constants/separation = 5
+
+[node name="HealthLabel" type="Label" parent="HealthPanel/HealthContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.94, 0.98, 0.96, 1)
+theme_override_font_sizes/font_size = 15
+text = "VIDA  100 / 100"
+
+[node name="HealthBar" type="ProgressBar" parent="HealthPanel/HealthContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 13)
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBox_health_bg")
+theme_override_styles/fill = SubResource("StyleBox_health_fill")
 
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true
