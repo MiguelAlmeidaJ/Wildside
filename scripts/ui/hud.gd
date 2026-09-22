@@ -174,7 +174,7 @@ func _on_capture_devices_changed(total: int) -> void:
 func _on_inventory_changed(medkits: int, snacks: int, energy_drinks: int) -> void:
 	medkit_label.text = "H  KIT MÉDICO  x%d  •  +55 HP" % medkits
 	snack_label.text = "K  LANCHE  x%d  •  +20 HP" % snacks
-	if GameManager.player != null and float(GameManager.player.get("energy_boost_left")) > 0.05:
+	if is_instance_valid(GameManager.player) and float(GameManager.player.get("energy_boost_left")) > 0.05:
 		set_energy_boost(float(GameManager.player.get("energy_boost_left")))
 	else:
 		energy_label.text = "J  ENERGÉTICO  x%d  •  10s velocidade" % energy_drinks
