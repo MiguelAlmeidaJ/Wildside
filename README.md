@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.5 · Godot 4.7.x**
+**Prototype 0.5.1 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -64,6 +64,7 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Combate corpo a corpo com `F`, alcance direcional, cooldown e feedback visual.
 - Sistema de vida do jogador com 100 HP, breve invulnerabilidade após dano e respawn com penalidade de até `$50`.
 - Raiders hostis no Distrito Industrial, liberados após a `ANOMALIA #002`, com perseguição, ataque, vida e recompensa em dinheiro.
+- A limpeza dos galpões agora é uma missão rastreada em `0/2`, `1/2` e `2/2`; o segundo Raider conclui automaticamente a missão e paga bônus de `$150`.
 - Carros em movimento podem atropelar e causar dano aos Raiders.
 - Nib e Volt ajudam automaticamente no combate quando há inimigos próximos.
 - Habilidades ativas de Wild: Nib usa `Impacto`, um golpe de alvo único com alto dano e knockback; Volt usa `Sobrecarga`, que encadeia eletricidade entre até três inimigos e aplica stun.
