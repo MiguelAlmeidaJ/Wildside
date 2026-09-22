@@ -81,7 +81,7 @@ A cidade agora também oferece progressão sem depender da campanha:
 - Nando organiza uma `Corrida de Rua` repetível na Zona Sul;
 - a corrida usa seis checkpoints espalhados pelas avenidas, cronômetro, melhor tempo e contador de vitórias;
 - completar uma volta paga `$180`, com bônus de `$50` abaixo de 75s e `$100` abaixo de 55s;
-- a `Garagem Cobalto` repara veículos danificados por um valor proporcional ao dano;
+- a `Garagem Cobalto` repara veículos danificados por um valor proporcional ao dano e recupera o Cobalto R perdido/destruído por `$50`;
 - a garagem vende o `Cobalto R` por `$350`, o primeiro veículo próprio do jogador;
 - entrar no Cobalto R não gera procura por roubo de veículo;
 - cinco esconderijos únicos foram espalhados entre Residencial, Centro, Industrial, Zona Sul e Mata Norte;
