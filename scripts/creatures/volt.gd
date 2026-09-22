@@ -165,14 +165,16 @@ func use_active_ability(player: CharacterBody2D) -> bool:
 		player.call("show_message", "Sobrecarga do Volt recarrega em %.1fs." % ability_cooldown_left)
 		return false
 
-	var first_target := _nearest_hostile_from(global_position, ability_range, [])
+	var excluded: Array[Node2D] = []
+	var first_target := _nearest_hostile_from(global_position, ability_range, excluded)
 	if not is_instance_valid(first_target):
 		player.call("show_message", "Nenhum inimigo ao alcance da Sobrecarga.")
 		return false
 
 	var targets: Array[Node2D] = [first_target]
 	while targets.size() < ability_max_targets:
-		var next_target := _nearest_hostile_from(targets[-1].global_position, chain_range, targets)
+		var last_target := targets[targets.size() - 1]
+		var next_target := _nearest_hostile_from(last_target.global_position, chain_range, targets)
 		if not is_instance_valid(next_target):
 			break
 		targets.append(next_target)
