@@ -1,0 +1,130 @@
+extends CharacterBody2D
+
+@export var max_health := 70.0
+@export var move_speed := 125.0
+@export var aggro_range := 360.0
+@export var attack_range := 66.0
+@export var attack_damage := 12.0
+@export var attack_cooldown := 0.9
+@export var reward := 35
+@export var active_after_anomaly_2 := true
+
+@onready var sprite: Sprite2D = $Sprite2D
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
+@onready var health_label: Label = $HealthLabel
+
+var health := 70.0
+var active := false
+var dead := false
+var _home := Vector2.ZERO
+var _attack_cooldown_left := 0.0
+var _knockback := Vector2.ZERO
+
+
+func _ready() -> void:
+	_home = global_position
+	health = max_health
+	add_to_group("hostile")
+	add_to_group("damageable")
+	_set_active(not active_after_anomaly_2)
+
+
+func _physics_process(delta: float) -> void:
+	if dead:
+		return
+	if not active and active_after_anomaly_2 and MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE:
+		_set_active(true)
+	if not active:
+		return
+
+	_attack_cooldown_left = maxf(0.0, _attack_cooldown_left - delta)
+	_knockback = _knockback.move_toward(Vector2.ZERO, 700.0 * delta)
+
+	var player := GameManager.player
+	if not is_instance_valid(player) or is_instance_valid(player.current_vehicle):
+		velocity = _knockback
+		move_and_slide()
+		return
+
+	var distance := global_position.distance_to(player.global_position)
+	if distance <= attack_range:
+		velocity = _knockback
+		if _attack_cooldown_left <= 0.0:
+			_attack_cooldown_left = attack_cooldown
+			player.call("take_damage", attack_damage, self)
+			_play_attack_animation()
+	elif distance <= aggro_range:
+		var direction := global_position.direction_to(player.global_position)
+		velocity = direction * move_speed + _knockback
+		if velocity.length() > 1.0:
+			sprite.rotation = direction.angle() + PI / 2.0
+	else:
+		var home_distance := global_position.distance_to(_home)
+		if home_distance > 24.0:
+			var direction_home := global_position.direction_to(_home)
+			velocity = direction_home * (move_speed * 0.6) + _knockback
+			sprite.rotation = direction_home.angle() + PI / 2.0
+		else:
+			velocity = _knockback
+
+	move_and_slide()
+
+
+func take_damage(amount: float, source: Node2D = null) -> void:
+	if dead or not active or amount <= 0.0:
+		return
+	health = maxf(0.0, health - amount)
+	_update_health_label()
+
+	if is_instance_valid(source):
+		var direction := source.global_position.direction_to(global_position)
+		_knockback = direction * 185.0
+
+	sprite.modulate = Color(1.7, 0.65, 0.65)
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.14)
+
+	if health <= 0.0:
+		_die()
+
+
+func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
+	if dead or not active or impact_speed < 70.0:
+		return
+	take_damage(impact_speed * 0.12, vehicle)
+
+
+func _die() -> void:
+	dead = true
+	remove_from_group("hostile")
+	remove_from_group("damageable")
+	velocity = Vector2.ZERO
+	collision_shape.set_deferred("disabled", true)
+	health_label.hide()
+
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", Vector2.ZERO, 0.2).set_trans(Tween.TRANS_BACK)
+	tween.tween_callback(hide)
+
+	GameManager.add_money(reward)
+	if is_instance_valid(GameManager.player):
+		GameManager.player.call("show_message", "Inimigo derrotado  •  +$%d" % reward)
+
+
+func _set_active(value: bool) -> void:
+	active = value
+	visible = value
+	collision_shape.set_deferred("disabled", not value)
+	health_label.visible = value
+	if value:
+		_update_health_label()
+
+
+func _update_health_label() -> void:
+	health_label.text = "RAIDER  %d/%d" % [roundi(health), roundi(max_health)]
+
+
+func _play_attack_animation() -> void:
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", Vector2(1.12, 0.88), 0.08)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_BACK)

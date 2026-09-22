@@ -3,6 +3,9 @@ extends CharacterBody2D
 enum State { IDLE, WANDER, FLEE, FOLLOW }
 
 @export var capture_chance := 0.75
+@export var assist_range := 210.0
+@export var assist_damage := 10.0
+@export var assist_cooldown := 1.2
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -15,6 +18,7 @@ var _wander_target := Vector2.ZERO
 var _state_timer := 1.0
 var _attempts := 0
 var _rng := RandomNumberGenerator.new()
+var _assist_cooldown_left := 0.0
 
 
 func _ready() -> void:
@@ -26,8 +30,10 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_state_timer -= delta
+	_assist_cooldown_left = maxf(0.0, _assist_cooldown_left - delta)
 	if captured:
 		_follow_player(delta)
+		_assist_player()
 	else:
 		_update_wild_state(delta)
 	move_and_slide()
@@ -103,6 +109,27 @@ func _follow_player(delta: float) -> void:
 		velocity = global_position.direction_to(target) * (280.0 if distance > 220.0 else 165.0)
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, 500.0 * delta)
+
+
+func _assist_player() -> void:
+	if _assist_cooldown_left > 0.0:
+		return
+	var target: Node2D
+	var nearest_distance := INF
+	for enemy in get_tree().get_nodes_in_group("hostile"):
+		if not enemy is Node2D or not enemy.visible or not enemy.has_method("take_damage"):
+			continue
+		var distance := global_position.distance_to(enemy.global_position)
+		if distance <= assist_range and distance < nearest_distance:
+			target = enemy
+			nearest_distance = distance
+	if not is_instance_valid(target):
+		return
+	_assist_cooldown_left = assist_cooldown
+	target.call("take_damage", assist_damage, self)
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", Vector2(1.16, 0.86), 0.08)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_BACK)
 
 
 func _play_capture_pulse() -> void:

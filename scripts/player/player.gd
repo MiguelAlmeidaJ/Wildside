@@ -2,6 +2,8 @@ extends CharacterBody2D
 
 signal prompt_changed(text: String)
 signal message_requested(text: String)
+signal health_changed(current: float, maximum: float)
+signal player_defeated
 
 enum MotionState { IDLE, WALK, RUN }
 
@@ -11,6 +13,11 @@ enum MotionState { IDLE, WALK, RUN }
 @export var deceleration := 1900.0
 @export var camera_look_ahead := 72.0
 @export var interaction_fallback_range := 128.0
+@export var max_health := 100.0
+@export var attack_damage := 35.0
+@export var attack_range := 96.0
+@export var attack_cooldown := 0.42
+@export var invulnerability_time := 0.6
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -22,15 +29,26 @@ var motion_state := MotionState.IDLE
 var _focused_interactable: Node2D
 var _animation_time := 0.0
 var _last_prompt := ""
+var health := 100.0
+var facing_direction := Vector2.UP
+var _attack_cooldown_left := 0.0
+var _invulnerability_left := 0.0
+var _spawn_position := Vector2.ZERO
 
 
 func _ready() -> void:
 	add_to_group("player")
 	GameManager.register_player(self)
+	_spawn_position = global_position
+	health = max_health
 	player_camera.make_current()
+	health_changed.emit(health, max_health)
 
 
 func _physics_process(delta: float) -> void:
+	_attack_cooldown_left = maxf(0.0, _attack_cooldown_left - delta)
+	_invulnerability_left = maxf(0.0, _invulnerability_left - delta)
+
 	if is_instance_valid(current_vehicle):
 		global_position = current_vehicle.global_position
 		_update_prompt()
@@ -44,6 +62,7 @@ func _physics_process(delta: float) -> void:
 	velocity = velocity.move_toward(target_velocity, change_rate * delta)
 
 	if direction != Vector2.ZERO:
+		facing_direction = direction.normalized()
 		sprite.rotation = direction.angle() + PI / 2.0
 		motion_state = MotionState.RUN if running else MotionState.WALK
 	else:
@@ -70,6 +89,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			creature.call("attempt_capture", self)
 		else:
 			show_message("Nenhum Wild ao alcance.")
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("attack") and not is_instance_valid(current_vehicle):
+		perform_attack()
 		get_viewport().set_input_as_handled()
 
 
@@ -99,6 +121,82 @@ func leave_vehicle(vehicle: CharacterBody2D, exit_position: Vector2) -> void:
 
 func show_message(text: String) -> void:
 	message_requested.emit(text)
+
+
+func perform_attack() -> bool:
+	if _attack_cooldown_left > 0.0:
+		return false
+	_attack_cooldown_left = attack_cooldown
+
+	var hit := false
+	for enemy in get_tree().get_nodes_in_group("hostile"):
+		if not enemy is Node2D or not enemy.has_method("take_damage"):
+			continue
+		var offset: Vector2 = enemy.global_position - global_position
+		var distance := offset.length()
+		if distance > attack_range or distance <= 0.01:
+			continue
+		if facing_direction.dot(offset.normalized()) < 0.15:
+			continue
+		enemy.call("take_damage", attack_damage, self)
+		hit = true
+
+	_play_attack_animation(hit)
+	return hit
+
+
+func take_damage(amount: float, source: Node2D = null) -> void:
+	if amount <= 0.0 or _invulnerability_left > 0.0 or health <= 0.0:
+		return
+	if is_instance_valid(current_vehicle):
+		return
+
+	health = maxf(0.0, health - amount)
+	_invulnerability_left = invulnerability_time
+	health_changed.emit(health, max_health)
+
+	if is_instance_valid(source):
+		var knockback := source.global_position.direction_to(global_position)
+		velocity += knockback * 155.0
+
+	_flash_damage()
+	if health <= 0.0:
+		_defeat()
+
+
+func heal(amount: float) -> void:
+	if amount <= 0.0:
+		return
+	health = minf(max_health, health + amount)
+	health_changed.emit(health, max_health)
+
+
+func _defeat() -> void:
+	player_defeated.emit()
+	var penalty := mini(50, GameManager.money)
+	if penalty > 0:
+		GameManager.add_money(-penalty)
+	global_position = _spawn_position
+	velocity = Vector2.ZERO
+	health = max_health
+	_invulnerability_left = 1.5
+	health_changed.emit(health, max_health)
+	show_message("Você apagou e acordou de volta no centro.  -$%d" % penalty)
+
+
+func _play_attack_animation(hit: bool) -> void:
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", Vector2(1.18, 0.82), 0.07)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.13).set_trans(Tween.TRANS_BACK)
+	if hit:
+		sprite.modulate = Color(1.25, 1.15, 0.85)
+		tween.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.16)
+
+
+func _flash_damage() -> void:
+	sprite.modulate = Color(1.7, 0.55, 0.55)
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color.WHITE, 0.18)
 
 
 func _update_visual_animation(delta: float) -> void:
