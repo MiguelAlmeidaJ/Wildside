@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.1 · Godot 4.7.x**
+**Prototype 0.2 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -31,6 +31,15 @@ O loop de `ANOMALIA #001` é:
 5. fugir das viaturas até zerar o nível de procura;
 6. voltar para Maya e receber `$250`.
 
+Depois de concluir a primeira missão, Maya libera a `ANOMALIA #002`:
+
+1. procurar Bruno no Distrito Industrial;
+2. receber a indicação da Oficina Cobalto;
+3. comprar um Dispositivo Wild por `$100`;
+4. localizar Volt nos galpões;
+5. capturá-lo usando o dispositivo;
+6. voltar para Bruno e receber `$200`.
+
 Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e faz o NPC fugir. A versão atual implementa os níveis 0–2; os níveis 3–5 ficam para slices posteriores.
 
 ## Sistemas implementados
@@ -45,6 +54,9 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Veículo com aceleração, ré, freio, derrapagem leve, dano, colisão, som de motor procedural e saída segura.
 - NPCs com estados `IDLE`, `WANDER`, `TALK` e `FLEE`.
 - Nib com estados `IDLE`, `WANDER`, `FLEE` e `FOLLOW`, chance de captura e acompanhamento do jogador.
+- Volt como segundo Wild, liberado pela `ANOMALIA #002` e capturado com um Dispositivo Wild.
+- Oficina Cobalto com compra funcional de dispositivos por `$100`.
+- Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
 - Gerenciadores globais pequenos para jogo, missões, procura, save e áudio.
@@ -73,7 +85,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, roubo e condução do carro, saída segura, procura, aparecimento da polícia, detecção das cinco regiões, interação real com o telefone, captura do Nib e recompensa.
+O teste cobre movimento, corrida, roubo e condução do carro, saída segura, procura, regiões, telefone, ANOMALIA #001, Oficina Cobalto, compra do dispositivo, captura de Volt, ANOMALIA #002 e recompensas.
 
 ## Critério de conclusão
 
