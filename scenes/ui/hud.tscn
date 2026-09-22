@@ -42,7 +42,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.1\nWASD  Mover   SHIFT  Correr   E  Interagir\nQ  Capturar   ESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.2\nWASD  Mover   SHIFT  Correr   E  Interagir\nQ  Capturar   ESPAÇO  Freio de mão"
 
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true
