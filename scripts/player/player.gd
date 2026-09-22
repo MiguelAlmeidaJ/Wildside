@@ -161,8 +161,6 @@ func fire_pistol_at(target_position: Vector2) -> bool:
 	_shoot_cooldown_left = pistol_cooldown
 	GameManager.consume_pistol_round()
 	GameManager.emit_noise(global_position, pistol_noise_radius, "gunshot", self)
-	var urban_shot := GameManager.current_district != "MATA NORTE"
-	WantedManager.report_gunshot(urban_shot)
 
 	var hit_target: Node2D
 	var hit_projection := INF
