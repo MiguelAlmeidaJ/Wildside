@@ -15,6 +15,8 @@ extends CanvasLayer
 @onready var health_label: Label = %HealthLabel
 @onready var nib_ability_label: Label = %NibAbilityLabel
 @onready var volt_ability_label: Label = %VoltAbilityLabel
+@onready var weapon_label: Label = %WeaponLabel
+@onready var weapon_hint_label: Label = %WeaponHintLabel
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -30,9 +32,11 @@ func _ready() -> void:
 	GameManager.money_changed.connect(_on_money_changed)
 	GameManager.capture_devices_changed.connect(_on_capture_devices_changed)
 	GameManager.district_changed.connect(_on_district_changed)
+	GameManager.weapon_changed.connect(_on_weapon_changed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_money_changed(GameManager.money)
 	_on_capture_devices_changed(GameManager.capture_devices)
+	_on_weapon_changed(GameManager.pistol_unlocked, GameManager.pistol_magazine, GameManager.pistol_reserve)
 
 
 func _process(_delta: float) -> void:
@@ -93,6 +97,15 @@ func _on_money_changed(total: int) -> void:
 
 func _on_capture_devices_changed(total: int) -> void:
 	devices_label.text = "◇  %d" % total
+
+
+func _on_weapon_changed(unlocked: bool, magazine: int, reserve: int) -> void:
+	if not unlocked:
+		weapon_label.text = "PISTOLA  [BLOQUEADA]"
+		weapon_hint_label.text = "Disponível na Oficina Cobalto"
+		return
+	weapon_label.text = "PISTOLA  %d / %d" % [magazine, reserve]
+	weapon_hint_label.text = "Mouse1 atirar  •  R recarregar"
 
 
 func _on_crime_committed(description: String, heat_added: float) -> void:
