@@ -27,7 +27,7 @@ func interact(player: CharacterBody2D) -> void:
 		player.call("show_message", "Você não pode entrar no apartamento enquanto está sendo procurado.")
 		return
 
-	player.call("heal", player.max_health)
+	player.call("heal", 9999.0)
 	player.call("set_respawn_point", global_position + Vector2(0, 72))
 	var saved := SaveManager.save_game()
 	if saved:
