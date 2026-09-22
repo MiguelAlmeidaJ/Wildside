@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/anomaly_node.gd" id="1_anomaly"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_anomaly"]
+radius = 32.0
+
+[node name="AnomalyNode" type="StaticBody2D"]
+z_index = 6
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_anomaly")
+
+[node name="Core" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, -24, 18, -10, 22, 12, 0, 26, -22, 12, -18, -10)
+color = Color(0.45, 0.32, 0.8, 0.95)
+
+[node name="Ring" type="Line2D" parent="."]
+points = PackedVector2Array(0, -44, 31, -31, 44, 0, 31, 31, 0, 44, -31, 31, -44, 0, -31, -31)
+closed = true
+width = 6.0
+default_color = Color(0.7, 0.56, 1, 0.65)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -104.0
+offset_top = -74.0
+offset_right = 104.0
+offset_bottom = -48.0
+theme_override_colors/font_color = Color(0.84, 0.73, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+text = "DISTORÇÃO"
+horizontal_alignment = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape_anomaly")

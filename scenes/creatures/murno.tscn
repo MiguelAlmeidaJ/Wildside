@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/creatures/murno.gd" id="1_murno"]
+[ext_resource type="Texture2D" path="res://assets/creatures/murno.svg" id="2_texture"]
+
+[sub_resource type="CircleShape2D" id="CircleShape_murno"]
+radius = 29.0
+
+[node name="Murno" type="CharacterBody2D"]
+z_index = 9
+collision_layer = 16
+collision_mask = 1
+script = ExtResource("1_murno")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -6)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape_murno")
+
+[node name="StatusLabel" type="Label" parent="."]
+offset_left = -112.0
+offset_top = -82.0
+offset_right = 112.0
+offset_bottom = -53.0
+theme_override_colors/font_color = Color(0.84, 0.72, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.92)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 15
+text = "MURNO  ◆  180/180"
+horizontal_alignment = 1

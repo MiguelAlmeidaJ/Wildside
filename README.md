@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.7 · Godot 4.7.x**
+**Prototype 0.8 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -45,6 +45,20 @@ Depois de concluir a primeira missão, Maya libera a `ANOMALIA #002`:
 5. capturá-lo usando o dispositivo;
 6. voltar para Bruno e receber `$200`.
 
+Depois da limpeza dos galpões, começa a `ANOMALIA #003 — APAGÃO`:
+
+1. voltar a Bruno e descobrir os mapas de quedas de energia;
+2. encontrar Jade no Centro;
+3. investigar uma distorção elétrica na Zona Sul;
+4. enfrentar uma emboscada com três invasores;
+5. encarar Murno como primeiro Wild-boss do jogo;
+6. reduzir Murno a 35% de vida e capturá-lo;
+7. sobreviver ao pulso anômalo e perder duas estrelas de procura;
+8. voltar para Jade e receber `$400`.
+
+Murno é enviado para a reserva depois da captura, mantendo apenas Nib e Volt como companheiros ativos para não poluir a movimentação e as interações.
+
+
 Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e faz o NPC fugir. A versão atual implementa os níveis 0–2; os níveis 3–5 ficam para slices posteriores.
 
 ## Sistemas implementados
@@ -52,14 +66,22 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Movimento com aceleração, desaceleração, corrida, direção visual e estados idle/walk/run.
 - Câmera suave com look-ahead e limites compatíveis com a área ampliada.
 - Cidade ampliada para 12 quarteirões, três eixos verticais e duas avenidas horizontais.
+- `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas receberam marcações, estacionamento e bordas mais legíveis.
+- Props urbanos distribuídos pelos distritos: postes, bancos, vasos, caçambas, cones, containers, placas de região e letreiros de estabelecimentos.
+- Seis carros civis circulam continuamente em rotas pelas avenidas principais.
 - Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul e Mata Norte.
 - Transição de bairro exibida no HUD ao cruzar de uma região para outra.
 - Mais cidadãos e veículos estacionados espalhados pelo mapa.
+- População ampliada com Jade, Otto, Vera, Rico, Lia, Celso e novos moradores/trabalhadores espalhados pela cidade.
+- Quatro variações visuais de cidadãos evitam que toda a população pareça o mesmo personagem recolorido.
+- NPCs recebem variações visuais e falas ambientais espontâneas enquanto caminham ou esperam na rua.
 - Interação local usando `Area2D`, sem varrer todos os objetos da cena a cada frame.
 - Veículo com aceleração, ré, freio, derrapagem leve, dano, colisão, som de motor procedural e saída segura.
 - NPCs com estados `IDLE`, `WANDER`, `TALK` e `FLEE`.
 - Nib com estados `IDLE`, `WANDER`, `FLEE` e `FOLLOW`, chance de captura e acompanhamento do jogador.
 - Volt como segundo Wild, liberado pela `ANOMALIA #002` e capturado com um Dispositivo Wild.
+- Murno como primeiro Wild-boss: 180 HP, comportamento agressivo, estado enfraquecido abaixo de 35% e captura obrigatória na `ANOMALIA #003`.
+- Durante o apagão, a cidade recebe uma modulação visual escura/arroxeada e pulsante que desaparece quando a crise termina.
 - Oficina Cobalto com compra funcional de dispositivos por `$100`.
 - Combate corpo a corpo com `F`, alcance direcional, cooldown e feedback visual.
 - Sistema de vida do jogador com 100 HP, breve invulnerabilidade após dano e respawn com penalidade de até `$50`.
@@ -112,7 +134,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, veículos, procura, contato policial, troca de veículo para evasão, prisão e fiança, regiões, missões, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído de disparo, fuga de civis, investigação de Raiders, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
+O teste cobre movimento, corrida, trânsito civil, população ampliada, procura, contato policial, evasão, prisão, regiões, as três anomalias, emboscada da Zona Sul, boss Murno, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
 
 ## Critério de conclusão
 
