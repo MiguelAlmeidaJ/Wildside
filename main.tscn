@@ -49,12 +49,16 @@ can_wander = false
 [node name="Davi" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(285, -95)
 citizen_name = "Davi"
+appearance_variant = 1
 dialogue = "Tem viaturas demais rondando o centro. Eu evitaria confusão."
+ambient_lines = PackedStringArray("Mais uma viatura...", "Hoje eu vou direto pra casa.")
 
 [node name="Luma" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-1460, 470)
 citizen_name = "Luma"
+appearance_variant = 2
 dialogue = "Aqui no residencial todo mundo sabe da vida de todo mundo. Até demais."
+ambient_lines = PackedStringArray("A rua nunca fica tão cheia.", "A vizinha viu uma criatura ontem.")
 
 [node name="Bruno" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(1240, 420)
@@ -66,7 +70,9 @@ can_wander = false
 [node name="Nando" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-540, 1460)
 citizen_name = "Nando"
+appearance_variant = 3
 dialogue = "Na Zona Sul você encontra de tudo. O problema é saber de quem está comprando."
+ambient_lines = PackedStringArray("Negócio bom não fica anunciado.", "Zona Sul acorda quando o resto dorme.")
 
 [node name="Iara" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(560, 1440)
