@@ -32,7 +32,7 @@ func _ready() -> void:
 	add_to_group("hostile")
 	add_to_group("damageable")
 	GameManager.noise_emitted.connect(_on_noise_emitted)
-	if activation_stage >= 0:
+	if mission_key == "blackout" or activation_stage >= 0:
 		_set_active(false)
 	else:
 		_set_active(not active_after_anomaly_2)
@@ -42,9 +42,11 @@ func _physics_process(delta: float) -> void:
 	if dead:
 		return
 	if not active:
-		if activation_stage >= 0 and MissionManager.stage == activation_stage:
+		if mission_key == "blackout" and MissionManager.stage == MissionManager.Stage.CLEAR_BLACKOUT:
 			_set_active(true)
-		elif activation_stage < 0 and active_after_anomaly_2 and MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE:
+		elif mission_key != "blackout" and activation_stage >= 0 and MissionManager.stage == activation_stage:
+			_set_active(true)
+		elif mission_key != "blackout" and activation_stage < 0 and active_after_anomaly_2 and MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE:
 			_set_active(true)
 	if not active:
 		return
