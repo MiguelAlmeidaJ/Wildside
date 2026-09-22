@@ -41,27 +41,28 @@ func _physics_process(delta: float) -> void:
 
 
 func _route_points(id: int) -> Array[Vector2]:
+	var points: Array[Vector2] = []
 	match id:
 		0:
-			return [
+			points = [
 				Vector2(-1650, -80), Vector2(-250, -80), Vector2(250, -80),
 				Vector2(1650, -80), Vector2(1650, 120), Vector2(250, 120),
 				Vector2(-250, 120), Vector2(-1650, 120)
 			]
 		1:
-			return [
+			points = [
 				Vector2(1650, 875), Vector2(250, 875), Vector2(-250, 875),
 				Vector2(-1650, 875), Vector2(-1650, 1125), Vector2(-250, 1125),
 				Vector2(250, 1125), Vector2(1650, 1125)
 			]
 		2:
-			return [
+			points = [
 				Vector2(-1120, -820), Vector2(-1120, 760), Vector2(-1120, 1660),
 				Vector2(-880, 1660), Vector2(-880, 760), Vector2(-880, -820)
 			]
 		3:
-			return [
+			points = [
 				Vector2(870, 1660), Vector2(870, 760), Vector2(870, -820),
 				Vector2(1150, -820), Vector2(1150, 760), Vector2(1150, 1660)
 			]
-	return []
+	return points
