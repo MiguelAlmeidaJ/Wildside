@@ -28,7 +28,8 @@ func _physics_process(delta: float) -> void:
 		WantedManager.report_police_contact()
 
 	var player := GameManager.player
-	var player_on_foot := is_instance_valid(player) and not is_instance_valid(player.current_vehicle)
+	var player_vehicle = player.get("current_vehicle") if is_instance_valid(player) else null
+	var player_on_foot := is_instance_valid(player) and not is_instance_valid(player_vehicle)
 
 	if player_on_foot and distance <= deploy_distance:
 		if not is_instance_valid(officer):
@@ -58,8 +59,10 @@ func _deploy_officer() -> void:
 	var parent := get_parent()
 	if parent == null:
 		return
-	officer = OFFICER_SCENE.instantiate()
-	officer.source_car = self
+	officer = OFFICER_SCENE.instantiate() as CharacterBody2D
+	if not is_instance_valid(officer):
+		return
+	officer.call("set_source_car", self)
 	parent.add_child(officer)
 	officer.global_position = global_position + Vector2.RIGHT.rotated(rotation) * 58.0
 
