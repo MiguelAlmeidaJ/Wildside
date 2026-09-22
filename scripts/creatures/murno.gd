@@ -51,7 +51,8 @@ func _physics_process(delta: float) -> void:
 	var target_position := GameManager.get_controlled_position()
 	var distance := global_position.distance_to(target_position)
 
-	if distance <= attack_range and not is_instance_valid(player.current_vehicle):
+	var player_vehicle = player.get("current_vehicle")
+	if distance <= attack_range and not is_instance_valid(player_vehicle):
 		velocity = velocity.move_toward(Vector2.ZERO, 850.0 * delta)
 		if _attack_cooldown_left <= 0.0:
 			_attack_cooldown_left = attack_cooldown
