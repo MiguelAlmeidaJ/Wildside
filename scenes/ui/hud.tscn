@@ -63,7 +63,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.9\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.10\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
@@ -133,6 +133,32 @@ theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "Disponível na Oficina Cobalto"
 
+[node name="VehiclePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = 24.0
+offset_top = 473.0
+offset_right = 329.0
+offset_bottom = 548.0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="VehicleContent" type="VBoxContainer" parent="VehiclePanel"]
+theme_override_constants/separation = 5
+
+[node name="VehicleLabel" type="Label" parent="VehiclePanel/VehicleContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.47, 0.93, 0.87, 1)
+theme_override_font_sizes/font_size = 14
+text = "VEÍCULO  •  100%"
+
+[node name="VehicleBar" type="ProgressBar" parent="VehiclePanel/VehicleContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBox_health_bg")
+theme_override_styles/fill = SubResource("StyleBox_health_fill")
+
 [node name="InventoryPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false
@@ -164,6 +190,12 @@ text = "K  LANCHE  x0  •  +20 HP"
 unique_name_in_owner = true
 theme_override_font_sizes/font_size = 15
 text = "J  ENERGÉTICO  x0  •  10s velocidade"
+
+[node name="CacheLabel" type="Label" parent="InventoryPanel/InventoryContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.76, 0.35, 1)
+theme_override_font_sizes/font_size = 14
+text = "ESCONDERIJOS  0 / 5"
 
 [node name="InventoryHint" type="Label" parent="InventoryPanel/InventoryContent"]
 theme_override_colors/font_color = Color(0.7, 0.76, 0.8, 1)
@@ -428,6 +460,35 @@ unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.92, 0.95, 0.98, 1)
 theme_override_font_sizes/font_size = 14
 text = "Retire a encomenda."
+autowrap_mode = 2
+
+[node name="RacePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -390.0
+offset_top = 432.0
+offset_right = -24.0
+offset_bottom = 535.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="RaceContent" type="VBoxContainer" parent="RacePanel"]
+theme_override_constants/separation = 4
+
+[node name="RaceTitle" type="Label" parent="RacePanel/RaceContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.61, 0.22, 1)
+theme_override_font_sizes/font_size = 16
+text = "CORRIDA DE RUA"
+
+[node name="RaceDescription" type="Label" parent="RacePanel/RaceContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.95, 0.96, 0.98, 1)
+theme_override_font_sizes/font_size = 14
+text = "Vá até a largada."
 autowrap_mode = 2
 
 [node name="DistrictLabel" type="Label" parent="."]
