@@ -20,6 +20,8 @@ var _home := Vector2.ZERO
 var _attack_cooldown_left := 0.0
 var _knockback := Vector2.ZERO
 var _stun_left := 0.0
+var _investigate_position := Vector2.ZERO
+var _investigate_left := 0.0
 
 
 func _ready() -> void:
@@ -27,6 +29,7 @@ func _ready() -> void:
 	health = max_health
 	add_to_group("hostile")
 	add_to_group("damageable")
+	GameManager.noise_emitted.connect(_on_noise_emitted)
 	_set_active(not active_after_anomaly_2)
 
 
@@ -40,6 +43,7 @@ func _physics_process(delta: float) -> void:
 
 	_attack_cooldown_left = maxf(0.0, _attack_cooldown_left - delta)
 	_stun_left = maxf(0.0, _stun_left - delta)
+	_investigate_left = maxf(0.0, _investigate_left - delta)
 	_knockback = _knockback.move_toward(Vector2.ZERO, 700.0 * delta)
 
 	if _stun_left > 0.0:
@@ -65,6 +69,15 @@ func _physics_process(delta: float) -> void:
 		velocity = direction * move_speed + _knockback
 		if velocity.length() > 1.0:
 			sprite.rotation = direction.angle() + PI / 2.0
+	elif _investigate_left > 0.0:
+		var investigate_distance := global_position.distance_to(_investigate_position)
+		if investigate_distance > 24.0:
+			var investigate_direction := global_position.direction_to(_investigate_position)
+			velocity = investigate_direction * (move_speed * 0.9) + _knockback
+			sprite.rotation = investigate_direction.angle() + PI / 2.0
+		else:
+			velocity = _knockback
+			_investigate_left = 0.0
 	else:
 		var home_distance := global_position.distance_to(_home)
 		if home_distance > 24.0:
@@ -108,6 +121,15 @@ func apply_stun(duration: float) -> void:
 	sprite.modulate = Color(0.72, 0.9, 1.55)
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color.WHITE, minf(duration, 0.5))
+
+
+func _on_noise_emitted(position: Vector2, radius: float, kind: String, source: Node2D) -> void:
+	if dead or not active or kind != "gunshot":
+		return
+	if source == self or global_position.distance_to(position) > radius:
+		return
+	_investigate_position = position
+	_investigate_left = 5.0
 
 
 func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
