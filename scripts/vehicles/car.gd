@@ -101,10 +101,12 @@ func interact(player: CharacterBody2D) -> void:
 		return
 	_set_parked_collision(false)
 	driver = player
-	if illegal_to_take and not was_taken:
+	var theft := illegal_to_take and not was_taken
+	if theft:
 		was_taken = true
-		WantedManager.add_heat(20.0, "Roubo de veículo")
 	player.call("enter_vehicle", self)
+	if theft:
+		WantedManager.add_heat(20.0, "Roubo de veículo")
 	vehicle_camera.enabled = true
 	vehicle_camera.make_current()
 
