@@ -10,6 +10,7 @@ func _ready() -> void:
 	player.prompt_changed.connect(hud.set_prompt)
 	player.message_requested.connect(hud.show_message)
 	player.health_changed.connect(hud.set_health)
+	player.arrest_progress_changed.connect(hud.set_arrest_progress)
 	GameManager.reset_run()
 	WantedManager.reset_run()
 	MissionManager.reset_run()
