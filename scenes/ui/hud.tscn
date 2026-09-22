@@ -50,19 +50,19 @@ script = ExtResource("1_hud")
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 329.0
-offset_bottom = 154.0
+offset_bottom = 178.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.4\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.5\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 166.0
+offset_top = 190.0
 offset_right = 329.0
-offset_bottom = 232.0
+offset_bottom = 256.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="HealthContent" type="VBoxContainer" parent="HealthPanel"]
@@ -84,9 +84,9 @@ theme_override_styles/fill = SubResource("StyleBox_health_fill")
 
 [node name="WildAbilitiesPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 244.0
+offset_top = 268.0
 offset_right = 329.0
-offset_bottom = 325.0
+offset_bottom = 349.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="WildContent" type="VBoxContainer" parent="WildAbilitiesPanel"]
@@ -103,6 +103,28 @@ unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.52, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 14
 text = "2  VOLT • SOBRECARGA  [BLOQUEADO]"
+
+[node name="WeaponPanel" type="PanelContainer" parent="."]
+offset_left = 24.0
+offset_top = 361.0
+offset_right = 329.0
+offset_bottom = 437.0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="WeaponContent" type="VBoxContainer" parent="WeaponPanel"]
+theme_override_constants/separation = 4
+
+[node name="WeaponLabel" type="Label" parent="WeaponPanel/WeaponContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.86, 0.48, 1)
+theme_override_font_sizes/font_size = 15
+text = "PISTOLA  [BLOQUEADA]"
+
+[node name="WeaponHintLabel" type="Label" parent="WeaponPanel/WeaponContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
+theme_override_font_sizes/font_size = 13
+text = "Disponível na Oficina Cobalto"
 
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true

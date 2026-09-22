@@ -62,6 +62,10 @@ func _activate() -> void:
 	add_to_group("wild_volt")
 
 
+func get_interaction_priority(_player: CharacterBody2D) -> int:
+	return 8 if captured else 70
+
+
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	return "Fazer carinho em Volt" if captured else "Capturar Volt  [Q]"
 
@@ -126,6 +130,8 @@ func _update_wild_state(delta: float) -> void:
 
 func _follow_player(delta: float) -> void:
 	var target := GameManager.get_controlled_position() + Vector2(-58, 48)
+	if is_instance_valid(GameManager.player) and GameManager.player.has_method("get_companion_anchor"):
+		target = GameManager.player.call("get_companion_anchor", 1)
 	var distance := global_position.distance_to(target)
 	if distance > 650.0:
 		global_position = target

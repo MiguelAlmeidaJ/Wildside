@@ -8,6 +8,10 @@ func _ready() -> void:
 	add_to_group("interactable")
 
 
+func get_interaction_priority(_player: CharacterBody2D) -> int:
+	return 115 if MissionManager.stage == MissionManager.Stage.ANSWER_PHONE else 75
+
+
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	if MissionManager.stage == MissionManager.Stage.ANSWER_PHONE:
 		return active_action_text

@@ -18,6 +18,12 @@ enum MotionState { IDLE, WALK, RUN }
 @export var attack_range := 96.0
 @export var attack_cooldown := 0.42
 @export var invulnerability_time := 0.6
+@export var pistol_damage := 45.0
+@export var pistol_range := 620.0
+@export var pistol_hit_width := 34.0
+@export var pistol_cooldown := 0.28
+@export var pistol_reload_time := 1.1
+@export var pistol_magazine_size := 8
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -34,6 +40,9 @@ var facing_direction := Vector2.UP
 var _attack_cooldown_left := 0.0
 var _invulnerability_left := 0.0
 var _spawn_position := Vector2.ZERO
+var pistol_equipped := false
+var _shoot_cooldown_left := 0.0
+var _reload_left := 0.0
 
 
 func _ready() -> void:
@@ -41,6 +50,7 @@ func _ready() -> void:
 	GameManager.register_player(self)
 	_spawn_position = global_position
 	health = max_health
+	_ensure_weapon_inputs()
 	player_camera.make_current()
 	health_changed.emit(health, max_health)
 
@@ -48,6 +58,11 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_attack_cooldown_left = maxf(0.0, _attack_cooldown_left - delta)
 	_invulnerability_left = maxf(0.0, _invulnerability_left - delta)
+	_shoot_cooldown_left = maxf(0.0, _shoot_cooldown_left - delta)
+	if _reload_left > 0.0:
+		_reload_left = maxf(0.0, _reload_left - delta)
+		if _reload_left <= 0.0:
+			_complete_reload()
 
 	if is_instance_valid(current_vehicle):
 		global_position = current_vehicle.global_position
@@ -99,6 +114,12 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("wild_volt") and not is_instance_valid(current_vehicle):
 		_use_wild_ability("wild_volt", "Volt")
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("shoot") and not is_instance_valid(current_vehicle):
+		fire_pistol_at(get_global_mouse_position())
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("reload") and not is_instance_valid(current_vehicle):
+		start_reload()
+		get_viewport().set_input_as_handled()
 
 
 func _use_wild_ability(group_name: String, wild_name: String) -> bool:
@@ -107,6 +128,135 @@ func _use_wild_ability(group_name: String, wild_name: String) -> bool:
 		show_message("%s ainda não está disponível." % wild_name)
 		return false
 	return bool(wild.call("use_active_ability", self))
+
+
+func equip_pistol(silent := false) -> void:
+	if not GameManager.pistol_unlocked:
+		return
+	pistol_equipped = true
+	_reload_left = 0.0
+	if not silent:
+		show_message("Pistola equipada • Clique esquerdo para atirar • R recarrega")
+
+
+func fire_pistol_at(target_position: Vector2) -> bool:
+	if not GameManager.pistol_unlocked or not pistol_equipped:
+		show_message("Você não tem uma pistola equipada.")
+		return false
+	if _reload_left > 0.0:
+		show_message("Recarregando...")
+		return false
+	if _shoot_cooldown_left > 0.0:
+		return false
+	if GameManager.pistol_magazine <= 0:
+		show_message("Pente vazio • pressione R para recarregar.")
+		return false
+
+	var direction := global_position.direction_to(target_position)
+	if direction == Vector2.ZERO:
+		direction = facing_direction
+	facing_direction = direction
+	sprite.rotation = direction.angle() + PI / 2.0
+	_shoot_cooldown_left = pistol_cooldown
+	GameManager.consume_pistol_round()
+
+	var hit_target: Node2D
+	var hit_projection := INF
+	for enemy in get_tree().get_nodes_in_group("hostile"):
+		if not enemy is Node2D or not enemy.visible or not enemy.has_method("take_damage"):
+			continue
+		var offset: Vector2 = enemy.global_position - global_position
+		var projection := offset.dot(direction)
+		if projection <= 0.0 or projection > pistol_range:
+			continue
+		var perpendicular := absf(direction.cross(offset))
+		if perpendicular > pistol_hit_width:
+			continue
+		if projection < hit_projection:
+			hit_target = enemy
+			hit_projection = projection
+
+	var end_position := global_position + direction * pistol_range
+	if is_instance_valid(hit_target):
+		end_position = hit_target.global_position
+		hit_target.call("take_damage", pistol_damage, self)
+	_draw_tracer(end_position)
+	return true
+
+
+func start_reload() -> bool:
+	if not GameManager.pistol_unlocked or not pistol_equipped:
+		return false
+	if _reload_left > 0.0 or GameManager.pistol_reserve <= 0 or GameManager.pistol_magazine >= pistol_magazine_size:
+		return false
+	_reload_left = pistol_reload_time
+	show_message("Recarregando pistola...")
+	return true
+
+
+func _complete_reload() -> void:
+	_reload_left = 0.0
+	var moved := GameManager.reload_pistol(pistol_magazine_size)
+	if moved > 0:
+		show_message("Pistola recarregada.")
+
+
+func _draw_tracer(end_position: Vector2) -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	var tracer := Line2D.new()
+	tracer.width = 3.0
+	tracer.default_color = Color(1.0, 0.86, 0.48, 0.95)
+	tracer.points = PackedVector2Array([
+		parent.to_local(global_position),
+		parent.to_local(end_position),
+	])
+	parent.add_child(tracer)
+	var tween := tracer.create_tween()
+	tween.tween_property(tracer, "modulate:a", 0.0, 0.12)
+	tween.tween_callback(tracer.queue_free)
+
+
+func get_companion_anchor(slot: int) -> Vector2:
+	var forward := facing_direction.normalized()
+	if forward == Vector2.ZERO:
+		forward = Vector2.UP
+	if is_instance_valid(current_vehicle) and current_vehicle.velocity.length() > 10.0:
+		forward = current_vehicle.velocity.normalized()
+	var side := forward.orthogonal()
+	var interaction_space := _has_nearby_priority_interactable()
+	var back_distance := 125.0 if interaction_space else 88.0
+	var side_distance := 125.0 if interaction_space else 68.0
+	var side_sign := 1.0 if slot == 0 else -1.0
+	return GameManager.get_controlled_position() - forward * back_distance + side * side_distance * side_sign
+
+
+func _has_nearby_priority_interactable() -> bool:
+	for candidate in get_tree().get_nodes_in_group("interactable"):
+		if not candidate is Node2D:
+			continue
+		if candidate.has_method("get_interaction_priority") and int(candidate.call("get_interaction_priority", self)) < 50:
+			continue
+		if global_position.distance_to(candidate.global_position) <= 155.0:
+			return true
+	return false
+
+
+func _ensure_weapon_inputs() -> void:
+	if not InputMap.has_action("shoot"):
+		InputMap.add_action("shoot")
+	if InputMap.action_get_events("shoot").is_empty():
+		var mouse := InputEventMouseButton.new()
+		mouse.button_index = MOUSE_BUTTON_LEFT
+		InputMap.action_add_event("shoot", mouse)
+
+	if not InputMap.has_action("reload"):
+		InputMap.add_action("reload")
+	if InputMap.action_get_events("reload").is_empty():
+		var reload_key := InputEventKey.new()
+		reload_key.physical_keycode = KEY_R
+		InputMap.action_add_event("reload", reload_key)
 
 
 func enter_vehicle(vehicle: CharacterBody2D) -> void:
@@ -270,11 +420,16 @@ func _update_prompt() -> void:
 
 func _find_nearest_interactable() -> Node2D:
 	var nearest: Node2D
+	var nearest_priority := -INF
 	var nearest_distance := INF
 	for candidate in _nearby_interactables():
+		var priority := 50.0
+		if candidate.has_method("get_interaction_priority"):
+			priority = float(candidate.call("get_interaction_priority", self))
 		var distance := global_position.distance_squared_to(candidate.global_position)
-		if distance < nearest_distance:
+		if priority > nearest_priority or (is_equal_approx(priority, nearest_priority) and distance < nearest_distance):
 			nearest = candidate
+			nearest_priority = priority
 			nearest_distance = distance
 	return nearest
 

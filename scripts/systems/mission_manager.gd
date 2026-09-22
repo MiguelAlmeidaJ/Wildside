@@ -73,7 +73,7 @@ func talk_to_bruno() -> String:
 			GameManager.add_money(MISSION_2_REWARD)
 			mission_completed.emit(MISSION_2_REWARD)
 			_emit_current_objective()
-			return "Bruno: Você trouxe o Volt vivo... bom. Isso vale dinheiro e informação. Mas cuidado: Raiders tomaram os galpões do norte.  +$%d" % MISSION_2_REWARD
+			return "Bruno: Você trouxe o Volt vivo... bom. Raiders tomaram os galpões do norte. A Cobalto separou uma pistola para você, se tiver dinheiro.  +$%d" % MISSION_2_REWARD
 		Stage.MISSION_2_COMPLETE:
 			return "Bruno: Fique com os olhos abertos. O Distrito Industrial não está quieto por acaso."
 		_:
@@ -149,4 +149,4 @@ func _emit_current_objective() -> void:
 		Stage.RETURN_TO_BRUNO:
 			objective_changed.emit("ANOMALIA #002", "Volte para Bruno.", BRUNO_POSITION, true)
 		Stage.MISSION_2_COMPLETE:
-			objective_changed.emit("DISTRITO EM ALERTA", "Raiders nos galpões • F atacar • 1 Impacto do Nib • 2 Sobrecarga do Volt.", Vector2.ZERO, false)
+			objective_changed.emit("DISTRITO EM ALERTA", "Raiders nos galpões • Cobalto vende pistola • F atacar • 1 Nib • 2 Volt.", Vector2.ZERO, false)

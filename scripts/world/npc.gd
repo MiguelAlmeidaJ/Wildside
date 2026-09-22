@@ -55,6 +55,12 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 
+func get_interaction_priority(_player: CharacterBody2D) -> int:
+	if mission_giver or not mission_contact.is_empty():
+		return 120
+	return 100
+
+
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	return "Conversar com " + citizen_name
 
