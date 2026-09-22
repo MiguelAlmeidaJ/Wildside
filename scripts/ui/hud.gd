@@ -9,6 +9,7 @@ extends CanvasLayer
 @onready var mission_panel: PanelContainer = %MissionPanel
 @onready var mission_title: Label = %MissionTitle
 @onready var mission_description: Label = %MissionDescription
+@onready var district_label: Label = %DistrictLabel
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -21,6 +22,7 @@ func _ready() -> void:
 	WantedManager.wanted_changed.connect(_on_wanted_changed)
 	WantedManager.crime_committed.connect(_on_crime_committed)
 	GameManager.money_changed.connect(_on_money_changed)
+	GameManager.district_changed.connect(_on_district_changed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_money_changed(GameManager.money)
 
@@ -67,6 +69,22 @@ func _on_crime_committed(description: String, heat_added: float) -> void:
 
 func _on_mission_completed(reward: int) -> void:
 	show_message("MISSÃO CONCLUÍDA  •  +$%d" % reward)
+
+
+func _on_district_changed(name: String) -> void:
+	if name.is_empty():
+		return
+	district_label.text = name
+	district_label.show()
+	district_label.modulate.a = 0.0
+
+	var tween := create_tween()
+	tween.set_trans(Tween.TRANS_QUAD)
+	tween.set_ease(Tween.EASE_OUT)
+	tween.tween_property(district_label, "modulate:a", 1.0, 0.22)
+	tween.tween_interval(1.65)
+	tween.tween_property(district_label, "modulate:a", 0.0, 0.65)
+	tween.tween_callback(district_label.hide)
 
 
 func _on_message_timer_timeout() -> void:
