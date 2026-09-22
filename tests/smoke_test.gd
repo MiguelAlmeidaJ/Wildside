@@ -146,6 +146,51 @@ func _run() -> void:
 	await process_frame
 	await physics_frame
 	_check(raider1.active and raider2.active, "Raiders precisam ativar após a ANOMALIA #002")
+	_check(InputMap.has_action("wild_nib"), "Ação da habilidade do Nib precisa existir")
+	_check(InputMap.has_action("wild_volt"), "Ação da habilidade do Volt precisa existir")
+
+	# Habilidade ativa do Nib: dano forte em um alvo + knockback.
+	raider1.health = raider1.max_health
+	raider1._update_health_label()
+	raider1._knockback = Vector2.ZERO
+	nib.global_position = raider1.global_position + Vector2(0, 120)
+	nib.ability_cooldown_left = 0.0
+	var nib_health_before: float = raider1.health
+	var nib_used := nib.use_active_ability(player)
+	_check(nib_used, "Nib precisa conseguir usar Impacto")
+	_check(raider1.health < nib_health_before, "Impacto do Nib precisa causar dano")
+	_check(raider1._knockback.length() > 0.0, "Impacto do Nib precisa aplicar knockback")
+	_check(nib.ability_cooldown_left > 0.0, "Impacto do Nib precisa iniciar cooldown")
+
+	# Habilidade ativa do Volt: corrente elétrica em múltiplos alvos + stun.
+	raider1.health = raider1.max_health
+	raider2.health = raider2.max_health
+	raider1._update_health_label()
+	raider2._update_health_label()
+	raider1._knockback = Vector2.ZERO
+	raider2._knockback = Vector2.ZERO
+	raider1._stun_left = 0.0
+	raider2._stun_left = 0.0
+	volt.global_position = raider1.global_position + Vector2(-80, 0)
+	volt.ability_cooldown_left = 0.0
+	var volt_r1_before: float = raider1.health
+	var volt_r2_before: float = raider2.health
+	var volt_used := volt.use_active_ability(player)
+	_check(volt_used, "Volt precisa conseguir usar Sobrecarga")
+	_check(raider1.health < volt_r1_before, "Sobrecarga precisa atingir o primeiro Raider")
+	_check(raider2.health < volt_r2_before, "Sobrecarga precisa encadear para o segundo Raider")
+	_check(raider1._stun_left > 0.0 and raider2._stun_left > 0.0, "Sobrecarga precisa atordoar os alvos")
+	_check(volt.ability_cooldown_left > 0.0, "Sobrecarga do Volt precisa iniciar cooldown")
+
+	# Restaura os inimigos para os testes de combate corpo a corpo abaixo.
+	raider1.health = raider1.max_health
+	raider2.health = raider2.max_health
+	raider1._stun_left = 0.0
+	raider2._stun_left = 0.0
+	raider1._knockback = Vector2.ZERO
+	raider2._knockback = Vector2.ZERO
+	raider1._update_health_label()
+	raider2._update_health_label()
 
 	# Ataque corpo a corpo do player deve respeitar alcance e direção.
 	player.global_position = raider1.global_position + Vector2(0, 82)

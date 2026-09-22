@@ -6,6 +6,12 @@ enum State { IDLE, WANDER, FLEE, FOLLOW }
 @export var assist_range := 260.0
 @export var assist_damage := 18.0
 @export var assist_cooldown := 0.85
+@export var ability_range := 390.0
+@export var chain_range := 300.0
+@export var ability_damage := 24.0
+@export var ability_stun := 0.85
+@export var ability_max_targets := 3
+@export var ability_cooldown := 6.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -19,6 +25,7 @@ var _wander_target := Vector2.ZERO
 var _state_timer := 1.0
 var _rng := RandomNumberGenerator.new()
 var _assist_cooldown_left := 0.0
+var ability_cooldown_left := 0.0
 
 
 func _ready() -> void:
@@ -36,6 +43,7 @@ func _physics_process(delta: float) -> void:
 
 	_state_timer -= delta
 	_assist_cooldown_left = maxf(0.0, _assist_cooldown_left - delta)
+	ability_cooldown_left = maxf(0.0, ability_cooldown_left - delta)
 	if captured:
 		_follow_player(delta)
 		_assist_player()
@@ -51,6 +59,7 @@ func _activate() -> void:
 	collision_shape.set_deferred("disabled", false)
 	add_to_group("interactable")
 	add_to_group("capturable")
+	add_to_group("wild_volt")
 
 
 func get_interaction_text(_player: CharacterBody2D) -> String:
@@ -146,6 +155,85 @@ func _assist_player() -> void:
 	sprite.modulate = Color(0.7, 1.15, 1.7)
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate", Color.WHITE, 0.18)
+
+
+func use_active_ability(player: CharacterBody2D) -> bool:
+	if not captured:
+		player.call("show_message", "Volt ainda não faz parte do seu grupo.")
+		return false
+	if ability_cooldown_left > 0.0:
+		player.call("show_message", "Sobrecarga do Volt recarrega em %.1fs." % ability_cooldown_left)
+		return false
+
+	var excluded: Array[Node2D] = []
+	var first_target := _nearest_hostile_from(global_position, ability_range, excluded)
+	if not is_instance_valid(first_target):
+		player.call("show_message", "Nenhum inimigo ao alcance da Sobrecarga.")
+		return false
+
+	var targets: Array[Node2D] = [first_target]
+	while targets.size() < ability_max_targets:
+		var last_target := targets[targets.size() - 1]
+		var next_target := _nearest_hostile_from(last_target.global_position, chain_range, targets)
+		if not is_instance_valid(next_target):
+			break
+		targets.append(next_target)
+
+	ability_cooldown_left = ability_cooldown
+	var origin := global_position
+	for index in range(targets.size()):
+		var target := targets[index]
+		var damage := ability_damage * (1.0 - float(index) * 0.15)
+		target.call("take_damage", damage, self)
+		if target.has_method("apply_stun"):
+			target.call("apply_stun", ability_stun)
+		_draw_lightning(origin, target.global_position, index)
+		origin = target.global_position
+
+	_play_overload_animation()
+	player.call("show_message", "Volt usou SOBRECARGA em %d alvo(s)!" % targets.size())
+	return true
+
+
+func _nearest_hostile_from(origin: Vector2, max_range: float, excluded: Array[Node2D]) -> Node2D:
+	var target: Node2D
+	var nearest_distance := INF
+	for enemy in get_tree().get_nodes_in_group("hostile"):
+		if not enemy is Node2D or not enemy.visible or not enemy.has_method("take_damage"):
+			continue
+		if excluded.has(enemy):
+			continue
+		var distance := origin.distance_to(enemy.global_position)
+		if distance <= max_range and distance < nearest_distance:
+			target = enemy
+			nearest_distance = distance
+	return target
+
+
+func _draw_lightning(from_position: Vector2, to_position: Vector2, segment_index: int) -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	var bolt := Line2D.new()
+	bolt.width = 7.0 if segment_index == 0 else 5.0
+	bolt.default_color = Color(0.45, 0.9, 1.0, 0.95)
+	var start := parent.to_local(from_position)
+	var finish := parent.to_local(to_position)
+	var mid := (start + finish) * 0.5
+	var perpendicular := (finish - start).orthogonal().normalized() * (18.0 if segment_index % 2 == 0 else -18.0)
+	bolt.points = PackedVector2Array([start, mid + perpendicular, finish])
+	parent.add_child(bolt)
+	var tween := bolt.create_tween()
+	tween.tween_property(bolt, "modulate:a", 0.0, 0.28)
+	tween.tween_callback(bolt.queue_free)
+
+
+func _play_overload_animation() -> void:
+	sprite.modulate = Color(0.7, 1.25, 1.8)
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", Vector2.ONE * 1.3, 0.08)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK)
+	tween.parallel().tween_property(sprite, "modulate", Color.WHITE, 0.22)
 
 
 func _play_capture_pulse() -> void:

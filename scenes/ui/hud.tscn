@@ -50,19 +50,19 @@ script = ExtResource("1_hud")
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 329.0
-offset_bottom = 130.0
+offset_bottom = 154.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.3\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.4\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 142.0
+offset_top = 166.0
 offset_right = 329.0
-offset_bottom = 208.0
+offset_bottom = 232.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="HealthContent" type="VBoxContainer" parent="HealthPanel"]
@@ -81,6 +81,28 @@ value = 100.0
 show_percentage = false
 theme_override_styles/background = SubResource("StyleBox_health_bg")
 theme_override_styles/fill = SubResource("StyleBox_health_fill")
+
+[node name="WildAbilitiesPanel" type="PanelContainer" parent="."]
+offset_left = 24.0
+offset_top = 244.0
+offset_right = 329.0
+offset_bottom = 325.0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="WildContent" type="VBoxContainer" parent="WildAbilitiesPanel"]
+theme_override_constants/separation = 5
+
+[node name="NibAbilityLabel" type="Label" parent="WildAbilitiesPanel/WildContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.74, 0.62, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "1  NIB • IMPACTO  [BLOQUEADO]"
+
+[node name="VoltAbilityLabel" type="Label" parent="WildAbilitiesPanel/WildContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.52, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "2  VOLT • SOBRECARGA  [BLOQUEADO]"
 
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true

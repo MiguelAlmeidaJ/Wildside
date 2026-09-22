@@ -93,6 +93,20 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event.is_action_pressed("attack") and not is_instance_valid(current_vehicle):
 		perform_attack()
 		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("wild_nib") and not is_instance_valid(current_vehicle):
+		_use_wild_ability("wild_nib", "Nib")
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("wild_volt") and not is_instance_valid(current_vehicle):
+		_use_wild_ability("wild_volt", "Volt")
+		get_viewport().set_input_as_handled()
+
+
+func _use_wild_ability(group_name: String, wild_name: String) -> bool:
+	var wild := get_tree().get_first_node_in_group(group_name)
+	if not is_instance_valid(wild) or not wild.has_method("use_active_ability"):
+		show_message("%s ainda não está disponível." % wild_name)
+		return false
+	return bool(wild.call("use_active_ability", self))
 
 
 func enter_vehicle(vehicle: CharacterBody2D) -> void:
