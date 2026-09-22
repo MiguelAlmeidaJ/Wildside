@@ -33,6 +33,8 @@ func _run() -> void:
 	var workshop = game.get_node("World/Props/Workshop")
 	var police = game.get_node("World/Entities/NPCs/Police1")
 	var district_tracker = game.get_node("DistrictTracker")
+	var raider1 = game.get_node("World/Entities/Enemies/Raider1")
+	var raider2 = game.get_node("World/Entities/Enemies/Raider2")
 	_check(player != null, "Player precisa existir")
 	_check(car != null, "Car precisa existir")
 	await physics_frame
@@ -139,6 +141,44 @@ func _run() -> void:
 	bruno.interact(player)
 	_check(mission.stage == mission.Stage.MISSION_2_COMPLETE, "Bruno precisa concluir a missão 2")
 	_check(game_manager.money == 350, "Missão 2 precisa pagar $200 após a compra do dispositivo")
+
+	# Combate liberado após a missão 2.
+	await process_frame
+	await physics_frame
+	_check(raider1.active and raider2.active, "Raiders precisam ativar após a ANOMALIA #002")
+
+	# Ataque corpo a corpo do player deve respeitar alcance e direção.
+	player.global_position = raider1.global_position + Vector2(0, 82)
+	player.velocity = Vector2.ZERO
+	player.facing_direction = Vector2.UP
+	player._attack_cooldown_left = 0.0
+	var raider_health_before: float = raider1.health
+	var hit := player.perform_attack()
+	_check(hit, "Ataque do player precisa acertar Raider à frente")
+	_check(raider1.health < raider_health_before, "Raider precisa receber dano do ataque")
+
+	# Raider consegue ferir o jogador e a invulnerabilidade evita dano instantâneo repetido.
+	var player_health_before: float = player.health
+	player._invulnerability_left = 0.0
+	player.take_damage(12.0, raider1)
+	_check(player.health == player_health_before - 12.0, "Player precisa receber dano")
+	var health_after_hit: float = player.health
+	player.take_damage(12.0, raider1)
+	_check(player.health == health_after_hit, "Invulnerabilidade curta precisa impedir dano duplicado")
+
+	# Derrotar inimigo paga recompensa.
+	var money_before_raider := game_manager.money
+	raider1.take_damage(999.0, player)
+	_check(raider1.dead, "Raider precisa ser derrotável")
+	_check(game_manager.money == money_before_raider + raider1.reward, "Derrotar Raider precisa pagar recompensa")
+
+	# Derrota do player deve restaurar vida, posição e cobrar até $50.
+	var money_before_defeat := game_manager.money
+	player._invulnerability_left = 0.0
+	player.take_damage(999.0, raider2)
+	_check(player.health == player.max_health, "Derrota precisa restaurar a vida")
+	_check(player.global_position == player._spawn_position, "Derrota precisa levar o player ao ponto inicial")
+	_check(game_manager.money == money_before_defeat - mini(50, money_before_defeat), "Derrota precisa aplicar penalidade de até $50")
 
 	game.queue_free()
 	await process_frame
