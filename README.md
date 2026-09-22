@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.2 · Godot 4.7.x**
+**Prototype 0.3 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -17,6 +17,7 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | Mover / dirigir | `WASD` ou setas |
 | Correr | `Shift` |
 | Interagir / entrar / sair | `E` |
+| Atacar | `F` |
 | Capturar Wild | `Q` |
 | Freio de mão / derrapagem | `Espaço` |
 
@@ -56,6 +57,11 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Nib com estados `IDLE`, `WANDER`, `FLEE` e `FOLLOW`, chance de captura e acompanhamento do jogador.
 - Volt como segundo Wild, liberado pela `ANOMALIA #002` e capturado com um Dispositivo Wild.
 - Oficina Cobalto com compra funcional de dispositivos por `$100`.
+- Combate corpo a corpo com `F`, alcance direcional, cooldown e feedback visual.
+- Sistema de vida do jogador com 100 HP, breve invulnerabilidade após dano e respawn com penalidade de até `$50`.
+- Raiders hostis no Distrito Industrial, liberados após a `ANOMALIA #002`, com perseguição, ataque, vida e recompensa em dinheiro.
+- Carros em movimento podem atropelar e causar dano aos Raiders.
+- Nib e Volt ajudam automaticamente no combate quando há inimigos próximos.
 - Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
@@ -85,7 +91,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, roubo e condução do carro, saída segura, procura, regiões, telefone, ANOMALIA #001, Oficina Cobalto, compra do dispositivo, captura de Volt, ANOMALIA #002 e recompensas.
+O teste cobre movimento, corrida, veículos, procura, regiões, as duas missões, economia, captura de Wilds, combate corpo a corpo, dano ao player, invulnerabilidade, Raiders, recompensas e respawn.
 
 ## Critério de conclusão
 
