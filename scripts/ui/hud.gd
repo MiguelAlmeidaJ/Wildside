@@ -183,6 +183,7 @@ func _on_inventory_changed(medkits: int, snacks: int, energy_drinks: int) -> voi
 func _on_store_state_changed(opened: bool, title: String) -> void:
 	store_panel.visible = opened
 	if opened:
+		inventory_panel.hide()
 		store_title.text = title
 
 
