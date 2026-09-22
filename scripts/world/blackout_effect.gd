@@ -11,10 +11,7 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	_time += delta
-	var blackout_active := (
-		MissionManager.stage >= MissionManager.Stage.INVESTIGATE_BLACKOUT
-		and MissionManager.stage <= MissionManager.Stage.ESCAPE_BLACKOUT
-	)
+	var blackout_active := MissionManager.stage >= MissionManager.Stage.INVESTIGATE_BLACKOUT and MissionManager.stage <= MissionManager.Stage.ESCAPE_BLACKOUT
 
 	var target := Color.WHITE
 	if blackout_active:
