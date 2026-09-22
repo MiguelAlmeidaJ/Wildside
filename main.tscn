@@ -247,7 +247,6 @@ reward = 45
 [node name="BlackoutRaider1" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 position = Vector2(-650, 1360)
 active_after_anomaly_2 = false
-activation_stage = 16
 mission_key = "blackout"
 move_speed = 142.0
 reward = 25
@@ -255,7 +254,6 @@ reward = 25
 [node name="BlackoutRaider2" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 position = Vector2(-430, 1440)
 active_after_anomaly_2 = false
-activation_stage = 16
 mission_key = "blackout"
 move_speed = 150.0
 attack_damage = 14.0
@@ -264,7 +262,6 @@ reward = 25
 [node name="BlackoutRaider3" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 position = Vector2(-560, 1570)
 active_after_anomaly_2 = false
-activation_stage = 16
 mission_key = "blackout"
 max_health = 85.0
 move_speed = 135.0
