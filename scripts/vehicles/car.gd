@@ -1,5 +1,7 @@
 extends CharacterBody2D
 
+signal durability_changed(current: float, maximum: float)
+
 @export var maximum_speed := 520.0
 @export var reverse_speed := 230.0
 @export var acceleration := 520.0
@@ -7,6 +9,8 @@ extends CharacterBody2D
 @export var steering_speed := 2.3
 @export var maximum_durability := 100.0
 @export var illegal_to_take := true
+@export var requires_ownership := false
+@export var vehicle_name := "Sedan"
 
 @onready var vehicle_camera: Camera2D = $Camera2D
 @onready var engine_player: AudioStreamPlayer2D = $EngineSound
@@ -22,11 +26,18 @@ var _damage_message_cooldown := 0.0
 
 
 func _ready() -> void:
-	add_to_group("interactable")
 	add_to_group("player_vehicle")
 	durability = maximum_durability
-	_set_parked_collision(true)
 	_setup_engine_audio()
+
+	if requires_ownership:
+		GameManager.vehicle_ownership_changed.connect(_on_ownership_changed)
+		_set_owned_available(GameManager.personal_vehicle_unlocked)
+	else:
+		add_to_group("interactable")
+		_set_parked_collision(true)
+
+	durability_changed.emit(durability, maximum_durability)
 
 
 func _exit_tree() -> void:
@@ -78,10 +89,14 @@ func get_interaction_priority(_player: CharacterBody2D) -> int:
 
 
 func get_interaction_text(_player: CharacterBody2D) -> String:
+	if requires_ownership:
+		return "Entrar no seu veículo"
 	return "Roubar veículo" if illegal_to_take and not was_taken else "Entrar no veículo"
 
 
 func interact(player: CharacterBody2D) -> void:
+	if requires_ownership and not GameManager.personal_vehicle_unlocked:
+		return
 	if is_instance_valid(driver) or durability <= 0.0:
 		return
 	_set_parked_collision(false)
@@ -120,10 +135,49 @@ func _set_parked_collision(parked: bool) -> void:
 
 func apply_damage(amount: float) -> void:
 	durability = maxf(0.0, durability - amount)
+	durability_changed.emit(durability, maximum_durability)
 	if is_instance_valid(driver) and _damage_message_cooldown <= 0.0:
 		driver.call("show_message", "Veículo: %d%%" % roundi(durability))
 		_damage_message_cooldown = 1.5
 	if durability <= 0.0:
+		current_speed = 0.0
+
+
+func repair_full() -> void:
+	durability = maximum_durability
+	durability_changed.emit(durability, maximum_durability)
+	if is_instance_valid(driver):
+		driver.call("show_message", "%s reparado • 100%%" % vehicle_name)
+
+
+func set_durability(value: float) -> void:
+	durability = clampf(value, 0.0, maximum_durability)
+	durability_changed.emit(durability, maximum_durability)
+
+
+func get_durability_ratio() -> float:
+	if maximum_durability <= 0.0:
+		return 0.0
+	return durability / maximum_durability
+
+
+func _on_ownership_changed(unlocked: bool) -> void:
+	if requires_ownership:
+		_set_owned_available(unlocked)
+
+
+func _set_owned_available(value: bool) -> void:
+	visible = value
+	set_physics_process(value)
+	if value:
+		if not is_in_group("interactable"):
+			add_to_group("interactable")
+		_set_parked_collision(true)
+	else:
+		if is_in_group("interactable"):
+			remove_from_group("interactable")
+		_set_parked_collision(false)
+		velocity = Vector2.ZERO
 		current_speed = 0.0
 
 
