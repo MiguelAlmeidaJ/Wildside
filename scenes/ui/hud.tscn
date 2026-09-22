@@ -57,19 +57,19 @@ script = ExtResource("1_hud")
 offset_left = 24.0
 offset_top = 24.0
 offset_right = 329.0
-offset_bottom = 178.0
+offset_bottom = 202.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.8\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.9\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 190.0
+offset_top = 214.0
 offset_right = 329.0
-offset_bottom = 256.0
+offset_bottom = 280.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="HealthContent" type="VBoxContainer" parent="HealthPanel"]
@@ -91,9 +91,9 @@ theme_override_styles/fill = SubResource("StyleBox_health_fill")
 
 [node name="WildAbilitiesPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 268.0
+offset_top = 292.0
 offset_right = 329.0
-offset_bottom = 349.0
+offset_bottom = 373.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="WildContent" type="VBoxContainer" parent="WildAbilitiesPanel"]
@@ -113,9 +113,9 @@ text = "2  VOLT • SOBRECARGA  [BLOQUEADO]"
 
 [node name="WeaponPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 361.0
+offset_top = 385.0
 offset_right = 329.0
-offset_bottom = 437.0
+offset_bottom = 461.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="WeaponContent" type="VBoxContainer" parent="WeaponPanel"]
@@ -132,6 +132,93 @@ unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "Disponível na Oficina Cobalto"
+
+[node name="InventoryPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+offset_left = 348.0
+offset_top = 118.0
+offset_right = 676.0
+offset_bottom = 270.0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="InventoryContent" type="VBoxContainer" parent="InventoryPanel"]
+theme_override_constants/separation = 7
+
+[node name="InventoryTitle" type="Label" parent="InventoryPanel/InventoryContent"]
+theme_override_colors/font_color = Color(0.42, 0.92, 0.82, 1)
+theme_override_font_sizes/font_size = 18
+text = "MOCHILA"
+
+[node name="MedkitLabel" type="Label" parent="InventoryPanel/InventoryContent"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 15
+text = "H  KIT MÉDICO  x0  •  +55 HP"
+
+[node name="SnackLabel" type="Label" parent="InventoryPanel/InventoryContent"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 15
+text = "K  LANCHE  x0  •  +20 HP"
+
+[node name="EnergyLabel" type="Label" parent="InventoryPanel/InventoryContent"]
+unique_name_in_owner = true
+theme_override_font_sizes/font_size = 15
+text = "J  ENERGÉTICO  x0  •  10s velocidade"
+
+[node name="InventoryHint" type="Label" parent="InventoryPanel/InventoryContent"]
+theme_override_colors/font_color = Color(0.7, 0.76, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "TAB fecha a mochila"
+
+[node name="StorePanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -170.0
+offset_right = 230.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="StoreContent" type="VBoxContainer" parent="StorePanel"]
+theme_override_constants/separation = 12
+
+[node name="StoreTitle" type="Label" parent="StorePanel/StoreContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.86, 0.38, 1)
+theme_override_font_sizes/font_size = 24
+text = "MERCADO 24H"
+horizontal_alignment = 1
+
+[node name="StoreSubtitle" type="Label" parent="StorePanel/StoreContent"]
+theme_override_colors/font_color = Color(0.72, 0.78, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "Escolha um item"
+horizontal_alignment = 1
+
+[node name="StoreItem1" type="Label" parent="StorePanel/StoreContent"]
+theme_override_font_sizes/font_size = 18
+text = "1   Lanche                 $15      +20 HP"
+
+[node name="StoreItem2" type="Label" parent="StorePanel/StoreContent"]
+theme_override_font_sizes/font_size = 18
+text = "2   Kit médico             $60      +55 HP"
+
+[node name="StoreItem3" type="Label" parent="StorePanel/StoreContent"]
+theme_override_font_sizes/font_size = 18
+text = "3   Energético             $35      velocidade 10s"
+
+[node name="StoreHint" type="Label" parent="StorePanel/StoreContent"]
+theme_override_colors/font_color = Color(0.48, 0.9, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "1 / 2 / 3 comprar    •    E ou Esc fechar"
+horizontal_alignment = 1
 
 [node name="ArrestPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -312,6 +399,35 @@ unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.94, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
 text = "Converse com Maya."
+autowrap_mode = 2
+
+[node name="SideJobPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -390.0
+offset_top = 314.0
+offset_right = -24.0
+offset_bottom = 420.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="SideJobContent" type="VBoxContainer" parent="SideJobPanel"]
+theme_override_constants/separation = 4
+
+[node name="SideJobTitle" type="Label" parent="SideJobPanel/SideJobContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.73, 0.33, 1)
+theme_override_font_sizes/font_size = 16
+text = "CORRIDA NOTURNA"
+
+[node name="SideJobDescription" type="Label" parent="SideJobPanel/SideJobContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.92, 0.95, 0.98, 1)
+theme_override_font_sizes/font_size = 14
+text = "Retire a encomenda."
 autowrap_mode = 2
 
 [node name="DistrictLabel" type="Label" parent="."]
