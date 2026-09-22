@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.9 · Godot 4.7.x**
+**Prototype 0.10 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -72,7 +72,24 @@ A Prototype 0.9 adiciona um loop fora das anomalias:
 - Rico oferece a atividade repetível `Corrida Noturna`: retirar um pacote no Mercado 24H e entregar para Vera no Residencial por `$120`;
 - o apartamento funciona como safehouse: restaura a vida, define o novo ponto de respawn e salva o progresso;
 - saves da versão 5 restauram dinheiro, inventário, armas, missão principal, atividade secundária, posição, checkpoint e estado de captura de Nib, Volt e Murno;
-- ao iniciar novamente o jogo, um save 0.9 válido é carregado automaticamente. Saves antigos são ignorados para evitar estado quebrado.
+- ao iniciar novamente o jogo, um save compatível é carregado automaticamente.
+
+### Atividades livres — Prototype 0.10
+
+A cidade agora também oferece progressão sem depender da campanha:
+
+- Nando organiza uma `Corrida de Rua` repetível na Zona Sul;
+- a corrida usa seis checkpoints espalhados pelas avenidas, cronômetro, melhor tempo e contador de vitórias;
+- completar uma volta paga `$180`, com bônus de `$50` abaixo de 75s e `$100` abaixo de 55s;
+- a `Garagem Cobalto` repara veículos danificados por um valor proporcional ao dano;
+- a garagem vende o `Cobalto R` por `$350`, o primeiro veículo próprio do jogador;
+- entrar no Cobalto R não gera procura por roubo de veículo;
+- cinco esconderijos únicos foram espalhados entre Residencial, Centro, Industrial, Zona Sul e Mata Norte;
+- esconderijos entregam dinheiro e consumíveis e não podem ser coletados duas vezes;
+- mochila mostra o progresso dos esconderijos encontrados;
+- HUD passa a exibir integridade do veículo durante a direção e cronômetro/progresso da corrida;
+- save version 6 persiste propriedade e durabilidade do carro, esconderijos encontrados, melhor tempo e vitórias;
+- saves da Prototype 0.9 (version 5) continuam compatíveis e recebem os novos campos com valores padrão.
 
 
 
@@ -130,6 +147,11 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Mercado 24H com interface de compra própria.
 - Corrida Noturna como primeira atividade secundária repetível com objetivo separado da missão principal.
 - Apartamento como safehouse funcional para cura, checkpoint, save e retomada automática da sessão.
+- Corrida de Rua com largada, seis checkpoints sequenciais, cronômetro, bônus por tempo e recorde persistente.
+- Garagem Cobalto com reparo de veículos e compra de um carro próprio legalizado.
+- Cobalto R como primeiro veículo permanente que não gera procura ao entrar.
+- Cinco esconderijos persistentes recompensam exploração livre com dinheiro e consumíveis.
+- HUD de integridade do veículo, progresso de exploração e atividade de corrida.
 
 ## Arquitetura da cena principal
 
@@ -155,7 +177,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, trânsito civil, população ampliada, Mercado 24H, mochila, consumíveis, Corrida Noturna, safehouse/save, procura, contato policial, evasão, prisão, regiões, as três anomalias, boss Murno, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
+O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, safehouse/save, persistência dos recordes e exploração, procura, polícia, regiões, as três anomalias, boss Murno, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
