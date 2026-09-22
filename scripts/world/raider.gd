@@ -129,6 +129,7 @@ func _die() -> void:
 	tween.tween_callback(hide)
 
 	GameManager.add_money(reward)
+	MissionManager.raider_defeated()
 	if is_instance_valid(GameManager.player):
 		GameManager.player.call("show_message", "Inimigo derrotado  •  +$%d" % reward)
 

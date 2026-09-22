@@ -16,6 +16,8 @@ enum Stage {
 	CAPTURE_VOLT,
 	RETURN_TO_BRUNO,
 	MISSION_2_COMPLETE,
+	CLEAR_RAIDERS,
+	MISSION_3_COMPLETE,
 }
 
 const MAYA_POSITION := Vector2(-282, 92)
@@ -27,8 +29,11 @@ const VOLT_POSITION := Vector2(1010, -600)
 
 const MISSION_1_REWARD := 250
 const MISSION_2_REWARD := 200
+const MISSION_3_REWARD := 150
+const RAIDERS_REQUIRED := 2
 
 var stage := Stage.TALK_TO_MAYA
+var raiders_defeated := 0
 
 
 func _ready() -> void:
@@ -37,6 +42,7 @@ func _ready() -> void:
 
 func reset_run() -> void:
 	stage = Stage.TALK_TO_MAYA
+	raiders_defeated = 0
 	_emit_current_objective()
 
 
@@ -56,8 +62,10 @@ func talk_to_maya() -> String:
 			stage = Stage.TALK_TO_BRUNO
 			_emit_current_objective()
 			return "Maya: Tem um cara chamado Bruno no Distrito Industrial. Se alguém entende esses sinais, é ele."
-		Stage.MISSION_2_COMPLETE:
-			return "Maya: Nib e Volt... isso está ficando maior do que eu imaginava."
+		Stage.CLEAR_RAIDERS, Stage.MISSION_2_COMPLETE:
+			return "Maya: Os Raiders estão se aproveitando do caos. Limpe os galpões e volte inteiro."
+		Stage.MISSION_3_COMPLETE:
+			return "Maya: Dois Wilds e um distrito limpo... agora temos problemas maiores para investigar."
 		_:
 			return "Maya: Siga a pista. Eu fico de olho nas ruas."
 
@@ -69,13 +77,16 @@ func talk_to_bruno() -> String:
 			_emit_current_objective()
 			return "Bruno: Vi o que apareceu na mata. Passe na Oficina Cobalto e compre um Dispositivo Wild. Tem outra criatura rondando os galpões."
 		Stage.RETURN_TO_BRUNO:
-			stage = Stage.MISSION_2_COMPLETE
+			stage = Stage.CLEAR_RAIDERS
+			raiders_defeated = 0
 			GameManager.add_money(MISSION_2_REWARD)
 			mission_completed.emit(MISSION_2_REWARD)
 			_emit_current_objective()
-			return "Bruno: Você trouxe o Volt vivo... bom. Raiders tomaram os galpões do norte. A Cobalto separou uma pistola para você, se tiver dinheiro.  +$%d" % MISSION_2_REWARD
-		Stage.MISSION_2_COMPLETE:
-			return "Bruno: Fique com os olhos abertos. O Distrito Industrial não está quieto por acaso."
+			return "Bruno: Você trouxe o Volt vivo... bom. Agora limpe os dois Raiders dos galpões. A Cobalto separou uma pistola para você, se tiver dinheiro.  +$%d" % MISSION_2_REWARD
+		Stage.CLEAR_RAIDERS, Stage.MISSION_2_COMPLETE:
+			return "Bruno: Ainda tem Raider nos galpões. Resolva isso antes que chegue reforço."
+		Stage.MISSION_3_COMPLETE:
+			return "Bruno: Galpões limpos. Bom trabalho. Mas eles estavam procurando alguma coisa por aqui..."
 		_:
 			return "Bruno: Agora não. Resolva o que já começou."
 
@@ -118,6 +129,23 @@ func capture_volt() -> void:
 	_emit_current_objective()
 
 
+func raider_defeated() -> void:
+	# Compatibilidade com saves da 0.5 que paravam em MISSION_2_COMPLETE.
+	if stage == Stage.MISSION_2_COMPLETE:
+		stage = Stage.CLEAR_RAIDERS
+		raiders_defeated = 0
+
+	if stage != Stage.CLEAR_RAIDERS:
+		return
+
+	raiders_defeated = mini(RAIDERS_REQUIRED, raiders_defeated + 1)
+	if raiders_defeated >= RAIDERS_REQUIRED:
+		stage = Stage.MISSION_3_COMPLETE
+		GameManager.add_money(MISSION_3_REWARD)
+		mission_completed.emit(MISSION_3_REWARD)
+	_emit_current_objective()
+
+
 func _on_wanted_changed(level: int, _heat: float) -> void:
 	if stage == Stage.ESCAPE_POLICE and level == 0:
 		stage = Stage.RETURN_TO_MAYA
@@ -148,5 +176,17 @@ func _emit_current_objective() -> void:
 			objective_changed.emit("ANOMALIA #002", "Encontre e capture Volt nos galpões.", VOLT_POSITION, true)
 		Stage.RETURN_TO_BRUNO:
 			objective_changed.emit("ANOMALIA #002", "Volte para Bruno.", BRUNO_POSITION, true)
-		Stage.MISSION_2_COMPLETE:
-			objective_changed.emit("DISTRITO EM ALERTA", "Raiders nos galpões • Cobalto vende pistola • F atacar • 1 Nib • 2 Volt.", Vector2.ZERO, false)
+		Stage.MISSION_2_COMPLETE, Stage.CLEAR_RAIDERS:
+			objective_changed.emit(
+				"LIMPEZA DOS GALPÕES",
+				"Elimine os Raiders no Distrito Industrial.  %d/%d" % [raiders_defeated, RAIDERS_REQUIRED],
+				Vector2(1285, -605),
+				true
+			)
+		Stage.MISSION_3_COMPLETE:
+			objective_changed.emit(
+				"MISSÃO CONCLUÍDA",
+				"Galpões limpos. Recompensa: +$%d. Bruno tem mais informações." % MISSION_3_REWARD,
+				Vector2.ZERO,
+				false
+			)
