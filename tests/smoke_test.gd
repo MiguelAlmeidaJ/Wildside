@@ -27,6 +27,7 @@ func _run() -> void:
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var bruno = game.get_node("World/Entities/NPCs/Bruno")
+	var davi = game.get_node("World/Entities/NPCs/Davi")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
 	var volt = game.get_node("World/Entities/Creatures/Volt")
@@ -176,12 +177,28 @@ func _run() -> void:
 	player._shoot_cooldown_left = 0.0
 	raider1.health = raider1.max_health
 	raider1._update_health_label()
+	game_manager.set_district("DISTRITO INDUSTRIAL")
+	davi.global_position = player.global_position + Vector2(110, 0)
+	davi._set_state(davi.State.IDLE, 1.0)
+	raider2._investigate_left = 0.0
+	wanted.clear()
+
 	var pistol_health_before: float = raider1.health
 	var magazine_before := game_manager.pistol_magazine
 	var shot := player.fire_pistol_at(raider1.global_position)
 	_check(shot, "Pistola precisa disparar")
 	_check(game_manager.pistol_magazine == magazine_before - 1, "Disparo precisa consumir uma munição")
 	_check(raider1.health < pistol_health_before, "Pistola precisa causar dano no Raider alinhado")
+	_check(davi.state == davi.State.FLEE, "Civil próximo precisa fugir ao ouvir tiro")
+	_check(raider2._investigate_left > 0.0, "Raider fora da visão precisa investigar o disparo")
+	_check(wanted.wanted_level == 1, "Disparo urbano precisa gerar uma estrela")
+	_check(police.active, "Polícia precisa reagir ao disparo urbano")
+
+	var heat_after_first_shot: float = wanted.heat
+	player._shoot_cooldown_left = 0.0
+	player.fire_pistol_at(raider1.global_position)
+	_check(is_equal_approx(wanted.heat, heat_after_first_shot), "Rajada curta não deve acumular heat a cada bala")
+	wanted.clear()
 
 	game_manager.pistol_magazine = 2
 	game_manager.pistol_reserve = 10
