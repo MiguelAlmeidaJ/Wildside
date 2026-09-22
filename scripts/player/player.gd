@@ -10,6 +10,7 @@ enum MotionState { IDLE, WALK, RUN }
 @export var acceleration := 1500.0
 @export var deceleration := 1900.0
 @export var camera_look_ahead := 72.0
+@export var interaction_fallback_range := 128.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -58,8 +59,10 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		if is_instance_valid(current_vehicle):
 			current_vehicle.call("request_exit")
-		elif is_instance_valid(_focused_interactable):
-			_focused_interactable.call("interact", self)
+		else:
+			_focused_interactable = _find_nearest_interactable()
+			if is_instance_valid(_focused_interactable):
+				_focused_interactable.call("interact", self)
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("capture") and not is_instance_valid(current_vehicle):
 		var creature := _nearest_capturable()
@@ -121,11 +124,20 @@ func _update_camera_look_ahead(delta: float) -> void:
 
 func _nearby_interactables() -> Array[Node2D]:
 	var result: Array[Node2D] = []
-	if not interaction_area.monitoring:
-		return result
-	for body in interaction_area.get_overlapping_bodies():
-		if body is Node2D and body.has_method("interact"):
-			result.append(body)
+	if interaction_area.monitoring:
+		for body in interaction_area.get_overlapping_bodies():
+			if body is Node2D and body.has_method("interact"):
+				result.append(body)
+
+	# Fallback para interações importantes (telefone, NPCs e veículos).
+	# Evita perder o alvo quando o overlap ainda não foi atualizado no mesmo frame.
+	for candidate in get_tree().get_nodes_in_group("interactable"):
+		if not candidate is Node2D or not candidate.has_method("interact"):
+			continue
+		if result.has(candidate):
+			continue
+		if global_position.distance_to(candidate.global_position) <= interaction_fallback_range:
+			result.append(candidate)
 	return result
 
 
@@ -135,6 +147,16 @@ func _update_prompt() -> void:
 		_set_prompt("E  Sair do veículo")
 		return
 
+	var nearest := _find_nearest_interactable()
+
+	_focused_interactable = nearest
+	if is_instance_valid(nearest):
+		_set_prompt("E  " + str(nearest.call("get_interaction_text", self)))
+	else:
+		_set_prompt("")
+
+
+func _find_nearest_interactable() -> Node2D:
 	var nearest: Node2D
 	var nearest_distance := INF
 	for candidate in _nearby_interactables():
@@ -142,12 +164,7 @@ func _update_prompt() -> void:
 		if distance < nearest_distance:
 			nearest = candidate
 			nearest_distance = distance
-
-	_focused_interactable = nearest
-	if is_instance_valid(nearest):
-		_set_prompt("E  " + str(nearest.call("get_interaction_text", self)))
-	else:
-		_set_prompt("")
+	return nearest
 
 
 func _nearest_capturable() -> Node2D:
