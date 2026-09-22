@@ -25,6 +25,7 @@ func _run() -> void:
 
 	var game := packed_main.instantiate()
 	root.add_child(game)
+	current_scene = game
 	await process_frame
 	await physics_frame
 
@@ -409,7 +410,21 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 5, "Save da Prototype 0.9 precisa usar versão 5")
+
+	# Save/load deve restaurar estado urbano essencial.
+	game_manager.add_item("medkit", 2)
+	game_manager.add_item("energy", 1)
+	var saved_money := game_manager.money
+	var saved_position: Vector2 = player.global_position
+	safehouse.interact(player)
+	game_manager.money = 0
+	game_manager.medkits = 0
+	game_manager.energy_drinks = 0
+	player.global_position = Vector2.ZERO
+	_check(save_manager.load_game(), "Save 0.9 precisa ser carregável")
+	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
+	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
+	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
 	var money_before_defeat := game_manager.money
