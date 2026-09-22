@@ -78,6 +78,7 @@ ambient_lines = PackedStringArray("As luzes piscaram de novo.", "Eu não atraves
 [node name="Jade" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(470, 230)
 citizen_name = "Jade"
+appearance_variant = 2
 dialogue = "Eu cubro a cidade inteira e nunca vi a rede elétrica se comportar assim."
 mission_contact = "jade"
 can_wander = false
@@ -87,6 +88,7 @@ ambient_chatter = false
 [node name="Otto" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(1240, 685)
 citizen_name = "Otto"
+appearance_variant = 3
 dialogue = "Cobalto conserta quase tudo. O que não conserta, a gente desmonta."
 can_wander = false
 appearance_tint = Color(0.82, 0.94, 1, 1)
@@ -95,6 +97,7 @@ ambient_lines = PackedStringArray("Essa peça ainda presta.", "Bruno anda muito 
 [node name="Vera" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-1240, 585)
 citizen_name = "Vera"
+appearance_variant = 2
 dialogue = "Moro aqui desde antes de chamarem isso de Wildside. A cidade sempre avisa quando algo ruim vem."
 appearance_tint = Color(1, 0.88, 0.82, 1)
 ambient_lines = PackedStringArray("Antes era mais quieto.", "Esses carros passam rápido demais.")
@@ -102,6 +105,7 @@ ambient_lines = PackedStringArray("Antes era mais quieto.", "Esses carros passam
 [node name="Rico" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-560, 1235)
 citizen_name = "Rico"
+appearance_variant = 1
 dialogue = "Na Zona Sul, se as luzes apagam, você guarda o celular e continua andando."
 appearance_tint = Color(0.88, 1, 0.82, 1)
 ambient_lines = PackedStringArray("Hoje a rua está esquisita.", "Ouvi um estouro perto da subestação.")
@@ -109,6 +113,7 @@ ambient_lines = PackedStringArray("Hoje a rua está esquisita.", "Ouvi um estour
 [node name="Lia" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(260, 1235)
 citizen_name = "Lia"
+appearance_variant = 2
 dialogue = "Eu estudo as oscilações. Elas parecem responder à presença dos Wilds."
 can_wander = false
 appearance_tint = Color(0.85, 0.9, 1, 1)
@@ -117,6 +122,7 @@ ambient_lines = PackedStringArray("A frequência subiu.", "Isso não parece uma 
 [node name="Celso" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(610, -230)
 citizen_name = "Celso"
+appearance_variant = 3
 dialogue = "O centro fecha tarde, mas depois dessas anomalias ninguém quer ficar até o último ônibus."
 appearance_tint = Color(1, 0.94, 0.78, 1)
 ambient_lines = PackedStringArray("Última entrega da noite.", "Queria estar em casa.")
@@ -124,6 +130,7 @@ ambient_lines = PackedStringArray("Última entrega da noite.", "Queria estar em 
 [node name="CitizenA" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-530, 230)
 citizen_name = "Morador"
+appearance_variant = 1
 dialogue = "Tem alguma coisa diferente no ar hoje."
 appearance_tint = Color(0.82, 0.9, 1, 1)
 ambient_lines = PackedStringArray("Você ouviu aquilo?", "O Centro está lotado hoje.", "Preciso pegar o ônibus.")
@@ -131,6 +138,7 @@ ambient_lines = PackedStringArray("Você ouviu aquilo?", "O Centro está lotado 
 [node name="CitizenB" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-1460, 760)
 citizen_name = "Moradora"
+appearance_variant = 2
 dialogue = "Só estou voltando para casa."
 appearance_tint = Color(1, 0.84, 0.88, 1)
 ambient_lines = PackedStringArray("O cachorro não para de latir.", "A rua ficou sem luz ontem.")
@@ -138,6 +146,7 @@ ambient_lines = PackedStringArray("O cachorro não para de latir.", "A rua ficou
 [node name="CitizenC" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(510, 760)
 citizen_name = "Trabalhador"
+appearance_variant = 3
 dialogue = "Turno da noite. Sempre sobra para alguém."
 appearance_tint = Color(0.92, 0.86, 0.72, 1)
 ambient_lines = PackedStringArray("Ainda faltam duas horas.", "Café. Eu preciso de café.")
@@ -145,6 +154,7 @@ ambient_lines = PackedStringArray("Ainda faltam duas horas.", "Café. Eu preciso
 [node name="CitizenD" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(1460, 760)
 citizen_name = "Operário"
+appearance_variant = 1
 dialogue = "Esses galpões estão dando problema desde o apagão."
 appearance_tint = Color(0.82, 0.88, 0.78, 1)
 ambient_lines = PackedStringArray("Máquina velha demais.", "Ouvi passos no galpão vazio.")
@@ -152,6 +162,7 @@ ambient_lines = PackedStringArray("Máquina velha demais.", "Ouvi passos no galp
 [node name="CitizenE" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-1510, 1215)
 citizen_name = "Morador"
+appearance_variant = 2
 dialogue = "A Zona Sul nunca dorme."
 appearance_tint = Color(0.9, 0.8, 1, 1)
 ambient_lines = PackedStringArray("Essa música vem de onde?", "Vai chover ou é a rede elétrica?")
@@ -159,6 +170,7 @@ ambient_lines = PackedStringArray("Essa música vem de onde?", "Vai chover ou é
 [node name="CitizenF" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(1460, 1215)
 citizen_name = "Entregador"
+appearance_variant = 3
 dialogue = "Tenho três pedidos e nenhuma vontade de passar perto da subestação."
 appearance_tint = Color(0.82, 1, 0.94, 1)
 ambient_lines = PackedStringArray("Endereço 42-B...", "Tomara que essa rua esteja aberta.")
