@@ -143,6 +143,20 @@ func attempt_capture(player: CharacterBody2D) -> void:
 	tween.tween_callback(hide)
 
 
+func restore_captured() -> void:
+	captured = true
+	active = false
+	weakened = true
+	if is_in_group("hostile"):
+		remove_from_group("hostile")
+	if is_in_group("damageable"):
+		remove_from_group("damageable")
+	if is_in_group("capturable"):
+		remove_from_group("capturable")
+	collision_shape.set_deferred("disabled", true)
+	hide()
+
+
 func _enter_weakened_state() -> void:
 	weakened = true
 	health = maxf(1.0, health)
