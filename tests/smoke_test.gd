@@ -28,21 +28,30 @@ func _run() -> void:
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var bruno = game.get_node("World/Entities/NPCs/Bruno")
+	var jade = game.get_node("World/Entities/NPCs/Jade")
 	var davi = game.get_node("World/Entities/NPCs/Davi")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
 	var volt = game.get_node("World/Entities/Creatures/Volt")
+	var murno = game.get_node("World/Entities/Creatures/Murno")
 	var workshop = game.get_node("World/Props/Workshop")
+	var blackout_anomaly = game.get_node("World/Props/BlackoutAnomaly")
 	var police = game.get_node("World/Entities/NPCs/Police1")
 	var district_tracker = game.get_node("DistrictTracker")
 	var raider1 = game.get_node("World/Entities/Enemies/Raider1")
 	var raider2 = game.get_node("World/Entities/Enemies/Raider2")
+	var blackout_raider1 = game.get_node("World/Entities/Enemies/BlackoutRaider1")
+	var blackout_raider2 = game.get_node("World/Entities/Enemies/BlackoutRaider2")
+	var blackout_raider3 = game.get_node("World/Entities/Enemies/BlackoutRaider3")
 	_check(player != null, "Player precisa existir")
 	_check(car != null, "Car precisa existir")
 	await physics_frame
 	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
 	_check(not parked_blocker.disabled, "Carro estacionado precisa manter o bloqueio estático ativo")
-	_check(get_nodes_in_group("interactable").size() >= 11, "Cidade ampliada precisa ter NPCs, veículos, telefone e Nib interativos")
+	_check(get_nodes_in_group("interactable").size() >= 20, "Cidade Viva precisa ter mais cidadãos e interações")
+	_check(get_nodes_in_group("citizens").size() >= 16, "Cidade Viva precisa ter população ampliada")
+	_check(get_nodes_in_group("ambient_traffic").size() >= 6, "Cidade Viva precisa ter trânsito civil")
+	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(-1400, 400)) == "BAIRRO RESIDENCIAL", "Residencial precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(1400, 400)) == "DISTRITO INDUSTRIAL", "Industrial precisa ser identificado")
@@ -299,6 +308,47 @@ func _run() -> void:
 	_check(mission.raiders_defeated == 2, "Segundo Raider precisa atualizar o objetivo para 2/2")
 	_check(mission.stage == mission.Stage.MISSION_3_COMPLETE, "Segundo Raider precisa concluir a limpeza dos galpões")
 	_check(game_manager.money == money_before_second_raider + raider2.reward + mission.MISSION_3_REWARD, "Segundo Raider precisa pagar recompensa própria e bônus da missão")
+
+	# ANOMALIA #003: Bruno -> Jade -> distorção -> emboscada -> Murno -> fuga -> Jade.
+	bruno.interact(player)
+	_check(mission.stage == mission.Stage.TALK_TO_JADE, "Bruno precisa liberar o contato com Jade após limpar os galpões")
+	jade.interact(player)
+	_check(mission.stage == mission.Stage.INVESTIGATE_BLACKOUT, "Jade precisa iniciar a investigação do apagão")
+	blackout_anomaly.interact(player)
+	_check(mission.stage == mission.Stage.CLEAR_BLACKOUT, "Distorção precisa iniciar a emboscada da Zona Sul")
+
+	await process_frame
+	await physics_frame
+	_check(blackout_raider1.active and blackout_raider2.active and blackout_raider3.active, "Três Raiders precisam ativar na emboscada")
+	_check(mission.blackout_raiders_defeated == 0, "Emboscada precisa começar em 0/3")
+
+	blackout_raider1.take_damage(999.0, player)
+	_check(mission.blackout_raiders_defeated == 1, "Primeiro invasor precisa atualizar a emboscada para 1/3")
+	blackout_raider2.take_damage(999.0, player)
+	_check(mission.blackout_raiders_defeated == 2, "Segundo invasor precisa atualizar a emboscada para 2/3")
+	var devices_before_murno := game_manager.capture_devices
+	blackout_raider3.take_damage(999.0, player)
+	_check(mission.stage == mission.Stage.CAPTURE_MURNO, "Terceiro invasor precisa liberar o confronto com Murno")
+	_check(game_manager.capture_devices == devices_before_murno + 1, "Missão precisa fornecer um dispositivo para capturar Murno")
+
+	await process_frame
+	await physics_frame
+	_check(murno.active, "Murno precisa aparecer como boss após a emboscada")
+	murno.take_damage(130.0, player)
+	_check(murno.weakened, "Murno precisa ficar capturável abaixo de 35% de vida")
+	_check(murno.is_in_group("capturable"), "Murno enfraquecido precisa entrar no grupo capturable")
+
+	murno.attempt_capture(player)
+	_check(murno.captured, "Murno precisa ser capturável com o dispositivo")
+	_check(mission.stage == mission.Stage.ESCAPE_BLACKOUT, "Capturar Murno precisa disparar a fuga da Zona Sul")
+	_check(wanted.wanted_level == 2, "Pulso de Murno precisa gerar duas estrelas de procura")
+
+	wanted.clear()
+	_check(mission.stage == mission.Stage.RETURN_TO_JADE, "Perder a polícia precisa liberar o retorno para Jade")
+	var money_before_jade := game_manager.money
+	jade.interact(player)
+	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
+	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
 	var money_before_defeat := game_manager.money
