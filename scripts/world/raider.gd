@@ -19,6 +19,7 @@ var dead := false
 var _home := Vector2.ZERO
 var _attack_cooldown_left := 0.0
 var _knockback := Vector2.ZERO
+var _stun_left := 0.0
 
 
 func _ready() -> void:
@@ -38,7 +39,13 @@ func _physics_process(delta: float) -> void:
 		return
 
 	_attack_cooldown_left = maxf(0.0, _attack_cooldown_left - delta)
+	_stun_left = maxf(0.0, _stun_left - delta)
 	_knockback = _knockback.move_toward(Vector2.ZERO, 700.0 * delta)
+
+	if _stun_left > 0.0:
+		velocity = _knockback
+		move_and_slide()
+		return
 
 	var player := GameManager.player
 	if not is_instance_valid(player) or is_instance_valid(player.current_vehicle):
@@ -86,6 +93,21 @@ func take_damage(amount: float, source: Node2D = null) -> void:
 
 	if health <= 0.0:
 		_die()
+
+
+func apply_knockback(direction: Vector2, strength: float) -> void:
+	if dead or not active:
+		return
+	_knockback = direction.normalized() * strength
+
+
+func apply_stun(duration: float) -> void:
+	if dead or not active:
+		return
+	_stun_left = maxf(_stun_left, duration)
+	sprite.modulate = Color(0.72, 0.9, 1.55)
+	var tween := create_tween()
+	tween.tween_property(sprite, "modulate", Color.WHITE, minf(duration, 0.5))
 
 
 func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
