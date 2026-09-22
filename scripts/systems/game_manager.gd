@@ -1,9 +1,11 @@
 extends Node
 
 signal money_changed(total: int)
+signal district_changed(name: String)
 
 var player: CharacterBody2D
 var money := 0
+var current_district := ""
 
 
 func register_player(value: CharacterBody2D) -> void:
@@ -23,7 +25,15 @@ func add_money(amount: int) -> void:
 	money_changed.emit(money)
 
 
+func set_district(name: String) -> void:
+	if name == current_district:
+		return
+	current_district = name
+	district_changed.emit(name)
+
+
 func reset_run() -> void:
 	money = 0
+	current_district = ""
 	money_changed.emit(money)
 

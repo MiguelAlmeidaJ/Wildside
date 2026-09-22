@@ -36,6 +36,12 @@ func _ready() -> void:
 func _draw() -> void:
 	draw_rect(CITY_RECT, Color("#77a464"))
 
+	# Tons discretos ajudam cada região a ter leitura própria sem trocar o tileset ainda.
+	draw_rect(Rect2(-1800, -900, 980, 1700), Color(0.18, 0.32, 0.45, 0.13))
+	draw_rect(Rect2(-820, -900, 1640, 1700), Color(0.30, 0.24, 0.38, 0.08))
+	draw_rect(Rect2(820, -900, 980, 1700), Color(0.42, 0.28, 0.16, 0.14))
+	draw_rect(Rect2(-1800, 1180, 3600, 620), Color(0.24, 0.18, 0.30, 0.13))
+
 	# Duas avenidas horizontais e três eixos verticais.
 	draw_rect(Rect2(-1800, -180, 3600, 360), ROAD_COLOR)
 	draw_rect(Rect2(-1800, 820, 3600, 360), ROAD_COLOR)

@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=13 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -11,9 +11,13 @@
 [ext_resource type="PackedScene" path="res://scenes/vehicles/police_car.tscn" id="9_police"]
 [ext_resource type="PackedScene" path="res://scenes/world/wilderness_zone.tscn" id="10_zone"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="11_hud"]
+[ext_resource type="Script" path="res://scripts/world/district_tracker.gd" id="12_district"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
+
+[node name="DistrictTracker" type="Node" parent="."]
+script = ExtResource("12_district")
 
 [node name="World" type="Node2D" parent="."]
 
@@ -37,6 +41,26 @@ position = Vector2(285, -95)
 citizen_name = "Davi"
 dialogue = "Tem viaturas demais rondando o centro. Eu evitaria confusão."
 
+[node name="Luma" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-1460, 470)
+citizen_name = "Luma"
+dialogue = "Aqui no residencial todo mundo sabe da vida de todo mundo. Até demais."
+
+[node name="Bruno" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(1460, 460)
+citizen_name = "Bruno"
+dialogue = "As fábricas fecharam cedo. Dizem que alguma coisa apareceu perto dos galpões."
+
+[node name="Nando" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-540, 1460)
+citizen_name = "Nando"
+dialogue = "Na Zona Sul você encontra de tudo. O problema é saber de quem está comprando."
+
+[node name="Iara" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(560, 1440)
+citizen_name = "Iara"
+dialogue = "Se você viu uma criatura estranha, não foi o primeiro. Só o primeiro a voltar falando."
+
 [node name="Police1" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
 position = Vector2(950, 0)
 
@@ -50,6 +74,14 @@ chase_speed = 345.0
 [node name="Car" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(-90, 65)
 rotation = 0.18
+
+[node name="CarResidential" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
+position = Vector2(-1010, 610)
+rotation = 1.5708
+
+[node name="CarIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
+position = Vector2(1010, 560)
+rotation = -1.5708
 
 [node name="Creatures" type="Node2D" parent="World/Entities"]
 
