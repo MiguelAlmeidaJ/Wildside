@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3]
 
-[ext_resource type="Script" path="res://scripts/world/interactive_object.gd" id="1_object"]
+[ext_resource type="Script" path="res://scripts/world/payphone.gd" id="1_object"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape_phone"]
 size = Vector2(38, 58)
@@ -10,9 +10,8 @@ z_index = 5
 collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_object")
-action_text = "Usar o telefone"
-response_text = "Sem sinal. Alguém riscou um símbolo estranho no aparelho."
-mission_phone = true
+active_action_text = "Atender telefone"
+idle_action_text = "Usar telefone"
 
 [node name="Body" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-19, -29, 19, -29, 19, 29, -19, 29)

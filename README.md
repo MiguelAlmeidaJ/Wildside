@@ -36,7 +36,8 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 ## Sistemas implementados
 
 - Movimento com aceleração, desaceleração, corrida, direção visual e estados idle/walk/run.
-- Câmera suave com look-ahead.
+- Câmera suave com look-ahead e limites compatíveis com a área ampliada.
+- Cidade ampliada para 12 quarteirões, três eixos verticais e duas avenidas horizontais.
 - Interação local usando `Area2D`, sem varrer todos os objetos da cena a cada frame.
 - Veículo com aceleração, ré, freio, derrapagem leve, dano, colisão, som de motor procedural e saída segura.
 - NPCs com estados `IDLE`, `WANDER`, `TALK` e `FLEE`.
@@ -69,7 +70,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, roubo e condução do carro, saída segura, procura, aparecimento da polícia, missão completa, captura do Nib e recompensa.
+O teste cobre movimento, corrida, roubo e condução do carro, saída segura, procura, aparecimento da polícia, detecção real do telefone pelo player, avanço da missão ao pressionar `E`, captura do Nib e recompensa.
 
 ## Critério de conclusão
 
