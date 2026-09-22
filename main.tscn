@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3]
+[gd_scene load_steps=25 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -21,6 +21,9 @@
 [ext_resource type="Script" path="res://scripts/world/blackout_effect.gd" id="19_blackout_fx"]
 [ext_resource type="PackedScene" path="res://scenes/world/market.tscn" id="20_market"]
 [ext_resource type="PackedScene" path="res://scenes/world/safehouse.tscn" id="21_safehouse"]
+[ext_resource type="PackedScene" path="res://scenes/world/race_checkpoint.tscn" id="22_race"]
+[ext_resource type="PackedScene" path="res://scenes/world/garage.tscn" id="23_garage"]
+[ext_resource type="PackedScene" path="res://scenes/world/street_cache.tscn" id="24_cache"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -74,6 +77,8 @@ position = Vector2(-540, 1460)
 citizen_name = "Nando"
 appearance_variant = 3
 dialogue = "Na Zona Sul você encontra de tudo. O problema é saber de quem está comprando."
+mission_contact = "race"
+can_wander = false
 ambient_lines = PackedStringArray("Negócio bom não fica anunciado.", "Zona Sul acorda quando o resto dorme.")
 
 [node name="Iara" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
@@ -207,6 +212,14 @@ rotation = 1.5708
 position = Vector2(1010, 560)
 rotation = -1.5708
 
+[node name="PersonalCar" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
+modulate = Color(0.58, 0.96, 0.88, 1)
+position = Vector2(1010, 760)
+rotation = -1.5708
+illegal_to_take = false
+requires_ownership = true
+vehicle_name = "Cobalto R"
+
 [node name="TrafficA" parent="World/Entities/Vehicles" instance=ExtResource("16_traffic")]
 route_id = 0
 start_offset = 0
@@ -308,6 +321,74 @@ position = Vector2(-520, 755)
 
 [node name="Safehouse" parent="World/Props" instance=ExtResource("21_safehouse")]
 position = Vector2(270, 510)
+
+[node name="GarageCobalto" parent="World/Props" instance=ExtResource("23_garage")]
+position = Vector2(1240, 760)
+
+[node name="RaceStart" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(-880, 1500)
+is_start = true
+marker_label = "LARGADA"
+
+[node name="RaceCheckpoint1" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(-880, 1000)
+checkpoint_index = 0
+marker_label = "CP 1"
+
+[node name="RaceCheckpoint2" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(-1120, 0)
+checkpoint_index = 1
+marker_label = "CP 2"
+
+[node name="RaceCheckpoint3" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(-250, -80)
+checkpoint_index = 2
+marker_label = "CP 3"
+
+[node name="RaceCheckpoint4" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(870, -80)
+checkpoint_index = 3
+marker_label = "CP 4"
+
+[node name="RaceCheckpoint5" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(1150, 1000)
+checkpoint_index = 4
+marker_label = "CP 5"
+
+[node name="RaceCheckpoint6" parent="World/Props" instance=ExtResource("22_race")]
+position = Vector2(250, 1125)
+checkpoint_index = 5
+marker_label = "FINAL"
+
+[node name="CacheResidential" parent="World/Props" instance=ExtResource("24_cache")]
+position = Vector2(-1510, 210)
+cache_id = "residential"
+money_reward = 45
+item_id = "snack"
+
+[node name="CacheCenter" parent="World/Props" instance=ExtResource("24_cache")]
+position = Vector2(650, 210)
+cache_id = "center"
+money_reward = 55
+item_id = "energy"
+
+[node name="CacheIndustrial" parent="World/Props" instance=ExtResource("24_cache")]
+position = Vector2(1240, -240)
+cache_id = "industrial"
+money_reward = 70
+item_id = "medkit"
+
+[node name="CacheSouth" parent="World/Props" instance=ExtResource("24_cache")]
+position = Vector2(620, 1215)
+cache_id = "south"
+money_reward = 85
+item_id = "snack"
+
+[node name="CacheNorth" parent="World/Props" instance=ExtResource("24_cache")]
+position = Vector2(-560, -980)
+cache_id = "north"
+money_reward = 120
+item_id = "medkit"
 
 [node name="WildernessZone" parent="World/Props" instance=ExtResource("10_zone")]
 

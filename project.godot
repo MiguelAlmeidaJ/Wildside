@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Wildside"
-config/version="0.9.0"
+config/version="0.10.0"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://assets/ui/icon.svg"
@@ -26,6 +26,7 @@ GameManager="*res://scripts/systems/game_manager.gd"
 WantedManager="*res://scripts/systems/wanted_manager.gd"
 MissionManager="*res://scripts/systems/mission_manager.gd"
 SideJobManager="*res://scripts/systems/side_job_manager.gd"
+StreetRaceManager="*res://scripts/systems/street_race_manager.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
 

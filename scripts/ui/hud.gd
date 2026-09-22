@@ -30,6 +30,13 @@ extends CanvasLayer
 @onready var side_job_panel: PanelContainer = %SideJobPanel
 @onready var side_job_title: Label = %SideJobTitle
 @onready var side_job_description: Label = %SideJobDescription
+@onready var cache_label: Label = %CacheLabel
+@onready var vehicle_panel: PanelContainer = %VehiclePanel
+@onready var vehicle_label: Label = %VehicleLabel
+@onready var vehicle_bar: ProgressBar = %VehicleBar
+@onready var race_panel: PanelContainer = %RacePanel
+@onready var race_title: Label = %RaceTitle
+@onready var race_description: Label = %RaceDescription
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -52,7 +59,11 @@ func _ready() -> void:
 	GameManager.weapon_changed.connect(_on_weapon_changed)
 	GameManager.inventory_changed.connect(_on_inventory_changed)
 	GameManager.store_state_changed.connect(_on_store_state_changed)
+	GameManager.cache_progress_changed.connect(_on_cache_progress_changed)
 	SideJobManager.objective_changed.connect(_on_side_job_objective_changed)
+	StreetRaceManager.race_state_changed.connect(_on_race_state_changed)
+	StreetRaceManager.race_progress_changed.connect(_on_race_progress_changed)
+	StreetRaceManager.race_completed.connect(_on_race_completed)
 	SideJobManager.job_completed.connect(_on_side_job_completed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_pursuit_state_changed(WantedManager.is_visible_to_police)
@@ -62,8 +73,11 @@ func _ready() -> void:
 	_on_weapon_changed(GameManager.pistol_unlocked, GameManager.pistol_magazine, GameManager.pistol_reserve)
 	_on_inventory_changed(GameManager.medkits, GameManager.snacks, GameManager.energy_drinks)
 	_on_store_state_changed(false, "")
+	_on_cache_progress_changed(GameManager.collected_caches.size(), GameManager.CACHE_TOTAL)
+	_on_race_state_changed(StreetRaceManager.state)
 	side_job_panel.hide()
 	inventory_panel.hide()
+	vehicle_panel.hide()
 
 
 func _process(_delta: float) -> void:
@@ -78,6 +92,10 @@ func _process(_delta: float) -> void:
 		side_job_description.text = "%s\n[ %d m ]" % [_side_objective_text, roundi(side_distance / 4.0)]
 	else:
 		side_job_description.text = _side_objective_text
+
+	if StreetRaceManager.state == StreetRaceManager.State.READY:
+		var start_distance := GameManager.get_controlled_position().distance_to(StreetRaceManager.START_POSITION)
+		race_description.text = "Vá até a largada na Zona Sul.\n[ %d m ]" % roundi(start_distance / 4.0)
 
 
 func set_prompt(text: String) -> void:
@@ -100,6 +118,15 @@ func set_energy_boost(remaining: float) -> void:
 		energy_label.text = "J  ENERGÉTICO  x%d  •  BOOST %.1fs" % [GameManager.energy_drinks, remaining]
 	else:
 		energy_label.text = "J  ENERGÉTICO  x%d" % GameManager.energy_drinks
+
+
+func set_vehicle_status(active: bool, vehicle_name: String = "", current: float = 0.0, maximum: float = 100.0) -> void:
+	vehicle_panel.visible = active
+	if not active:
+		return
+	vehicle_bar.max_value = maximum
+	vehicle_bar.value = current
+	vehicle_label.text = "%s  •  %d%%" % [vehicle_name.to_upper(), roundi((current / maxf(1.0, maximum)) * 100.0)]
 
 
 func set_arrest_progress(value: float) -> void:
@@ -178,6 +205,33 @@ func _on_inventory_changed(medkits: int, snacks: int, energy_drinks: int) -> voi
 		set_energy_boost(float(GameManager.player.get("energy_boost_left")))
 	else:
 		energy_label.text = "J  ENERGÉTICO  x%d  •  10s velocidade" % energy_drinks
+
+
+func _on_cache_progress_changed(found: int, total: int) -> void:
+	cache_label.text = "ESCONDERIJOS  %d / %d" % [found, total]
+
+
+func _on_race_state_changed(state: int) -> void:
+	match state:
+		StreetRaceManager.State.READY:
+			race_panel.show()
+			race_title.text = "CORRIDA DE RUA"
+			race_description.text = "Vá até a largada na Zona Sul."
+		StreetRaceManager.State.RACING:
+			race_panel.show()
+			race_title.text = "CORRIDA DE RUA"
+		_:
+			race_panel.hide()
+
+
+func _on_race_progress(checkpoint: int, total: int, elapsed: float) -> void:
+	if StreetRaceManager.state != StreetRaceManager.State.RACING:
+		return
+	race_description.text = "CHECKPOINT  %d / %d\nTEMPO  %.1fs" % [mini(checkpoint + 1, total), total, elapsed]
+
+
+func _on_race_completed(reward: int, elapsed: float, best_time: float) -> void:
+	show_message("CORRIDA CONCLUÍDA  •  %.1fs  •  +$%d  •  recorde %.1fs" % [elapsed, reward, best_time])
 
 
 func _on_store_state_changed(opened: bool, title: String) -> void:

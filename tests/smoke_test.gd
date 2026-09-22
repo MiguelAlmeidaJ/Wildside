@@ -16,6 +16,7 @@ func _run() -> void:
 	var wanted = root.get_node("WantedManager")
 	var mission = root.get_node("MissionManager")
 	var side_job = root.get_node("SideJobManager")
+	var race_manager = root.get_node("StreetRaceManager")
 	var save_manager = root.get_node("SaveManager")
 	var packed_main: PackedScene = load("res://main.tscn")
 	_check(packed_main != null, "main.tscn precisa carregar")
@@ -38,6 +39,7 @@ func _run() -> void:
 	var jade = game.get_node("World/Entities/NPCs/Jade")
 	var rico = game.get_node("World/Entities/NPCs/Rico")
 	var vera = game.get_node("World/Entities/NPCs/Vera")
+	var nando = game.get_node("World/Entities/NPCs/Nando")
 	var davi = game.get_node("World/Entities/NPCs/Davi")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
@@ -47,6 +49,13 @@ func _run() -> void:
 	var blackout_anomaly = game.get_node("World/Props/BlackoutAnomaly")
 	var market = game.get_node("World/Props/Market24")
 	var safehouse = game.get_node("World/Props/Safehouse")
+	var garage = game.get_node("World/Props/GarageCobalto")
+	var personal_car = game.get_node("World/Entities/Vehicles/PersonalCar")
+	var cache_center = game.get_node("World/Props/CacheCenter")
+	var cache_residential = game.get_node("World/Props/CacheResidential")
+	var cache_industrial = game.get_node("World/Props/CacheIndustrial")
+	var cache_south = game.get_node("World/Props/CacheSouth")
+	var cache_north = game.get_node("World/Props/CacheNorth")
 	var police = game.get_node("World/Entities/NPCs/Police1")
 	var district_tracker = game.get_node("DistrictTracker")
 	var raider1 = game.get_node("World/Entities/Enemies/Raider1")
@@ -64,6 +73,8 @@ func _run() -> void:
 	_check(get_nodes_in_group("ambient_traffic").size() >= 6, "Cidade Viva precisa ter trânsito civil")
 	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
 	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
+	_check(garage != null and personal_car != null, "Garagem Cobalto e veículo próprio precisam existir")
+	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(-1400, 400)) == "BAIRRO RESIDENCIAL", "Residencial precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(1400, 400)) == "DISTRITO INDUSTRIAL", "Industrial precisa ser identificado")
@@ -102,8 +113,63 @@ func _run() -> void:
 	_check(side_job.deliveries_completed == 1, "Entrega concluída precisa entrar no contador")
 	_check(game_manager.money == money_before_delivery + side_job.DELIVERY_REWARD, "Corrida Noturna precisa pagar $120")
 
+	# Atividades livres 0.10: exploração, garagem, veículo próprio e corrida de rua.
+	game_manager.add_money(900)
+	var money_before_car := game_manager.money
+	garage.interact(player)
+	_check(game_manager.personal_vehicle_unlocked, "Garagem precisa vender o veículo próprio")
+	_check(game_manager.money == money_before_car - 350, "Veículo próprio precisa custar $350")
+	await process_frame
+	await physics_frame
+	_check(personal_car.visible, "Veículo próprio precisa aparecer após a compra")
+	_check(personal_car.is_in_group("interactable"), "Veículo próprio comprado precisa ficar interativo")
+
+	personal_car.apply_damage(50.0)
+	var money_before_repair := game_manager.money
+	garage.interact(player)
+	_check(personal_car.durability == personal_car.maximum_durability, "Garagem precisa reparar o veículo próximo")
+	_check(game_manager.money == money_before_repair - 40, "Reparo de 50% precisa custar $40")
+
+	var money_before_caches := game_manager.money
+	cache_center.interact(player)
+	cache_residential.interact(player)
+	cache_industrial.interact(player)
+	cache_south.interact(player)
+	cache_north.interact(player)
+	_check(game_manager.collected_caches.size() == game_manager.CACHE_TOTAL, "Cinco esconderijos precisam ser coletáveis")
+	_check(game_manager.money > money_before_caches, "Esconderijos precisam recompensar exploração")
+	var money_after_caches := game_manager.money
+	cache_center.interact(player)
+	_check(game_manager.money == money_after_caches, "Esconderijo já coletado não pode pagar duas vezes")
+
+	race_manager.reset_run()
+	nando.interact(player)
+	_check(race_manager.state == race_manager.State.READY, "Nando precisa liberar a Corrida de Rua")
+	personal_car.interact(player)
+	await physics_frame
+	_check(player.current_vehicle == personal_car, "Veículo próprio precisa ser dirigível sem roubo")
+	_check(wanted.wanted_level == 0, "Entrar no veículo próprio não pode gerar procura")
+	_check(race_manager.start_race(personal_car), "Largada precisa iniciar corrida com o carro dirigido")
+	for checkpoint_index in range(race_manager.CHECKPOINT_COUNT - 1):
+		_check(race_manager.checkpoint_reached(checkpoint_index, personal_car), "Checkpoint %d precisa ser aceito em ordem" % (checkpoint_index + 1))
+	race_manager.elapsed = 60.0
+	var money_before_race := game_manager.money
+	_check(race_manager.checkpoint_reached(race_manager.CHECKPOINT_COUNT - 1, personal_car), "Checkpoint final precisa concluir a corrida")
+	_check(race_manager.wins == 1, "Corrida concluída precisa entrar no histórico")
+	_check(is_equal_approx(race_manager.best_time, 60.0), "Primeira corrida precisa registrar melhor tempo")
+	_check(game_manager.money == money_before_race + 230, "Volta de 60s precisa pagar prêmio base + bônus")
+	personal_car.global_position = Vector2(1000, 1000)
+	personal_car.request_exit()
+	await physics_frame
+	_check(player.current_vehicle == null, "Player precisa conseguir sair do veículo próprio após a corrida")
+	var money_before_recovery := game_manager.money
+	garage.interact(player)
+	_check(personal_car.global_position == garage.global_position + Vector2(-230, 0), "Garagem precisa recuperar o carro próprio distante")
+	_check(game_manager.money == money_before_recovery - 50, "Recuperação do Cobalto R precisa custar $50")
+
 	game_manager.reset_run()
 	side_job.reset_run()
+	race_manager.reset_run()
 	player.energy_boost_left = 0.0
 	player.heal(player.max_health)
 
@@ -402,7 +468,7 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.9.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.10.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -410,21 +476,39 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
+	_check(save_manager.SAVE_VERSION == 6, "Prototype 0.10 precisa usar save version 6")
 
-	# Save/load deve restaurar estado urbano essencial.
+	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
 	game_manager.add_item("energy", 1)
+	game_manager.unlock_personal_vehicle()
+	game_manager.collect_cache("center")
+	game_manager.collect_cache("north")
+	race_manager.best_time = 58.5
+	race_manager.wins = 2
+	personal_car.set_durability(63.0)
 	var saved_money := game_manager.money
 	var saved_position: Vector2 = player.global_position
 	safehouse.interact(player)
+
 	game_manager.money = 0
 	game_manager.medkits = 0
 	game_manager.energy_drinks = 0
+	game_manager.personal_vehicle_unlocked = false
+	game_manager.collected_caches.clear()
+	race_manager.best_time = -1.0
+	race_manager.wins = 0
+	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
-	_check(save_manager.load_game(), "Save 0.9 precisa ser carregável")
+
+	_check(save_manager.load_game(), "Save 0.10 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
+	_check(game_manager.personal_vehicle_unlocked, "Load precisa restaurar propriedade do veículo")
+	_check(game_manager.collected_caches.has("center") and game_manager.collected_caches.has("north"), "Load precisa restaurar esconderijos encontrados")
+	_check(is_equal_approx(race_manager.best_time, 58.5) and race_manager.wins == 2, "Load precisa restaurar recorde e vitórias de corrida")
+	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
 	var money_before_defeat := game_manager.money
