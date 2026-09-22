@@ -24,6 +24,7 @@ func _run() -> void:
 
 	var player = game.get_node("Player")
 	var car = game.get_node("World/Entities/Vehicles/Car")
+	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
@@ -31,6 +32,9 @@ func _run() -> void:
 	var district_tracker = game.get_node("DistrictTracker")
 	_check(player != null, "Player precisa existir")
 	_check(car != null, "Car precisa existir")
+	await physics_frame
+	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
+	_check(not parked_blocker.disabled, "Carro estacionado precisa manter o bloqueio estático ativo")
 	_check(get_nodes_in_group("interactable").size() >= 11, "Cidade ampliada precisa ter NPCs, veículos, telefone e Nib interativos")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(-1400, 400)) == "BAIRRO RESIDENCIAL", "Residencial precisa ser identificado")
@@ -51,6 +55,8 @@ func _run() -> void:
 	car.interact(player)
 	await physics_frame
 	_check(player.current_vehicle == car, "Player precisa entrar no carro")
+	_check(car.collision_layer == 4, "Carro dirigido precisa reativar sua camada móvel")
+	_check(parked_blocker.disabled, "Bloqueio estático deve desligar enquanto o carro é dirigido")
 	_check(car.driver == player, "Carro precisa registrar o motorista")
 	_check(wanted.wanted_level == 1, "Roubar o carro precisa gerar uma estrela")
 	_check(police.active, "Polícia precisa aparecer com uma estrela")
@@ -67,6 +73,8 @@ func _run() -> void:
 	_check(player.current_vehicle == null, "Player precisa sair do carro")
 	_check(car.driver == null, "Carro precisa liberar o motorista")
 	_check(player.global_position.distance_to(car.global_position) > 60.0, "Saída precisa usar um ponto lateral livre")
+	_check(car.collision_layer == 0, "Carro deve voltar ao modo estacionado após a saída")
+	_check(not parked_blocker.disabled, "Bloqueio estático deve voltar após a saída")
 
 	wanted.clear()
 	mission.reset_run()

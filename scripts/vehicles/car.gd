@@ -10,6 +10,7 @@ extends CharacterBody2D
 
 @onready var vehicle_camera: Camera2D = $Camera2D
 @onready var engine_player: AudioStreamPlayer2D = $EngineSound
+@onready var parked_blocker_shape: CollisionShape2D = $ParkedBlocker/CollisionShape2D
 
 var driver
 var current_speed := 0.0
@@ -24,6 +25,7 @@ func _ready() -> void:
 	add_to_group("interactable")
 	add_to_group("player_vehicle")
 	durability = maximum_durability
+	_set_parked_collision(true)
 	_setup_engine_audio()
 
 
@@ -78,6 +80,7 @@ func get_interaction_text(_player: CharacterBody2D) -> String:
 func interact(player: CharacterBody2D) -> void:
 	if is_instance_valid(driver) or durability <= 0.0:
 		return
+	_set_parked_collision(false)
 	driver = player
 	if illegal_to_take and not was_taken:
 		was_taken = true
@@ -97,9 +100,18 @@ func request_exit() -> void:
 	var exiting_driver = driver
 	driver = null
 	current_speed = 0.0
+	velocity = Vector2.ZERO
 	vehicle_camera.enabled = false
 	vehicle_camera.position = Vector2.ZERO
+	_set_parked_collision(true)
 	exiting_driver.call("leave_vehicle", self, exit_position)
+
+
+func _set_parked_collision(parked: bool) -> void:
+	# O carro estacionado usa um StaticBody2D separado. Isso mantém o veículo
+	# sólido para o player sem colocar dois CharacterBody2D se empurrando.
+	collision_layer = 0 if parked else 4
+	parked_blocker_shape.set_deferred("disabled", not parked)
 
 
 func apply_damage(amount: float) -> void:
