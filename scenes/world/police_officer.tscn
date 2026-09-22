@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/police_officer.gd" id="1_officer"]
+[ext_resource type="Texture2D" path="res://assets/characters/police_officer.svg" id="2_texture"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape_officer"]
+radius = 16.0
+height = 38.0
+
+[node name="PoliceOfficer" type="CharacterBody2D"]
+z_index = 10
+collision_layer = 8
+collision_mask = 3
+script = ExtResource("1_officer")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -5)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CapsuleShape_officer")
