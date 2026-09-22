@@ -7,6 +7,8 @@ signal weapon_changed(unlocked: bool, magazine: int, reserve: int)
 signal noise_emitted(position: Vector2, radius: float, kind: String, source: Node2D)
 signal inventory_changed(medkits: int, snacks: int, energy_drinks: int)
 signal store_state_changed(opened: bool, title: String)
+signal vehicle_ownership_changed(unlocked: bool)
+signal cache_progress_changed(found: int, total: int)
 
 var player: CharacterBody2D
 var money := 0
@@ -20,6 +22,9 @@ var snacks := 0
 var energy_drinks := 0
 var store_open := false
 var active_store := ""
+var personal_vehicle_unlocked := false
+var collected_caches: Array[String] = []
+const CACHE_TOTAL := 5
 
 
 func register_player(value: CharacterBody2D) -> void:
@@ -174,6 +179,26 @@ func purchase_store_slot(slot: int) -> String:
 	return "%s comprado por $%d." % [item_name, price]
 
 
+func unlock_personal_vehicle() -> bool:
+	if personal_vehicle_unlocked:
+		return false
+	personal_vehicle_unlocked = true
+	vehicle_ownership_changed.emit(true)
+	return true
+
+
+func collect_cache(cache_id: String) -> bool:
+	if cache_id.is_empty() or collected_caches.has(cache_id):
+		return false
+	collected_caches.append(cache_id)
+	cache_progress_changed.emit(collected_caches.size(), CACHE_TOTAL)
+	return true
+
+
+func is_cache_collected(cache_id: String) -> bool:
+	return collected_caches.has(cache_id)
+
+
 func set_district(name: String) -> void:
 	if name == current_district:
 		return
@@ -193,9 +218,13 @@ func reset_run() -> void:
 	energy_drinks = 0
 	store_open = false
 	active_store = ""
+	personal_vehicle_unlocked = false
+	collected_caches.clear()
 	money_changed.emit(money)
 	capture_devices_changed.emit(capture_devices)
 	weapon_changed.emit(pistol_unlocked, pistol_magazine, pistol_reserve)
 	inventory_changed.emit(medkits, snacks, energy_drinks)
 	store_state_changed.emit(false, "")
+	vehicle_ownership_changed.emit(personal_vehicle_unlocked)
+	cache_progress_changed.emit(collected_caches.size(), CACHE_TOTAL)
 
