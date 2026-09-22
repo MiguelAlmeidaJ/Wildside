@@ -397,6 +397,11 @@ func _create_district_signs() -> void:
 	_create_sign(Vector2(1260, 210), "INDUSTRIAL", Color("#e2a761"))
 	_create_sign(Vector2(-120, 1210), "ZONA SUL", Color("#bc8be8"))
 
+	_create_shop_sign(Vector2(-675, 675), "MERCADO 24H", Color("#ffd46a"))
+	_create_shop_sign(Vector2(335, 675), "ARCADE", Color("#79d8ff"))
+	_create_shop_sign(Vector2(1315, 675), "COBALTO", Color("#6df1d7"))
+	_create_shop_sign(Vector2(-675, 1690), "NOITE ALTA", Color("#d69bff"))
+
 
 func _create_sign(at: Vector2, text_value: String, accent: Color) -> void:
 	var label := Label.new()
@@ -406,6 +411,28 @@ func _create_sign(at: Vector2, text_value: String, accent: Color) -> void:
 	label.add_theme_font_size_override("font_size", 15)
 	label.add_theme_color_override("font_color", accent)
 	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.85))
+	label.add_theme_constant_override("shadow_offset_x", 2)
+	label.add_theme_constant_override("shadow_offset_y", 2)
+	add_child(label)
+
+
+func _create_shop_sign(at: Vector2, text_value: String, accent: Color) -> void:
+	var plate := Polygon2D.new()
+	plate.position = at + Vector2(46, 10)
+	plate.z_index = 5
+	plate.polygon = PackedVector2Array([
+		Vector2(-50, -15), Vector2(50, -15), Vector2(50, 15), Vector2(-50, 15)
+	])
+	plate.color = Color(0.04, 0.06, 0.09, 0.88)
+	add_child(plate)
+
+	var label := Label.new()
+	label.position = at
+	label.z_index = 6
+	label.text = text_value
+	label.add_theme_font_size_override("font_size", 13)
+	label.add_theme_color_override("font_color", accent)
+	label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.9))
 	label.add_theme_constant_override("shadow_offset_x", 2)
 	label.add_theme_constant_override("shadow_offset_y", 2)
 	add_child(label)
