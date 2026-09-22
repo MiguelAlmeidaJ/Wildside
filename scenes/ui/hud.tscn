@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
 
@@ -43,6 +43,13 @@ corner_radius_top_right = 6
 corner_radius_bottom_right = 6
 corner_radius_bottom_left = 6
 
+[sub_resource type="StyleBoxFlat" id="StyleBox_arrest_fill"]
+bg_color = Color(0.93, 0.35, 0.35, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
 
@@ -56,7 +63,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.6\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.7\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
@@ -126,6 +133,39 @@ theme_override_colors/font_color = Color(0.78, 0.82, 0.86, 1)
 theme_override_font_sizes/font_size = 13
 text = "Disponível na Oficina Cobalto"
 
+[node name="ArrestPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -190.0
+offset_top = -148.0
+offset_right = 190.0
+offset_bottom = -91.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="ArrestContent" type="VBoxContainer" parent="ArrestPanel"]
+theme_override_constants/separation = 4
+
+[node name="ArrestLabel" type="Label" parent="ArrestPanel/ArrestContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.75, 0.75, 1)
+theme_override_font_sizes/font_size = 15
+text = "PRISÃO  0%"
+horizontal_alignment = 1
+
+[node name="ArrestBar" type="ProgressBar" parent="ArrestPanel/ArrestContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+show_percentage = false
+theme_override_styles/background = SubResource("StyleBox_health_bg")
+theme_override_styles/fill = SubResource("StyleBox_arrest_fill")
+
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true
 visible = false
@@ -191,15 +231,33 @@ theme_override_font_sizes/font_size = 24
 text = "☆☆☆☆☆  00"
 horizontal_alignment = 2
 
+[node name="PursuitLabel" type="Label" parent="."]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 58.0
+offset_right = -24.0
+offset_bottom = 84.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.68, 0.72, 0.76, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 15
+text = "SEM PROCURA"
+horizontal_alignment = 2
+
 [node name="MoneyLabel" type="Label" parent="."]
 unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -300.0
-offset_top = 61.0
+offset_top = 88.0
 offset_right = -24.0
-offset_bottom = 95.0
+offset_bottom = 122.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(0.39, 0.91, 0.58, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
@@ -216,9 +274,9 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -300.0
-offset_top = 96.0
+offset_top = 124.0
 offset_right = -24.0
-offset_bottom = 126.0
+offset_bottom = 154.0
 grow_horizontal = 0
 theme_override_colors/font_color = Color(0.35, 0.95, 0.82, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
@@ -234,9 +292,9 @@ anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -390.0
-offset_top = 136.0
+offset_top = 166.0
 offset_right = -24.0
-offset_bottom = 241.0
+offset_bottom = 271.0
 grow_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
