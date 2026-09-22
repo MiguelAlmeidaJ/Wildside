@@ -67,12 +67,13 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Câmera suave com look-ahead e limites compatíveis com a área ampliada.
 - Cidade ampliada para 12 quarteirões, três eixos verticais e duas avenidas horizontais.
 - `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas receberam marcações, estacionamento e bordas mais legíveis.
-- Props urbanos distribuídos pelos distritos: postes, bancos, vasos, caçambas, cones, containers e placas de região.
+- Props urbanos distribuídos pelos distritos: postes, bancos, vasos, caçambas, cones, containers, placas de região e letreiros de estabelecimentos.
 - Seis carros civis circulam continuamente em rotas pelas avenidas principais.
 - Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul e Mata Norte.
 - Transição de bairro exibida no HUD ao cruzar de uma região para outra.
 - Mais cidadãos e veículos estacionados espalhados pelo mapa.
 - População ampliada com Jade, Otto, Vera, Rico, Lia, Celso e novos moradores/trabalhadores espalhados pela cidade.
+- Quatro variações visuais de cidadãos evitam que toda a população pareça o mesmo personagem recolorido.
 - NPCs recebem variações visuais e falas ambientais espontâneas enquanto caminham ou esperam na rua.
 - Interação local usando `Area2D`, sem varrer todos os objetos da cena a cada frame.
 - Veículo com aceleração, ré, freio, derrapagem leve, dano, colisão, som de motor procedural e saída segura.
