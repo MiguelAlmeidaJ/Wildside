@@ -3,10 +3,14 @@ extends Node2D
 
 func _ready() -> void:
 	var trees := [
+		Vector2(-1660, -1510), Vector2(-1470, -1330), Vector2(-1260, -1510),
 		Vector2(-1080, -1510), Vector2(-890, -1370), Vector2(-690, -1515),
 		Vector2(-475, -1320), Vector2(480, -1350), Vector2(680, -1510),
-		Vector2(895, -1340), Vector2(1080, -1510), Vector2(-1030, -1080),
-		Vector2(-760, -1160), Vector2(760, -1130), Vector2(1040, -1040),
+		Vector2(895, -1340), Vector2(1080, -1510), Vector2(1280, -1360),
+		Vector2(1490, -1510), Vector2(1680, -1310), Vector2(-1580, -1080),
+		Vector2(-1320, -1160), Vector2(-1030, -1080), Vector2(-760, -1160),
+		Vector2(760, -1130), Vector2(1040, -1040), Vector2(1340, -1140),
+		Vector2(1600, -1050),
 	]
 	for tree_position in trees:
 		_create_tree(tree_position)
@@ -14,7 +18,7 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(-1200, -1600, 2400, 700), Color("#315b3b"))
+	draw_rect(Rect2(-1800, -1600, 3600, 700), Color("#315b3b"))
 	draw_colored_polygon(PackedVector2Array([
 		Vector2(-215, -900), Vector2(215, -900), Vector2(350, -1600), Vector2(-330, -1600)
 	]), Color("#8b7d58"))
@@ -50,4 +54,3 @@ func _create_tree(at: Vector2) -> void:
 	center.z_index = 1
 	body.add_child(center)
 	add_child(body)
-
