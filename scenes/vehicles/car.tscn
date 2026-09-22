@@ -22,10 +22,10 @@ shape = SubResource("RectangleShape_car")
 enabled = false
 position_smoothing_enabled = true
 position_smoothing_speed = 6.0
-limit_left = -1200
+limit_left = -1800
 limit_top = -1600
-limit_right = 1200
-limit_bottom = 900
+limit_right = 1800
+limit_bottom = 1800
 
 [node name="EngineSound" type="AudioStreamPlayer2D" parent="."]
 max_distance = 850.0
