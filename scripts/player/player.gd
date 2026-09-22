@@ -302,7 +302,7 @@ func _ensure_utility_inputs() -> void:
 	_ensure_key_action("item_snack", KEY_K)
 
 
-func _ensure_key_action(action_name: String, keycode: Key) -> void:
+func _ensure_key_action(action_name: String, keycode: int) -> void:
 	if not InputMap.has_action(action_name):
 		InputMap.add_action(action_name)
 	if InputMap.action_get_events(action_name).is_empty():
