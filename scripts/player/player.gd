@@ -195,6 +195,7 @@ func start_reload() -> bool:
 
 
 func _complete_reload() -> void:
+	_reload_left = 0.0
 	var moved := GameManager.reload_pistol(pistol_magazine_size)
 	if moved > 0:
 		show_message("Pistola recarregada.")
