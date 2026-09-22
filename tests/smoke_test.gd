@@ -24,6 +24,7 @@ func _run() -> void:
 
 	var player = game.get_node("Player")
 	var car = game.get_node("World/Entities/Vehicles/Car")
+	var car_residential = game.get_node("World/Entities/Vehicles/CarResidential")
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var bruno = game.get_node("World/Entities/NPCs/Bruno")
@@ -66,6 +67,8 @@ func _run() -> void:
 	_check(car.driver == player, "Carro precisa registrar o motorista")
 	_check(wanted.wanted_level == 1, "Roubar o carro precisa gerar uma estrela")
 	_check(police.active, "Polícia precisa aparecer com uma estrela")
+	wanted.report_police_contact(1.0)
+	_check(wanted.is_visible_to_police, "Contato policial precisa marcar o player como VISTO")
 
 	var car_start: Vector2 = car.global_position
 	Input.action_press("move_up")
@@ -82,7 +85,13 @@ func _run() -> void:
 	_check(car.collision_layer == 0, "Carro deve voltar ao modo estacionado após a saída")
 	_check(not parked_blocker.disabled, "Bloqueio estático deve voltar após a saída")
 
+	var heat_before_swap: float = wanted.heat
+	var swapped := wanted.notify_vehicle_change(car_residential)
+	_check(swapped, "Trocar para outro veículo durante a perseguição precisa ajudar na fuga")
+	_check(wanted.heat == maxf(0.0, heat_before_swap - 15.0), "Troca de veículo precisa reduzir 15 de heat")
+
 	wanted.clear()
+	_check(not wanted.is_visible_to_police, "Limpar procura precisa remover estado VISTO")
 	mission.reset_run()
 	maya.interact(player)
 	_check(mission.stage == mission.Stage.ANSWER_PHONE, "Maya precisa iniciar a missão")
@@ -298,6 +307,26 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Derrota precisa restaurar a vida")
 	_check(player.global_position == player._spawn_position, "Derrota precisa levar o player ao ponto inicial")
 	_check(game_manager.money == money_before_defeat - mini(50, money_before_defeat), "Derrota precisa aplicar penalidade de até $50")
+
+	# Polícia a pé e prisão.
+	wanted.add_heat(20.0, "Teste de prisão")
+	police.global_position = player.global_position + Vector2(0, 120)
+	police._deploy_officer()
+	await process_frame
+	await physics_frame
+	_check(is_instance_valid(police.officer), "Viatura precisa conseguir desembarcar um policial")
+
+	if is_instance_valid(police.officer):
+		var officer = police.officer
+		officer.global_position = player.global_position + Vector2(0, 28)
+		var money_before_arrest := game_manager.money
+		for _frame in 110:
+			await physics_frame
+			if wanted.wanted_level == 0:
+				break
+		_check(wanted.wanted_level == 0, "Policial próximo precisa concluir a prisão")
+		_check(player.global_position == player._spawn_position, "Prisão precisa levar o player ao ponto inicial")
+		_check(game_manager.money == money_before_arrest - mini(75, money_before_arrest), "Prisão precisa cobrar até $75 de fiança")
 
 	game.queue_free()
 	await process_frame
