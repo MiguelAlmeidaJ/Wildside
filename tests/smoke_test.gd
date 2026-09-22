@@ -66,8 +66,26 @@ func _run() -> void:
 	mission.reset_run()
 	maya.interact(player)
 	_check(mission.stage == mission.Stage.ANSWER_PHONE, "Maya precisa iniciar a missão")
-	phone.interact(player)
-	_check(mission.stage == mission.Stage.REACH_WILDERNESS, "Telefone precisa indicar a mata")
+
+	# Valida a interação do telefone pelo mesmo fluxo usado durante o jogo.
+	player.global_position = phone.global_position + Vector2(0, 80)
+	player.velocity = Vector2.ZERO
+	await physics_frame
+	await physics_frame
+	_check(player._find_nearest_interactable() == phone, "Player precisa detectar o telefone como alvo de interação")
+
+	var interact_event := InputEventAction.new()
+	interact_event.action = "interact"
+	interact_event.pressed = true
+	Input.parse_input_event(interact_event)
+	await process_frame
+	await physics_frame
+	var release_event := InputEventAction.new()
+	release_event.action = "interact"
+	release_event.pressed = false
+	Input.parse_input_event(release_event)
+	_check(mission.stage == mission.Stage.REACH_WILDERNESS, "Apertar E no telefone precisa indicar a mata")
+
 	mission.enter_wilderness()
 	_check(mission.stage == mission.Stage.CAPTURE_NIB, "Mata precisa liberar a captura")
 	nib.capture_chance = 1.0
