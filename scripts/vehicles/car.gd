@@ -73,6 +73,10 @@ func _physics_process(delta: float) -> void:
 	_update_engine_audio()
 
 
+func get_interaction_priority(_player: CharacterBody2D) -> int:
+	return 55
+
+
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	return "Roubar veículo" if illegal_to_take and not was_taken else "Entrar no veículo"
 
