@@ -1,5 +1,12 @@
 extends CharacterBody2D
 
+const CITIZEN_TEXTURES: Array[Texture2D] = [
+	preload("res://assets/characters/citizen.svg"),
+	preload("res://assets/characters/citizen_b.svg"),
+	preload("res://assets/characters/citizen_c.svg"),
+	preload("res://assets/characters/citizen_d.svg"),
+]
+
 enum State { IDLE, WANDER, TALK, FLEE }
 
 @export var citizen_name := "Maya"
@@ -8,6 +15,7 @@ enum State { IDLE, WANDER, TALK, FLEE }
 @export var mission_contact := ""
 @export var can_wander := true
 @export var wander_radius := 85.0
+@export_range(0, 3) var appearance_variant := 0
 @export var appearance_tint := Color.WHITE
 @export var ambient_chatter := true
 @export var ambient_lines := PackedStringArray()
@@ -33,6 +41,7 @@ func _ready() -> void:
 	add_to_group("citizens")
 	_home = global_position
 	_rng.seed = hash(name)
+	sprite.texture = CITIZEN_TEXTURES[clampi(appearance_variant, 0, CITIZEN_TEXTURES.size() - 1)]
 	sprite.modulate = appearance_tint
 	ambient_label.hide()
 	_ambient_timer = _rng.randf_range(2.5, 7.5)
