@@ -76,8 +76,8 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Depois da compra da pistola, a Cobalto vende pacotes de 16 munições por `$40`.
 - Estado da pistola e munição passa a ser persistido no save.
 - Disparos agora emitem ruído no mundo: civis próximos fogem e Raiders investigam a origem mesmo antes de enxergar o player.
-- Atirar em área urbana gera procura e ativa a polícia; uma rajada curta usa cooldown para não somar heat em toda bala.
-- Tiros na Mata Norte ainda geram reação de NPCs/inimigos, mas não acionam automaticamente a polícia.
+- Civis que escutam um disparo fogem e reportam o crime, gerando procura e ativando a polícia; uma rajada curta usa cooldown para não somar heat em toda bala.
+- Sem testemunha próxima, o tiro ainda atrai inimigos, mas a polícia não recebe informação magicamente.
 - Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
