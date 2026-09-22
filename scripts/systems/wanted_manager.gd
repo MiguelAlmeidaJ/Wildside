@@ -35,11 +35,11 @@ func add_heat(amount: float, description: String) -> void:
 	wanted_changed.emit(wanted_level, heat)
 
 
-func report_gunshot(in_urban_area: bool) -> bool:
-	if not in_urban_area or _gunshot_report_cooldown > 0.0:
+func report_gunshot(reported: bool) -> bool:
+	if not reported or _gunshot_report_cooldown > 0.0:
 		return false
 	_gunshot_report_cooldown = 2.5
-	add_heat(20.0, "Disparo em área urbana")
+	add_heat(20.0, "Disparo reportado")
 	return true
 
 
