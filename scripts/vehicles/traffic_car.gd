@@ -18,7 +18,7 @@ func _ready() -> void:
 	if _points.is_empty():
 		set_physics_process(false)
 		return
-	_target_index = posmod(start_offset, _points.size())
+	_target_index = ((start_offset % _points.size()) + _points.size()) % _points.size()
 	global_position = _points[_target_index]
 	_target_index = (_target_index + 1) % _points.size()
 
