@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.4 · Godot 4.7.x**
+**Prototype 0.5 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -17,7 +17,9 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | Mover / dirigir | `WASD` ou setas |
 | Correr | `Shift` |
 | Interagir / entrar / sair | `E` |
-| Atacar | `F` |
+| Atacar corpo a corpo | `F` |
+| Atirar com pistola | `Mouse 1` |
+| Recarregar pistola | `R` |
 | Habilidade do Nib — Impacto | `1` |
 | Habilidade do Volt — Sobrecarga | `2` |
 | Capturar Wild | `Q` |
@@ -66,6 +68,12 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Nib e Volt ajudam automaticamente no combate quando há inimigos próximos.
 - Habilidades ativas de Wild: Nib usa `Impacto`, um golpe de alvo único com alto dano e knockback; Volt usa `Sobrecarga`, que encadeia eletricidade entre até três inimigos e aplica stun.
 - Cooldowns das habilidades aparecem no HUD e mudam para `PRONTO` quando podem ser usados novamente.
+- Companheiros capturados entram em formação atrás/lateral do player e abrem espaço automaticamente perto de NPCs e outros pontos de interação.
+- Sistema de prioridade de interação: NPCs, objetivos, telefone e oficina vencem os Wilds no `E`, mesmo quando Nib ou Volt estão mais próximos.
+- Oficina Cobalto passa a vender uma pistola por `$150` após a ANOMALIA #002; ela vem com 8 munições no pente e 24 na reserva.
+- Pistola com tiro hitscan pelo mouse, dano, cooldown, traçante visual, pente, reserva e recarga no `R`.
+- Depois da compra da pistola, a Cobalto vende pacotes de 16 munições por `$40`.
+- Estado da pistola e munição passa a ser persistido no save.
 - Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
@@ -95,7 +103,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, veículos, procura, regiões, as duas missões, economia, captura de Wilds, combate corpo a corpo, habilidades ativas de Nib e Volt, knockback, stun, dano ao player, Raiders, recompensas e respawn.
+O teste cobre movimento, corrida, veículos, procura, regiões, as duas missões, economia, captura de Wilds, prioridade de interação com companheiros, formação, pistola, munição, recarga, combate corpo a corpo, habilidades ativas de Nib e Volt, knockback, stun, dano ao player, Raiders, recompensas e respawn.
 
 ## Critério de conclusão
 
