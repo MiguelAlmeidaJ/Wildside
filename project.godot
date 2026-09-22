@@ -25,6 +25,7 @@ config/icon="res://assets/ui/icon.svg"
 GameManager="*res://scripts/systems/game_manager.gd"
 WantedManager="*res://scripts/systems/wanted_manager.gd"
 MissionManager="*res://scripts/systems/mission_manager.gd"
+SideJobManager="*res://scripts/systems/side_job_manager.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
 
