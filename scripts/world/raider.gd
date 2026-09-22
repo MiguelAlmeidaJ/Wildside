@@ -88,6 +88,12 @@ func take_damage(amount: float, source: Node2D = null) -> void:
 		_die()
 
 
+func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
+	if dead or not active or impact_speed < 70.0:
+		return
+	take_damage(impact_speed * 0.12, vehicle)
+
+
 func _die() -> void:
 	dead = true
 	remove_from_group("hostile")
