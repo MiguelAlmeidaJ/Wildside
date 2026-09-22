@@ -180,6 +180,7 @@ func _set_owned_available(value: bool) -> void:
 			remove_from_group("interactable")
 		collision_layer = 0
 		parked_blocker_shape.set_deferred("disabled", true)
+		engine_player.volume_db = -80.0
 		velocity = Vector2.ZERO
 		current_speed = 0.0
 
