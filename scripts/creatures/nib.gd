@@ -6,6 +6,10 @@ enum State { IDLE, WANDER, FLEE, FOLLOW }
 @export var assist_range := 210.0
 @export var assist_damage := 10.0
 @export var assist_cooldown := 1.2
+@export var ability_range := 300.0
+@export var ability_damage := 38.0
+@export var ability_knockback := 360.0
+@export var ability_cooldown := 4.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -19,11 +23,13 @@ var _state_timer := 1.0
 var _attempts := 0
 var _rng := RandomNumberGenerator.new()
 var _assist_cooldown_left := 0.0
+var ability_cooldown_left := 0.0
 
 
 func _ready() -> void:
 	add_to_group("interactable")
 	add_to_group("capturable")
+	add_to_group("wild_nib")
 	_home = global_position
 	_rng.randomize()
 
@@ -31,6 +37,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	_state_timer -= delta
 	_assist_cooldown_left = maxf(0.0, _assist_cooldown_left - delta)
+	ability_cooldown_left = maxf(0.0, ability_cooldown_left - delta)
 	if captured:
 		_follow_player(delta)
 		_assist_player()
@@ -130,6 +137,65 @@ func _assist_player() -> void:
 	var tween := create_tween()
 	tween.tween_property(sprite, "scale", Vector2(1.16, 0.86), 0.08)
 	tween.tween_property(sprite, "scale", Vector2.ONE, 0.14).set_trans(Tween.TRANS_BACK)
+
+
+func use_active_ability(player: CharacterBody2D) -> bool:
+	if not captured:
+		player.call("show_message", "Nib ainda não faz parte do seu grupo.")
+		return false
+	if ability_cooldown_left > 0.0:
+		player.call("show_message", "Impacto do Nib recarrega em %.1fs." % ability_cooldown_left)
+		return false
+
+	var target := _nearest_hostile(ability_range)
+	if not is_instance_valid(target):
+		player.call("show_message", "Nenhum inimigo ao alcance do Impacto.")
+		return false
+
+	ability_cooldown_left = ability_cooldown
+	target.call("take_damage", ability_damage, self)
+	if target.has_method("apply_knockback"):
+		target.call("apply_knockback", global_position.direction_to(target.global_position), ability_knockback)
+	_draw_ability_trail(target.global_position)
+	_play_impact_animation()
+	player.call("show_message", "Nib usou IMPACTO!")
+	return true
+
+
+func _nearest_hostile(max_range: float) -> Node2D:
+	var target: Node2D
+	var nearest_distance := INF
+	for enemy in get_tree().get_nodes_in_group("hostile"):
+		if not enemy is Node2D or not enemy.visible or not enemy.has_method("take_damage"):
+			continue
+		var distance := global_position.distance_to(enemy.global_position)
+		if distance <= max_range and distance < nearest_distance:
+			target = enemy
+			nearest_distance = distance
+	return target
+
+
+func _draw_ability_trail(target_position: Vector2) -> void:
+	var parent := get_parent()
+	if parent == null:
+		return
+	var trail := Line2D.new()
+	trail.width = 12.0
+	trail.default_color = Color(0.65, 0.45, 1.0, 0.9)
+	trail.points = PackedVector2Array([
+		parent.to_local(global_position),
+		parent.to_local(target_position),
+	])
+	parent.add_child(trail)
+	var tween := trail.create_tween()
+	tween.tween_property(trail, "modulate:a", 0.0, 0.22)
+	tween.tween_callback(trail.queue_free)
+
+
+func _play_impact_animation() -> void:
+	var tween := create_tween()
+	tween.tween_property(sprite, "scale", Vector2(1.35, 0.72), 0.07)
+	tween.tween_property(sprite, "scale", Vector2.ONE, 0.18).set_trans(Tween.TRANS_BACK)
 
 
 func _play_capture_pulse() -> void:
