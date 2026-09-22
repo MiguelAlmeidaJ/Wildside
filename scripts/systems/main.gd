@@ -29,4 +29,4 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	hud.set_wild_ability("nib", nib.captured, nib.ability_cooldown_left, nib.ability_cooldown)
 	hud.set_wild_ability("volt", volt.captured, volt.ability_cooldown_left, volt.ability_cooldown)
-	hud.set_energy_boost(player.energy_boost_left)
+	hud.set_energy_boost(float(player.get("energy_boost_left")))
