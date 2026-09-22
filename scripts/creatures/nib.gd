@@ -85,6 +85,15 @@ func attempt_capture(player: CharacterBody2D) -> void:
 		player.call("show_message", "Nib escapou do dispositivo. Tente outra vez!")
 
 
+func restore_captured() -> void:
+	captured = true
+	state = State.FOLLOW
+	if is_in_group("capturable"):
+		remove_from_group("capturable")
+	collision_shape.set_deferred("disabled", true)
+	status_label.text = "NIB  ♥  SEU WILD"
+
+
 func _update_wild_state(_delta: float) -> void:
 	var player_position := GameManager.get_controlled_position()
 	if state != State.FLEE and global_position.distance_to(player_position) < 135.0:

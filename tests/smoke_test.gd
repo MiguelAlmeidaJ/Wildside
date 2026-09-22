@@ -8,9 +8,15 @@ func _initialize() -> void:
 
 
 func _run() -> void:
+	var save_path := ProjectSettings.globalize_path("user://wildside_save.json")
+	if FileAccess.file_exists("user://wildside_save.json"):
+		DirAccess.remove_absolute(save_path)
+
 	var game_manager = root.get_node("GameManager")
 	var wanted = root.get_node("WantedManager")
 	var mission = root.get_node("MissionManager")
+	var side_job = root.get_node("SideJobManager")
+	var save_manager = root.get_node("SaveManager")
 	var packed_main: PackedScene = load("res://main.tscn")
 	_check(packed_main != null, "main.tscn precisa carregar")
 	if packed_main == null:
@@ -19,6 +25,7 @@ func _run() -> void:
 
 	var game := packed_main.instantiate()
 	root.add_child(game)
+	current_scene = game
 	await process_frame
 	await physics_frame
 
@@ -29,6 +36,8 @@ func _run() -> void:
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var bruno = game.get_node("World/Entities/NPCs/Bruno")
 	var jade = game.get_node("World/Entities/NPCs/Jade")
+	var rico = game.get_node("World/Entities/NPCs/Rico")
+	var vera = game.get_node("World/Entities/NPCs/Vera")
 	var davi = game.get_node("World/Entities/NPCs/Davi")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
@@ -36,6 +45,8 @@ func _run() -> void:
 	var murno = game.get_node("World/Entities/Creatures/Murno")
 	var workshop = game.get_node("World/Props/Workshop")
 	var blackout_anomaly = game.get_node("World/Props/BlackoutAnomaly")
+	var market = game.get_node("World/Props/Market24")
+	var safehouse = game.get_node("World/Props/Safehouse")
 	var police = game.get_node("World/Entities/NPCs/Police1")
 	var district_tracker = game.get_node("DistrictTracker")
 	var raider1 = game.get_node("World/Entities/Enemies/Raider1")
@@ -52,11 +63,49 @@ func _run() -> void:
 	_check(get_nodes_in_group("citizens").size() >= 16, "Cidade Viva precisa ter população ampliada")
 	_check(get_nodes_in_group("ambient_traffic").size() >= 6, "Cidade Viva precisa ter trânsito civil")
 	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
+	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(-1400, 400)) == "BAIRRO RESIDENCIAL", "Residencial precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(1400, 400)) == "DISTRITO INDUSTRIAL", "Industrial precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(0, 1400)) == "ZONA SUL", "Zona Sul precisa ser identificada")
 	_check(district_tracker._district_for(Vector2(0, -1300)) == "MATA NORTE", "Mata Norte precisa ser identificada")
+
+	# Vida urbana: Mercado 24H, mochila, consumíveis e corrida de entrega.
+	game_manager.add_money(200)
+	market.interact(player)
+	_check(game_manager.store_open, "Mercado 24H precisa abrir a loja")
+	var money_before_market := game_manager.money
+	game_manager.purchase_store_slot(1)
+	game_manager.purchase_store_slot(2)
+	game_manager.purchase_store_slot(3)
+	_check(game_manager.money == money_before_market - 110, "Comprar os três consumíveis precisa custar $110")
+	_check(game_manager.snacks == 1 and game_manager.medkits == 1 and game_manager.energy_drinks == 1, "Compras precisam entrar na mochila")
+	game_manager.close_store()
+
+	player.health = 20.0
+	player.health_changed.emit(player.health, player.max_health)
+	_check(player.use_snack(), "Lanche precisa ser utilizável")
+	_check(player.health == 40.0, "Lanche precisa curar 20 HP")
+	_check(player.use_medkit(), "Kit médico precisa ser utilizável")
+	_check(player.health == 95.0, "Kit médico precisa curar 55 HP")
+	_check(player.use_energy_drink(), "Energético precisa ser utilizável")
+	_check(player.energy_boost_left > 9.0, "Energético precisa ativar boost de 10s")
+
+	side_job.reset_run()
+	rico.interact(player)
+	_check(side_job.stage == side_job.Stage.PICKUP_PACKAGE, "Rico precisa iniciar a Corrida Noturna")
+	market.interact(player)
+	_check(side_job.stage == side_job.Stage.DELIVER_PACKAGE, "Mercado precisa entregar a encomenda do Rico")
+	var money_before_delivery := game_manager.money
+	vera.interact(player)
+	_check(side_job.stage == side_job.Stage.IDLE, "Vera precisa concluir a entrega")
+	_check(side_job.deliveries_completed == 1, "Entrega concluída precisa entrar no contador")
+	_check(game_manager.money == money_before_delivery + side_job.DELIVERY_REWARD, "Corrida Noturna precisa pagar $120")
+
+	game_manager.reset_run()
+	side_job.reset_run()
+	player.energy_boost_left = 0.0
+	player.heal(player.max_health)
 
 	var player_start: Vector2 = player.global_position
 	Input.action_press("move_up")
@@ -353,6 +402,30 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.9.
+	wanted.clear()
+	player.health = 25.0
+	player.health_changed.emit(player.health, player.max_health)
+	safehouse.interact(player)
+	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
+	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
+	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
+
+	# Save/load deve restaurar estado urbano essencial.
+	game_manager.add_item("medkit", 2)
+	game_manager.add_item("energy", 1)
+	var saved_money := game_manager.money
+	var saved_position: Vector2 = player.global_position
+	safehouse.interact(player)
+	game_manager.money = 0
+	game_manager.medkits = 0
+	game_manager.energy_drinks = 0
+	player.global_position = Vector2.ZERO
+	_check(save_manager.load_game(), "Save 0.9 precisa ser carregável")
+	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
+	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
+	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
+
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
 	var money_before_defeat := game_manager.money
 	player._invulnerability_left = 0.0
@@ -380,6 +453,9 @@ func _run() -> void:
 		_check(wanted.wanted_level == 0, "Policial próximo precisa concluir a prisão")
 		_check(player.global_position == player._spawn_position, "Prisão precisa levar o player ao ponto inicial")
 		_check(game_manager.money == money_before_arrest - mini(75, money_before_arrest), "Prisão precisa cobrar até $75 de fiança")
+
+	if FileAccess.file_exists("user://wildside_save.json"):
+		DirAccess.remove_absolute(save_path)
 
 	game.queue_free()
 	await process_frame

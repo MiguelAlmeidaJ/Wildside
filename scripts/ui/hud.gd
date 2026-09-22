@@ -21,11 +21,23 @@ extends CanvasLayer
 @onready var arrest_panel: PanelContainer = %ArrestPanel
 @onready var arrest_bar: ProgressBar = %ArrestBar
 @onready var arrest_label: Label = %ArrestLabel
+@onready var inventory_panel: PanelContainer = %InventoryPanel
+@onready var medkit_label: Label = %MedkitLabel
+@onready var snack_label: Label = %SnackLabel
+@onready var energy_label: Label = %EnergyLabel
+@onready var store_panel: PanelContainer = %StorePanel
+@onready var store_title: Label = %StoreTitle
+@onready var side_job_panel: PanelContainer = %SideJobPanel
+@onready var side_job_title: Label = %SideJobTitle
+@onready var side_job_description: Label = %SideJobDescription
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
 var _objective_has_target := false
 var _district_tween: Tween
+var _side_objective_text := ""
+var _side_objective_target := Vector2.ZERO
+var _side_objective_has_target := false
 
 
 func _ready() -> void:
@@ -38,12 +50,20 @@ func _ready() -> void:
 	GameManager.capture_devices_changed.connect(_on_capture_devices_changed)
 	GameManager.district_changed.connect(_on_district_changed)
 	GameManager.weapon_changed.connect(_on_weapon_changed)
+	GameManager.inventory_changed.connect(_on_inventory_changed)
+	GameManager.store_state_changed.connect(_on_store_state_changed)
+	SideJobManager.objective_changed.connect(_on_side_job_objective_changed)
+	SideJobManager.job_completed.connect(_on_side_job_completed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_pursuit_state_changed(WantedManager.is_visible_to_police)
 	set_arrest_progress(0.0)
 	_on_money_changed(GameManager.money)
 	_on_capture_devices_changed(GameManager.capture_devices)
 	_on_weapon_changed(GameManager.pistol_unlocked, GameManager.pistol_magazine, GameManager.pistol_reserve)
+	_on_inventory_changed(GameManager.medkits, GameManager.snacks, GameManager.energy_drinks)
+	_on_store_state_changed(false, "")
+	side_job_panel.hide()
+	inventory_panel.hide()
 
 
 func _process(_delta: float) -> void:
@@ -52,6 +72,12 @@ func _process(_delta: float) -> void:
 		mission_description.text = "%s\n[ %d m ]" % [_objective_text, roundi(distance / 4.0)]
 	else:
 		mission_description.text = _objective_text
+
+	if _side_objective_has_target:
+		var side_distance := GameManager.get_controlled_position().distance_to(_side_objective_target)
+		side_job_description.text = "%s\n[ %d m ]" % [_side_objective_text, roundi(side_distance / 4.0)]
+	else:
+		side_job_description.text = _side_objective_text
 
 
 func set_prompt(text: String) -> void:
@@ -63,6 +89,17 @@ func set_health(current: float, maximum: float) -> void:
 	health_bar.max_value = maximum
 	health_bar.value = current
 	health_label.text = "VIDA  %d / %d" % [roundi(current), roundi(maximum)]
+
+
+func toggle_inventory() -> void:
+	inventory_panel.visible = not inventory_panel.visible
+
+
+func set_energy_boost(remaining: float) -> void:
+	if remaining > 0.05:
+		energy_label.text = "J  ENERGÉTICO  x%d  •  BOOST %.1fs" % [GameManager.energy_drinks, remaining]
+	else:
+		energy_label.text = "J  ENERGÉTICO  x%d" % GameManager.energy_drinks
 
 
 func set_arrest_progress(value: float) -> void:
@@ -132,6 +169,39 @@ func _on_money_changed(total: int) -> void:
 
 func _on_capture_devices_changed(total: int) -> void:
 	devices_label.text = "◇  %d" % total
+
+
+func _on_inventory_changed(medkits: int, snacks: int, energy_drinks: int) -> void:
+	medkit_label.text = "H  KIT MÉDICO  x%d  •  +55 HP" % medkits
+	snack_label.text = "K  LANCHE  x%d  •  +20 HP" % snacks
+	if is_instance_valid(GameManager.player) and float(GameManager.player.get("energy_boost_left")) > 0.05:
+		set_energy_boost(float(GameManager.player.get("energy_boost_left")))
+	else:
+		energy_label.text = "J  ENERGÉTICO  x%d  •  10s velocidade" % energy_drinks
+
+
+func _on_store_state_changed(opened: bool, title: String) -> void:
+	store_panel.visible = opened
+	if opened:
+		inventory_panel.hide()
+		store_title.text = title
+
+
+func _on_side_job_objective_changed(title: String, description: String, target: Vector2, has_target: bool) -> void:
+	if title.is_empty():
+		side_job_panel.hide()
+		_side_objective_text = ""
+		_side_objective_has_target = false
+		return
+	side_job_title.text = title
+	_side_objective_text = description
+	_side_objective_target = target
+	_side_objective_has_target = has_target
+	side_job_panel.show()
+
+
+func _on_side_job_completed(reward: int, deliveries: int) -> void:
+	show_message("CORRIDA CONCLUÍDA  •  +$%d  •  entregas: %d" % [reward, deliveries])
 
 
 func _on_weapon_changed(unlocked: bool, magazine: int, reserve: int) -> void:

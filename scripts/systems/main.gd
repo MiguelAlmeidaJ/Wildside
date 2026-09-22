@@ -11,14 +11,22 @@ func _ready() -> void:
 	player.message_requested.connect(hud.show_message)
 	player.health_changed.connect(hud.set_health)
 	player.arrest_progress_changed.connect(hud.set_arrest_progress)
+	player.inventory_toggle_requested.connect(hud.toggle_inventory)
+
 	GameManager.reset_run()
 	WantedManager.reset_run()
 	MissionManager.reset_run()
-	hud.set_health(player.health, player.max_health)
-	hud.show_message("Saia do apartamento e fale com Maya • Esta noite está diferente.")
+	SideJobManager.reset_run()
 
+	hud.set_health(player.health, player.max_health)
+
+	if SaveManager.load_game():
+		hud.show_message("SAVE CARREGADO • você voltou ao último descanso no apartamento.")
+	else:
+		hud.show_message("Saia do apartamento e fale com Maya • Esta noite está diferente.")
 
 
 func _process(_delta: float) -> void:
 	hud.set_wild_ability("nib", nib.captured, nib.ability_cooldown_left, nib.ability_cooldown)
 	hud.set_wild_ability("volt", volt.captured, volt.ability_cooldown_left, volt.ability_cooldown)
+	hud.set_energy_boost(float(player.get("energy_boost_left")))

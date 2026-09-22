@@ -1,8 +1,8 @@
 # Wildside
 
-**Prototype 0.8 · Godot 4.7.x**
+**Prototype 0.9 · Godot 4.7.x**
 
-Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
+Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
 ## Executar
 
@@ -23,6 +23,10 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | Habilidade do Nib — Impacto | `1` |
 | Habilidade do Volt — Sobrecarga | `2` |
 | Capturar Wild | `Q` |
+| Mochila | `Tab` |
+| Kit médico | `H` |
+| Energético | `J` |
+| Lanche | `K` |
 | Freio de mão / derrapagem | `Espaço` |
 
 ## Vertical slice
@@ -57,6 +61,19 @@ Depois da limpeza dos galpões, começa a `ANOMALIA #003 — APAGÃO`:
 8. voltar para Jade e receber `$400`.
 
 Murno é enviado para a reserva depois da captura, mantendo apenas Nib e Volt como companheiros ativos para não poluir a movimentação e as interações.
+
+## Vida urbana
+
+A Prototype 0.9 adiciona um loop fora das anomalias:
+
+- o `Mercado 24H` vende Lanche por `$15`, Kit Médico por `$60` e Energético por `$35`;
+- `Tab` abre a mochila e mostra os consumíveis disponíveis;
+- Lanche recupera 20 HP, Kit Médico recupera 55 HP e Energético aumenta a velocidade por 10 segundos;
+- Rico oferece a atividade repetível `Corrida Noturna`: retirar um pacote no Mercado 24H e entregar para Vera no Residencial por `$120`;
+- o apartamento funciona como safehouse: restaura a vida, define o novo ponto de respawn e salva o progresso;
+- saves da versão 5 restauram dinheiro, inventário, armas, missão principal, atividade secundária, posição, checkpoint e estado de captura de Nib, Volt e Murno;
+- ao iniciar novamente o jogo, um save 0.9 válido é carregado automaticamente. Saves antigos são ignorados para evitar estado quebrado.
+
 
 
 Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e faz o NPC fugir. A versão atual implementa os níveis 0–2; os níveis 3–5 ficam para slices posteriores.
@@ -108,7 +125,11 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Ao alcançar o jogador a pé, a viatura pode parar e desembarcar um policial que persegue e inicia uma barra de prisão.
 - Se a barra de prisão completar, a procura zera, o player volta ao ponto inicial e paga até `$75` de fiança.
 - Trocar para um veículo diferente durante a fuga reduz `15` de heat, com cooldown para impedir abuso.
-- Gerenciadores globais pequenos para jogo, missões, procura, save e áudio.
+- Gerenciadores globais pequenos para jogo, missões, atividade secundária, procura, save e áudio.
+- Inventário funcional de consumíveis com mochila visual e atalhos de uso.
+- Mercado 24H com interface de compra própria.
+- Corrida Noturna como primeira atividade secundária repetível com objetivo separado da missão principal.
+- Apartamento como safehouse funcional para cura, checkpoint, save e retomada automática da sessão.
 
 ## Arquitetura da cena principal
 
@@ -134,7 +155,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, trânsito civil, população ampliada, procura, contato policial, evasão, prisão, regiões, as três anomalias, emboscada da Zona Sul, boss Murno, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
+O teste cobre movimento, corrida, trânsito civil, população ampliada, Mercado 24H, mochila, consumíveis, Corrida Noturna, safehouse/save, procura, contato policial, evasão, prisão, regiões, as três anomalias, boss Murno, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
 
 ## Critério de conclusão
 

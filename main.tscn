@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3]
+[gd_scene load_steps=22 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -19,6 +19,8 @@
 [ext_resource type="PackedScene" path="res://scenes/world/anomaly_node.tscn" id="17_anomaly"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/murno.tscn" id="18_murno"]
 [ext_resource type="Script" path="res://scripts/world/blackout_effect.gd" id="19_blackout_fx"]
+[ext_resource type="PackedScene" path="res://scenes/world/market.tscn" id="20_market"]
+[ext_resource type="PackedScene" path="res://scenes/world/safehouse.tscn" id="21_safehouse"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -105,6 +107,7 @@ position = Vector2(-1240, 585)
 citizen_name = "Vera"
 appearance_variant = 2
 dialogue = "Moro aqui desde antes de chamarem isso de Wildside. A cidade sempre avisa quando algo ruim vem."
+mission_contact = "vera"
 appearance_tint = Color(1, 0.88, 0.82, 1)
 ambient_lines = PackedStringArray("Antes era mais quieto.", "Esses carros passam rápido demais.")
 
@@ -113,6 +116,7 @@ position = Vector2(-560, 1235)
 citizen_name = "Rico"
 appearance_variant = 1
 dialogue = "Na Zona Sul, se as luzes apagam, você guarda o celular e continua andando."
+mission_contact = "rico"
 appearance_tint = Color(0.88, 1, 0.82, 1)
 ambient_lines = PackedStringArray("Hoje a rua está esquisita.", "Ouvi um estouro perto da subestação.")
 
@@ -298,6 +302,12 @@ position = Vector2(1240, 620)
 
 [node name="BlackoutAnomaly" parent="World/Props" instance=ExtResource("17_anomaly")]
 position = Vector2(-520, 1235)
+
+[node name="Market24" parent="World/Props" instance=ExtResource("20_market")]
+position = Vector2(-520, 755)
+
+[node name="Safehouse" parent="World/Props" instance=ExtResource("21_safehouse")]
+position = Vector2(270, 510)
 
 [node name="WildernessZone" parent="World/Props" instance=ExtResource("10_zone")]
 

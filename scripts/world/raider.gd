@@ -46,7 +46,10 @@ func _physics_process(delta: float) -> void:
 			_set_active(true)
 		elif mission_key != "blackout" and activation_stage >= 0 and MissionManager.stage == activation_stage:
 			_set_active(true)
-		elif mission_key != "blackout" and activation_stage < 0 and active_after_anomaly_2 and MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE:
+		elif mission_key != "blackout" and activation_stage < 0 and active_after_anomaly_2 and (
+			MissionManager.stage == MissionManager.Stage.MISSION_2_COMPLETE
+			or MissionManager.stage == MissionManager.Stage.CLEAR_RAIDERS
+		):
 			_set_active(true)
 	if not active:
 		return

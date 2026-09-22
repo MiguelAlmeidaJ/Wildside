@@ -5,6 +5,7 @@ signal message_requested(text: String)
 signal health_changed(current: float, maximum: float)
 signal player_defeated
 signal arrest_progress_changed(value: float)
+signal inventory_toggle_requested
 
 enum MotionState { IDLE, WALK, RUN }
 
@@ -47,6 +48,7 @@ var _shoot_cooldown_left := 0.0
 var _reload_left := 0.0
 var _arrest_progress := 0.0
 var _arrest_source: Node2D
+var energy_boost_left := 0.0
 
 
 func _ready() -> void:
@@ -55,6 +57,7 @@ func _ready() -> void:
 	_spawn_position = global_position
 	health = max_health
 	_ensure_weapon_inputs()
+	_ensure_utility_inputs()
 	player_camera.make_current()
 	health_changed.emit(health, max_health)
 
@@ -63,6 +66,7 @@ func _physics_process(delta: float) -> void:
 	_attack_cooldown_left = maxf(0.0, _attack_cooldown_left - delta)
 	_invulnerability_left = maxf(0.0, _invulnerability_left - delta)
 	_shoot_cooldown_left = maxf(0.0, _shoot_cooldown_left - delta)
+	energy_boost_left = maxf(0.0, energy_boost_left - delta)
 	if _reload_left > 0.0:
 		_reload_left = maxf(0.0, _reload_left - delta)
 		if _reload_left <= 0.0:
@@ -73,9 +77,18 @@ func _physics_process(delta: float) -> void:
 		_update_prompt()
 		return
 
+	if GameManager.store_open:
+		velocity = velocity.move_toward(Vector2.ZERO, deceleration * delta)
+		motion_state = MotionState.IDLE
+		_update_visual_animation(delta)
+		_update_prompt()
+		return
+
 	var direction := Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	var running := Input.is_action_pressed("run") and direction != Vector2.ZERO
 	var target_speed := run_speed if running else walk_speed
+	if energy_boost_left > 0.0:
+		target_speed *= 1.25
 	var target_velocity := direction * target_speed
 	var change_rate := acceleration if direction != Vector2.ZERO else deceleration
 	velocity = velocity.move_toward(target_velocity, change_rate * delta)
@@ -94,7 +107,40 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("interact"):
+	if GameManager.store_open:
+		if event.is_action_pressed("interact") or event.is_action_pressed("ui_cancel"):
+			GameManager.close_store()
+			get_viewport().set_input_as_handled()
+			return
+		if event is InputEventKey and event.pressed and not event.echo:
+			var slot := 0
+			if event.physical_keycode == KEY_1:
+				slot = 1
+			elif event.physical_keycode == KEY_2:
+				slot = 2
+			elif event.physical_keycode == KEY_3:
+				slot = 3
+			if slot > 0:
+				var result := GameManager.purchase_store_slot(slot)
+				if not result.is_empty():
+					show_message(result)
+				get_viewport().set_input_as_handled()
+				return
+		return
+
+	if event.is_action_pressed("inventory"):
+		inventory_toggle_requested.emit()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("item_medkit") and not is_instance_valid(current_vehicle):
+		use_medkit()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("item_energy") and not is_instance_valid(current_vehicle):
+		use_energy_drink()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("item_snack") and not is_instance_valid(current_vehicle):
+		use_snack()
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("interact"):
 		if is_instance_valid(current_vehicle):
 			current_vehicle.call("request_exit")
 		else:
@@ -250,6 +296,22 @@ func _has_nearby_priority_interactable() -> bool:
 	return false
 
 
+func _ensure_utility_inputs() -> void:
+	_ensure_key_action("inventory", KEY_TAB)
+	_ensure_key_action("item_medkit", KEY_H)
+	_ensure_key_action("item_energy", KEY_J)
+	_ensure_key_action("item_snack", KEY_K)
+
+
+func _ensure_key_action(action_name: String, keycode: int) -> void:
+	if not InputMap.has_action(action_name):
+		InputMap.add_action(action_name)
+	if InputMap.action_get_events(action_name).is_empty():
+		var key := InputEventKey.new()
+		key.physical_keycode = keycode
+		InputMap.action_add_event(action_name, key)
+
+
 func _ensure_weapon_inputs() -> void:
 	if not InputMap.has_action("shoot"):
 		InputMap.add_action("shoot")
@@ -264,6 +326,47 @@ func _ensure_weapon_inputs() -> void:
 		var reload_key := InputEventKey.new()
 		reload_key.physical_keycode = KEY_R
 		InputMap.action_add_event("reload", reload_key)
+
+
+func use_medkit() -> bool:
+	if health >= max_health:
+		show_message("Sua vida já está cheia.")
+		return false
+	if not GameManager.consume_item("medkit"):
+		show_message("Você não tem kit médico.")
+		return false
+	heal(55.0)
+	show_message("Kit médico usado • +55 de vida.")
+	return true
+
+
+func use_snack() -> bool:
+	if health >= max_health:
+		show_message("Você não precisa comer agora.")
+		return false
+	if not GameManager.consume_item("snack"):
+		show_message("Você não tem lanche.")
+		return false
+	heal(20.0)
+	show_message("Lanche consumido • +20 de vida.")
+	return true
+
+
+func use_energy_drink() -> bool:
+	if not GameManager.consume_item("energy"):
+		show_message("Você não tem energético.")
+		return false
+	energy_boost_left = 10.0
+	show_message("Energético usado • velocidade aumentada por 10s.")
+	return true
+
+
+func set_respawn_point(value: Vector2) -> void:
+	_spawn_position = value
+
+
+func get_respawn_point() -> Vector2:
+	return _spawn_position
 
 
 func enter_vehicle(vehicle: CharacterBody2D) -> void:
@@ -452,6 +555,10 @@ func _nearby_interactables() -> Array[Node2D]:
 
 
 func _update_prompt() -> void:
+	if GameManager.store_open:
+		_focused_interactable = null
+		_set_prompt("1/2/3  Comprar   E/Esc  Fechar")
+		return
 	if is_instance_valid(current_vehicle):
 		_focused_interactable = null
 		_set_prompt("E  Sair do veículo")

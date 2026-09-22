@@ -103,6 +103,17 @@ func attempt_capture(player: CharacterBody2D) -> void:
 		player.call("show_message", "Volt escapou. O dispositivo não foi consumido.")
 
 
+func restore_captured() -> void:
+	if not available:
+		_activate()
+	captured = true
+	state = State.FOLLOW
+	if is_in_group("capturable"):
+		remove_from_group("capturable")
+	collision_shape.set_deferred("disabled", true)
+	status_label.text = "VOLT  ⚡  SEU WILD"
+
+
 func _update_wild_state(delta: float) -> void:
 	var player_position := GameManager.get_controlled_position()
 	if state != State.FLEE and global_position.distance_to(player_position) < 145.0:
