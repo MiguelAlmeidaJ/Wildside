@@ -17,6 +17,7 @@ func _ready() -> void:
 	WantedManager.reset_run()
 	MissionManager.reset_run()
 	SideJobManager.reset_run()
+	StreetRaceManager.reset_run()
 
 	hud.set_health(player.health, player.max_health)
 
@@ -30,3 +31,14 @@ func _process(_delta: float) -> void:
 	hud.set_wild_ability("nib", nib.captured, nib.ability_cooldown_left, nib.ability_cooldown)
 	hud.set_wild_ability("volt", volt.captured, volt.ability_cooldown_left, volt.ability_cooldown)
 	hud.set_energy_boost(float(player.get("energy_boost_left")))
+
+	var current_vehicle = player.get("current_vehicle")
+	if is_instance_valid(current_vehicle):
+		hud.set_vehicle_status(
+			true,
+			str(current_vehicle.get("vehicle_name")),
+			float(current_vehicle.get("durability")),
+			float(current_vehicle.get("maximum_durability"))
+		)
+	else:
+		hud.set_vehicle_status(false)
