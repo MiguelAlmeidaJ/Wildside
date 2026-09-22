@@ -24,6 +24,7 @@ enum MotionState { IDLE, WALK, RUN }
 @export var pistol_cooldown := 0.28
 @export var pistol_reload_time := 1.1
 @export var pistol_magazine_size := 8
+@export var pistol_noise_radius := 720.0
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -159,6 +160,7 @@ func fire_pistol_at(target_position: Vector2) -> bool:
 	sprite.rotation = direction.angle() + PI / 2.0
 	_shoot_cooldown_left = pistol_cooldown
 	GameManager.consume_pistol_round()
+	GameManager.emit_noise(global_position, pistol_noise_radius, "gunshot", self)
 
 	var hit_target: Node2D
 	var hit_projection := INF

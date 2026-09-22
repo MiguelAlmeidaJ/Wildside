@@ -4,6 +4,7 @@ signal money_changed(total: int)
 signal district_changed(name: String)
 signal capture_devices_changed(total: int)
 signal weapon_changed(unlocked: bool, magazine: int, reserve: int)
+signal noise_emitted(position: Vector2, radius: float, kind: String, source: Node2D)
 
 var player: CharacterBody2D
 var money := 0
@@ -84,6 +85,10 @@ func reload_pistol(magazine_size: int = 8) -> int:
 	pistol_reserve -= moved
 	weapon_changed.emit(pistol_unlocked, pistol_magazine, pistol_reserve)
 	return moved
+
+
+func emit_noise(position: Vector2, radius: float, kind: String, source: Node2D) -> void:
+	noise_emitted.emit(position, radius, kind, source)
 
 
 func set_district(name: String) -> void:

@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.5.1 · Godot 4.7.x**
+**Prototype 0.6 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -75,6 +75,9 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Pistola com tiro hitscan pelo mouse, dano, cooldown, traçante visual, pente, reserva e recarga no `R`.
 - Depois da compra da pistola, a Cobalto vende pacotes de 16 munições por `$40`.
 - Estado da pistola e munição passa a ser persistido no save.
+- Disparos agora emitem ruído no mundo: civis próximos fogem e Raiders investigam a origem mesmo antes de enxergar o player.
+- Civis que escutam um disparo fogem e reportam o crime, gerando procura e ativando a polícia; uma rajada curta usa cooldown para não somar heat em toda bala.
+- Sem testemunha próxima, o tiro ainda atrai inimigos, mas a polícia não recebe informação magicamente.
 - Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
@@ -104,7 +107,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, veículos, procura, regiões, as duas missões, economia, captura de Wilds, prioridade de interação com companheiros, formação, pistola, munição, recarga, combate corpo a corpo, habilidades ativas de Nib e Volt, knockback, stun, dano ao player, Raiders, recompensas e respawn.
+O teste cobre movimento, corrida, veículos, procura, regiões, missões, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído de disparo, fuga de civis, investigação de Raiders, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
 
 ## Critério de conclusão
 

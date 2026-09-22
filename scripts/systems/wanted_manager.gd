@@ -9,9 +9,11 @@ const LEVEL_TWO_HEAT := 60.0
 var heat := 0.0
 var wanted_level := 0
 var _cooldown := 0.0
+var _gunshot_report_cooldown := 0.0
 
 
 func _process(delta: float) -> void:
+	_gunshot_report_cooldown = maxf(0.0, _gunshot_report_cooldown - delta)
 	if heat <= 0.0:
 		return
 	if _cooldown > 0.0:
@@ -33,6 +35,14 @@ func add_heat(amount: float, description: String) -> void:
 	wanted_changed.emit(wanted_level, heat)
 
 
+func report_gunshot(reported: bool) -> bool:
+	if not reported or _gunshot_report_cooldown > 0.0:
+		return false
+	_gunshot_report_cooldown = 2.5
+	add_heat(20.0, "Disparo reportado")
+	return true
+
+
 func reduce_heat(amount: float) -> void:
 	heat = maxf(0.0, heat - amount)
 	_recalculate_level()
@@ -42,6 +52,7 @@ func reduce_heat(amount: float) -> void:
 func clear() -> void:
 	heat = 0.0
 	_cooldown = 0.0
+	_gunshot_report_cooldown = 0.0
 	wanted_level = 0
 	wanted_changed.emit(wanted_level, heat)
 

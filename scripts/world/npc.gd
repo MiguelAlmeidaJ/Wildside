@@ -25,6 +25,7 @@ func _ready() -> void:
 	add_to_group("citizens")
 	_home = global_position
 	_rng.seed = hash(name)
+	GameManager.noise_emitted.connect(_on_noise_emitted)
 
 
 func _physics_process(delta: float) -> void:
@@ -87,7 +88,18 @@ func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
 
 func react_to_danger(source_position: Vector2) -> void:
 	_flee_direction = source_position.direction_to(global_position)
+	if _flee_direction == Vector2.ZERO:
+		_flee_direction = Vector2.RIGHT
 	_set_state(State.FLEE, 4.0)
+
+
+func _on_noise_emitted(position: Vector2, radius: float, kind: String, _source: Node2D) -> void:
+	if kind != "gunshot":
+		return
+	if global_position.distance_to(position) > radius:
+		return
+	react_to_danger(position)
+	WantedManager.report_gunshot(true)
 
 
 func _begin_wander() -> void:
