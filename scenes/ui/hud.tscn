@@ -154,4 +154,22 @@ theme_override_colors/font_color = Color(0.94, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
 text = "Converse com Maya."
 
+[node name="DistrictLabel" type="Label" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 3
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 28.0
+offset_top = -82.0
+offset_right = 520.0
+offset_bottom = -34.0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 3
+theme_override_constants/shadow_offset_y = 3
+theme_override_font_sizes/font_size = 28
+text = "CENTRO DE WILDSIDE"
+
 [connection signal="timeout" from="MessageTimer" to="." method="_on_message_timer_timeout"]
