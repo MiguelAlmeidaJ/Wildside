@@ -50,6 +50,7 @@ func _ready() -> void:
 	GameManager.register_player(self)
 	_spawn_position = global_position
 	health = max_health
+	_ensure_weapon_inputs()
 	player_camera.make_current()
 	health_changed.emit(health, max_health)
 
@@ -129,12 +130,13 @@ func _use_wild_ability(group_name: String, wild_name: String) -> bool:
 	return bool(wild.call("use_active_ability", self))
 
 
-func equip_pistol() -> void:
+func equip_pistol(silent := false) -> void:
 	if not GameManager.pistol_unlocked:
 		return
 	pistol_equipped = true
 	_reload_left = 0.0
-	show_message("Pistola equipada • Clique esquerdo para atirar • R recarrega")
+	if not silent:
+		show_message("Pistola equipada • Clique esquerdo para atirar • R recarrega")
 
 
 func fire_pistol_at(target_position: Vector2) -> bool:
@@ -238,6 +240,22 @@ func _has_nearby_priority_interactable() -> bool:
 		if global_position.distance_to(candidate.global_position) <= 155.0:
 			return true
 	return false
+
+
+func _ensure_weapon_inputs() -> void:
+	if not InputMap.has_action("shoot"):
+		InputMap.add_action("shoot")
+	if InputMap.action_get_events("shoot").is_empty():
+		var mouse := InputEventMouseButton.new()
+		mouse.button_index = MOUSE_BUTTON_LEFT
+		InputMap.action_add_event("shoot", mouse)
+
+	if not InputMap.has_action("reload"):
+		InputMap.add_action("reload")
+	if InputMap.action_get_events("reload").is_empty():
+		var reload_key := InputEventKey.new()
+		reload_key.physical_keycode = KEY_R
+		InputMap.action_add_event("reload", reload_key)
 
 
 func enter_vehicle(vehicle: CharacterBody2D) -> void:
