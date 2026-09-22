@@ -11,12 +11,22 @@ enum Stage {
 	ESCAPE_POLICE,
 	RETURN_TO_MAYA,
 	COMPLETE,
+	TALK_TO_BRUNO,
+	BUY_DEVICE,
+	CAPTURE_VOLT,
+	RETURN_TO_BRUNO,
+	MISSION_2_COMPLETE,
 }
 
 const MAYA_POSITION := Vector2(-282, 92)
 const PHONE_POSITION := Vector2(280, 220)
 const WILDERNESS_POSITION := Vector2(0, -1260)
-const REWARD := 250
+const BRUNO_POSITION := Vector2(1240, 420)
+const WORKSHOP_POSITION := Vector2(1240, 620)
+const VOLT_POSITION := Vector2(1010, -600)
+
+const MISSION_1_REWARD := 250
+const MISSION_2_REWARD := 200
 
 var stage := Stage.TALK_TO_MAYA
 
@@ -38,14 +48,36 @@ func talk_to_maya() -> String:
 			return "Maya: O telefone da praça não para de tocar. Acho que é para você."
 		Stage.RETURN_TO_MAYA:
 			stage = Stage.COMPLETE
-			GameManager.add_money(REWARD)
-			mission_completed.emit(REWARD)
+			GameManager.add_money(MISSION_1_REWARD)
+			mission_completed.emit(MISSION_1_REWARD)
 			_emit_current_objective()
-			return "Maya: Então os Wilds são reais... Pegue isto. Você vai precisar.  +$%d" % REWARD
+			return "Maya: Então os Wilds são reais... Pegue isto. Você vai precisar.  +$%d" % MISSION_1_REWARD
 		Stage.COMPLETE:
-			return "Maya: Cuide do Nib. A cidade ainda não sabe o que está chegando."
+			stage = Stage.TALK_TO_BRUNO
+			_emit_current_objective()
+			return "Maya: Tem um cara chamado Bruno no Distrito Industrial. Se alguém entende esses sinais, é ele."
+		Stage.MISSION_2_COMPLETE:
+			return "Maya: Nib e Volt... isso está ficando maior do que eu imaginava."
 		_:
 			return "Maya: Siga a pista. Eu fico de olho nas ruas."
+
+
+func talk_to_bruno() -> String:
+	match stage:
+		Stage.TALK_TO_BRUNO:
+			stage = Stage.BUY_DEVICE
+			_emit_current_objective()
+			return "Bruno: Vi o que apareceu na mata. Passe na Oficina Cobalto e compre um Dispositivo Wild. Tem outra criatura rondando os galpões."
+		Stage.RETURN_TO_BRUNO:
+			stage = Stage.MISSION_2_COMPLETE
+			GameManager.add_money(MISSION_2_REWARD)
+			mission_completed.emit(MISSION_2_REWARD)
+			_emit_current_objective()
+			return "Bruno: Você trouxe o Volt vivo... bom. Isso vale dinheiro e informação.  +$%d" % MISSION_2_REWARD
+		Stage.MISSION_2_COMPLETE:
+			return "Bruno: Fique com os olhos abertos. O Distrito Industrial não está quieto por acaso."
+		_:
+			return "Bruno: Agora não. Resolva o que já começou."
 
 
 func answer_phone() -> String:
@@ -72,6 +104,20 @@ func capture_nib() -> void:
 		WantedManager.add_heat(20.0, "Sinal anômalo detectado")
 
 
+func bought_capture_device() -> void:
+	if stage != Stage.BUY_DEVICE:
+		return
+	stage = Stage.CAPTURE_VOLT
+	_emit_current_objective()
+
+
+func capture_volt() -> void:
+	if stage != Stage.CAPTURE_VOLT:
+		return
+	stage = Stage.RETURN_TO_BRUNO
+	_emit_current_objective()
+
+
 func _on_wanted_changed(level: int, _heat: float) -> void:
 	if stage == Stage.ESCAPE_POLICE and level == 0:
 		stage = Stage.RETURN_TO_MAYA
@@ -93,5 +139,14 @@ func _emit_current_objective() -> void:
 		Stage.RETURN_TO_MAYA:
 			objective_changed.emit("ANOMALIA #001", "Volte para Maya.", MAYA_POSITION, true)
 		Stage.COMPLETE:
-			objective_changed.emit("MISSÃO CONCLUÍDA", "Nib agora faz parte do seu grupo.", Vector2.ZERO, false)
-
+			objective_changed.emit("MISSÃO CONCLUÍDA", "Nib agora faz parte do seu grupo. Fale com Maya para continuar.", Vector2.ZERO, false)
+		Stage.TALK_TO_BRUNO:
+			objective_changed.emit("ANOMALIA #002", "Procure Bruno no Distrito Industrial.", BRUNO_POSITION, true)
+		Stage.BUY_DEVICE:
+			objective_changed.emit("OFICINA COBALTO", "Compre um Dispositivo Wild por $100.", WORKSHOP_POSITION, true)
+		Stage.CAPTURE_VOLT:
+			objective_changed.emit("ANOMALIA #002", "Encontre e capture Volt nos galpões.", VOLT_POSITION, true)
+		Stage.RETURN_TO_BRUNO:
+			objective_changed.emit("ANOMALIA #002", "Volte para Bruno.", BRUNO_POSITION, true)
+		Stage.MISSION_2_COMPLETE:
+			objective_changed.emit("MISSÃO CONCLUÍDA", "Volt agora faz parte do seu grupo.", Vector2.ZERO, false)

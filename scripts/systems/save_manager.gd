@@ -8,8 +8,9 @@ func save_game() -> bool:
 	if file == null:
 		return false
 	file.store_string(JSON.stringify({
-		"version": 1,
+		"version": 2,
 		"money": GameManager.money,
+		"capture_devices": GameManager.capture_devices,
 		"mission_stage": MissionManager.stage,
 	}))
 	return true
@@ -23,8 +24,10 @@ func load_game() -> bool:
 	if not data is Dictionary:
 		return false
 	GameManager.money = int(data.get("money", 0))
+	GameManager.capture_devices = int(data.get("capture_devices", 0))
 	MissionManager.stage = int(data.get("mission_stage", MissionManager.Stage.TALK_TO_MAYA))
 	GameManager.money_changed.emit(GameManager.money)
+	GameManager.capture_devices_changed.emit(GameManager.capture_devices)
 	MissionManager.call("_emit_current_objective")
 	return true
 

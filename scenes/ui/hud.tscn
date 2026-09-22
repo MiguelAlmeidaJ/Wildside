@@ -42,7 +42,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.1\nWASD  Mover   SHIFT  Correr   E  Interagir\nQ  Capturar   ESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.2\nWASD  Mover   SHIFT  Correr   E  Interagir\nQ  Capturar   ESPAÇO  Freio de mão"
 
 [node name="PromptLabel" type="Label" parent="."]
 unique_name_in_owner = true
@@ -127,15 +127,34 @@ theme_override_font_sizes/font_size = 22
 text = "$ 0"
 horizontal_alignment = 2
 
+
+[node name="DevicesLabel" type="Label" parent="."]
+unique_name_in_owner = true
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -300.0
+offset_top = 96.0
+offset_right = -24.0
+offset_bottom = 126.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.35, 0.95, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.85)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 20
+text = "◇  0"
+horizontal_alignment = 2
+
 [node name="MissionPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -390.0
-offset_top = 112.0
+offset_top = 136.0
 offset_right = -24.0
-offset_bottom = 217.0
+offset_bottom = 241.0
 grow_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBox_info")
 

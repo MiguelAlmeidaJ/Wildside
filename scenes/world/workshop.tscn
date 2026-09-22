@@ -1,0 +1,42 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/workshop.gd" id="1_workshop"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_workshop"]
+size = Vector2(86, 74)
+
+[node name="Workshop" type="StaticBody2D"]
+z_index = 5
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_workshop")
+
+[node name="Body" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(-43, -37, 43, -37, 43, 37, -43, 37)
+color = Color(0.12, 0.16, 0.20, 1)
+
+[node name="Counter" type="Polygon2D" parent="."]
+position = Vector2(0, 14)
+polygon = PackedVector2Array(-34, -10, 34, -10, 34, 10, -34, 10)
+color = Color(0.22, 0.28, 0.33, 1)
+
+[node name="Sign" type="Label" parent="."]
+offset_left = -58.0
+offset_top = -66.0
+offset_right = 58.0
+offset_bottom = -40.0
+theme_override_colors/font_color = Color(0.27, 0.92, 0.82, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 16
+text = "COBALTO"
+horizontal_alignment = 1
+
+[node name="Device" type="Polygon2D" parent="."]
+position = Vector2(0, -8)
+polygon = PackedVector2Array(0, -13, 13, 0, 0, 13, -13, 0)
+color = Color(0.35, 0.95, 0.82, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape_workshop")

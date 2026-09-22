@@ -6,6 +6,7 @@ extends CanvasLayer
 @onready var message_timer: Timer = $MessageTimer
 @onready var wanted_label: Label = %WantedLabel
 @onready var money_label: Label = %MoneyLabel
+@onready var devices_label: Label = %DevicesLabel
 @onready var mission_panel: PanelContainer = %MissionPanel
 @onready var mission_title: Label = %MissionTitle
 @onready var mission_description: Label = %MissionDescription
@@ -23,9 +24,11 @@ func _ready() -> void:
 	WantedManager.wanted_changed.connect(_on_wanted_changed)
 	WantedManager.crime_committed.connect(_on_crime_committed)
 	GameManager.money_changed.connect(_on_money_changed)
+	GameManager.capture_devices_changed.connect(_on_capture_devices_changed)
 	GameManager.district_changed.connect(_on_district_changed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_money_changed(GameManager.money)
+	_on_capture_devices_changed(GameManager.capture_devices)
 
 
 func _process(_delta: float) -> void:
@@ -62,6 +65,10 @@ func _on_wanted_changed(level: int, heat: float) -> void:
 
 func _on_money_changed(total: int) -> void:
 	money_label.text = "$ %d" % total
+
+
+func _on_capture_devices_changed(total: int) -> void:
+	devices_label.text = "◇  %d" % total
 
 
 func _on_crime_committed(description: String, heat_added: float) -> void:

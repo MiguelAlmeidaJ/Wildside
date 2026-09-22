@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -12,6 +12,8 @@
 [ext_resource type="PackedScene" path="res://scenes/world/wilderness_zone.tscn" id="10_zone"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="11_hud"]
 [ext_resource type="Script" path="res://scripts/world/district_tracker.gd" id="12_district"]
+[ext_resource type="PackedScene" path="res://scenes/world/workshop.tscn" id="13_workshop"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/volt.tscn" id="14_volt"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -47,9 +49,11 @@ citizen_name = "Luma"
 dialogue = "Aqui no residencial todo mundo sabe da vida de todo mundo. Até demais."
 
 [node name="Bruno" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(1460, 460)
+position = Vector2(1240, 420)
 citizen_name = "Bruno"
 dialogue = "As fábricas fecharam cedo. Dizem que alguma coisa apareceu perto dos galpões."
+mission_contact = "bruno"
+can_wander = false
 
 [node name="Nando" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(-540, 1460)
@@ -88,10 +92,16 @@ rotation = -1.5708
 [node name="Nib" parent="World/Entities/Creatures" instance=ExtResource("8_nib")]
 position = Vector2(0, -1320)
 
+[node name="Volt" parent="World/Entities/Creatures" instance=ExtResource("14_volt")]
+position = Vector2(1010, -600)
+
 [node name="Props" type="Node2D" parent="World"]
 
 [node name="Payphone" parent="World/Props" instance=ExtResource("7_phone")]
 position = Vector2(280, 220)
+
+[node name="Workshop" parent="World/Props" instance=ExtResource("13_workshop")]
+position = Vector2(1240, 620)
 
 [node name="WildernessZone" parent="World/Props" instance=ExtResource("10_zone")]
 

@@ -26,8 +26,11 @@ func _run() -> void:
 	var car = game.get_node("World/Entities/Vehicles/Car")
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
 	var maya = game.get_node("World/Entities/NPCs/Maya")
+	var bruno = game.get_node("World/Entities/NPCs/Bruno")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
+	var volt = game.get_node("World/Entities/Creatures/Volt")
+	var workshop = game.get_node("World/Props/Workshop")
 	var police = game.get_node("World/Entities/NPCs/Police1")
 	var district_tracker = game.get_node("DistrictTracker")
 	_check(player != null, "Player precisa existir")
@@ -112,7 +115,30 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.RETURN_TO_MAYA, "Perder a polícia precisa liberar o retorno")
 	maya.interact(player)
 	_check(mission.stage == mission.Stage.COMPLETE, "Maya precisa concluir a missão")
-	_check(game_manager.money == 250, "Missão precisa pagar $250")
+	_check(game_manager.money == 250, "Missão 1 precisa pagar $250")
+
+	# ANOMALIA #002: Maya -> Bruno -> Oficina Cobalto -> Volt -> Bruno.
+	maya.interact(player)
+	_check(mission.stage == mission.Stage.TALK_TO_BRUNO, "Maya precisa liberar a missão 2")
+	bruno.interact(player)
+	_check(mission.stage == mission.Stage.BUY_DEVICE, "Bruno precisa indicar a Oficina Cobalto")
+	workshop.interact(player)
+	_check(mission.stage == mission.Stage.CAPTURE_VOLT, "Comprar o dispositivo precisa liberar a captura de Volt")
+	_check(game_manager.money == 150, "Dispositivo Wild precisa custar $100")
+	_check(game_manager.capture_devices == 1, "Compra precisa adicionar um Dispositivo Wild")
+
+	await process_frame
+	await physics_frame
+	_check(volt.available, "Volt precisa aparecer quando a missão liberar sua captura")
+	volt.capture_chance = 1.0
+	volt.attempt_capture(player)
+	await physics_frame
+	_check(volt.captured, "Volt precisa ser capturável")
+	_check(game_manager.capture_devices == 0, "Captura de Volt precisa consumir um dispositivo")
+	_check(mission.stage == mission.Stage.RETURN_TO_BRUNO, "Captura de Volt precisa liberar o retorno ao Bruno")
+	bruno.interact(player)
+	_check(mission.stage == mission.Stage.MISSION_2_COMPLETE, "Bruno precisa concluir a missão 2")
+	_check(game_manager.money == 350, "Missão 2 precisa pagar $200 após a compra do dispositivo")
 
 	game.queue_free()
 	await process_frame
