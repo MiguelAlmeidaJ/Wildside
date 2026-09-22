@@ -126,6 +126,7 @@ func _unhandled_input(event: InputEvent) -> void:
 					show_message(result)
 				get_viewport().set_input_as_handled()
 				return
+		return
 
 	if event.is_action_pressed("inventory"):
 		inventory_toggle_requested.emit()
