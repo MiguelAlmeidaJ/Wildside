@@ -12,6 +12,7 @@ collision_mask = 0
 script = ExtResource("1_object")
 action_text = "Usar o telefone"
 response_text = "Sem sinal. Alguém riscou um símbolo estranho no aparelho."
+mission_phone = true
 
 [node name="Body" type="Polygon2D" parent="."]
 polygon = PackedVector2Array(-19, -29, 19, -29, 19, 29, -19, 29)
@@ -29,4 +30,3 @@ default_color = Color(0.12, 0.16, 0.22, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape_phone")
-

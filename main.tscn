@@ -1,35 +1,71 @@
-[gd_scene format=3 uid="uid://b2tfvl460eh3r"]
+[gd_scene load_steps=12 format=3]
 
-[ext_resource type="Script" uid="uid://cg5fkj5ebsbs5" path="res://scripts/systems/main.gd" id="1_main"]
+[ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
-[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
-[ext_resource type="PackedScene" path="res://scenes/vehicles/car.tscn" id="4_car"]
-[ext_resource type="PackedScene" path="res://scenes/world/npc.tscn" id="5_npc"]
-[ext_resource type="PackedScene" path="res://scenes/world/payphone.tscn" id="6_phone"]
-[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="7_hud"]
+[ext_resource type="PackedScene" path="res://scenes/world/wilderness.tscn" id="3_wilderness"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/car.tscn" id="5_car"]
+[ext_resource type="PackedScene" path="res://scenes/world/npc.tscn" id="6_npc"]
+[ext_resource type="PackedScene" path="res://scenes/world/payphone.tscn" id="7_phone"]
+[ext_resource type="PackedScene" path="res://scenes/creatures/nib.tscn" id="8_nib"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/police_car.tscn" id="9_police"]
+[ext_resource type="PackedScene" path="res://scenes/world/wilderness_zone.tscn" id="10_zone"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="11_hud"]
 
-[node name="Main" type="Node2D" unique_id=1604852437]
+[node name="Game" type="Node2D"]
 script = ExtResource("1_main")
 
-[node name="City" parent="." unique_id=1724106614 instance=ExtResource("2_city")]
+[node name="World" type="Node2D" parent="."]
 
-[node name="Car" parent="." unique_id=1565640798 instance=ExtResource("4_car")]
+[node name="City" parent="World" instance=ExtResource("2_city")]
+
+[node name="Wilderness" parent="World" instance=ExtResource("3_wilderness")]
+
+[node name="Entities" type="Node2D" parent="World"]
+
+[node name="NPCs" type="Node2D" parent="World/Entities"]
+
+[node name="Maya" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-282, 92)
+citizen_name = "Maya"
+dialogue = "O telefone da praça não para de tocar. Acho que é para você."
+mission_giver = true
+can_wander = false
+
+[node name="Davi" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(285, -95)
+citizen_name = "Davi"
+dialogue = "Tem viaturas demais rondando o centro. Eu evitaria confusão."
+
+[node name="Police1" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
+position = Vector2(950, 0)
+
+[node name="Police2" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
+position = Vector2(-950, 0)
+required_level = 2
+chase_speed = 345.0
+
+[node name="Vehicles" type="Node2D" parent="World/Entities"]
+
+[node name="Car" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(-90, 65)
 rotation = 0.18
 
-[node name="Maya" parent="." unique_id=924809125 instance=ExtResource("5_npc")]
-position = Vector2(-282, 92)
-dialogue = "Ouvi barulhos estranhos perto da mata. Por enquanto, teste aquele carro vermelho."
+[node name="Creatures" type="Node2D" parent="World/Entities"]
 
-[node name="Davi" parent="." unique_id=1244480569 instance=ExtResource("5_npc")]
-position = Vector2(285, -95)
-citizen_name = "Davi"
-dialogue = "Quando a polícia chegar, estas avenidas vão virar rotas de fuga."
+[node name="Nib" parent="World/Entities/Creatures" instance=ExtResource("8_nib")]
+position = Vector2(0, -1320)
 
-[node name="Payphone" parent="." unique_id=112833175 instance=ExtResource("6_phone")]
+[node name="Props" type="Node2D" parent="World"]
+
+[node name="Payphone" parent="World/Props" instance=ExtResource("7_phone")]
 position = Vector2(280, 220)
 
-[node name="Player" parent="." unique_id=1986058963 instance=ExtResource("3_player")]
-position = Vector2(75, 503)
+[node name="WildernessZone" parent="World/Props" instance=ExtResource("10_zone")]
 
-[node name="HUD" parent="." unique_id=915772023 instance=ExtResource("7_hud")]
+[node name="Player" parent="." instance=ExtResource("4_player")]
+position = Vector2(75, 510)
+
+[node name="UI" type="Node" parent="."]
+
+[node name="HUD" parent="UI" instance=ExtResource("11_hud")]

@@ -122,10 +122,10 @@ func _create_obstacle(at: Vector2, color: Color) -> void:
 
 
 func _create_world_boundaries() -> void:
-	_create_boundary(Vector2(0, -930), Vector2(2460, 60))
+	_create_boundary(Vector2(0, -1630), Vector2(2460, 60))
 	_create_boundary(Vector2(0, 930), Vector2(2460, 60))
-	_create_boundary(Vector2(-1230, 0), Vector2(60, 1860))
-	_create_boundary(Vector2(1230, 0), Vector2(60, 1860))
+	_create_boundary(Vector2(-1230, -350), Vector2(60, 2560))
+	_create_boundary(Vector2(1230, -350), Vector2(60, 2560))
 
 
 func _create_boundary(at: Vector2, size: Vector2) -> void:
@@ -139,4 +139,3 @@ func _create_boundary(at: Vector2, size: Vector2) -> void:
 	collision.shape = rectangle
 	body.add_child(collision)
 	add_child(body)
-

@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="Texture2D" path="res://assets/characters/player.svg" id="2_sprite"]
@@ -6,6 +6,9 @@
 [sub_resource type="CapsuleShape2D" id="CapsuleShape_player"]
 radius = 16.0
 height = 38.0
+
+[sub_resource type="CircleShape2D" id="CircleShape_interaction"]
+radius = 112.0
 
 [node name="Player" type="CharacterBody2D"]
 z_index = 10
@@ -25,7 +28,14 @@ shape = SubResource("CapsuleShape_player")
 position_smoothing_enabled = true
 position_smoothing_speed = 7.0
 limit_left = -1200
-limit_top = -900
+limit_top = -1600
 limit_right = 1200
 limit_bottom = 900
 
+[node name="InteractionArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 29
+monitorable = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea"]
+shape = SubResource("CircleShape_interaction")
