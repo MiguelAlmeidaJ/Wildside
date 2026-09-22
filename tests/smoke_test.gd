@@ -162,6 +162,10 @@ func _run() -> void:
 	personal_car.request_exit()
 	await physics_frame
 	_check(player.current_vehicle == null, "Player precisa conseguir sair do veículo próprio após a corrida")
+	var money_before_recovery := game_manager.money
+	garage.interact(player)
+	_check(personal_car.global_position == garage.global_position + Vector2(-230, 0), "Garagem precisa recuperar o carro próprio distante")
+	_check(game_manager.money == money_before_recovery - 50, "Recuperação do Cobalto R precisa custar $50")
 
 	game_manager.reset_run()
 	side_job.reset_run()
