@@ -8,8 +8,14 @@ enum State { IDLE, WANDER, TALK, FLEE }
 @export var mission_contact := ""
 @export var can_wander := true
 @export var wander_radius := 85.0
+@export var appearance_tint := Color.WHITE
+@export var ambient_chatter := true
+@export var ambient_lines := PackedStringArray()
+@export var ambient_interval_min := 7.0
+@export var ambient_interval_max := 14.0
 
 @onready var sprite: Sprite2D = $Sprite2D
+@onready var ambient_label: Label = $AmbientLabel
 
 var state := State.IDLE
 var _home := Vector2.ZERO
@@ -17,6 +23,8 @@ var _target := Vector2.ZERO
 var _state_timer := 1.0
 var _flee_direction := Vector2.ZERO
 var _crime_cooldown := 0.0
+var _ambient_timer := 4.0
+var _ambient_visible_left := 0.0
 var _rng := RandomNumberGenerator.new()
 
 
@@ -25,19 +33,24 @@ func _ready() -> void:
 	add_to_group("citizens")
 	_home = global_position
 	_rng.seed = hash(name)
+	sprite.modulate = appearance_tint
+	ambient_label.hide()
+	_ambient_timer = _rng.randf_range(2.5, 7.5)
 	GameManager.noise_emitted.connect(_on_noise_emitted)
 
 
 func _physics_process(delta: float) -> void:
 	_state_timer -= delta
 	_crime_cooldown = maxf(0.0, _crime_cooldown - delta)
+	_update_ambient_chatter(delta)
+
 	match state:
 		State.IDLE:
 			velocity = velocity.move_toward(Vector2.ZERO, 500.0 * delta)
 			if can_wander and _state_timer <= 0.0:
 				_begin_wander()
 		State.WANDER:
-			var direction := global_position.direction_to(_target)
+			var direction: Vector2 = global_position.direction_to(_target)
 			velocity = direction * 62.0
 			if global_position.distance_to(_target) < 10.0 or _state_timer <= 0.0:
 				_set_state(State.IDLE, _rng.randf_range(1.5, 3.5))
@@ -67,16 +80,22 @@ func get_interaction_text(_player: CharacterBody2D) -> String:
 
 
 func interact(player: CharacterBody2D) -> void:
+	_hide_ambient()
 	_set_state(State.TALK, 2.5)
 	var text := dialogue
-	if mission_contact == "bruno":
-		text = MissionManager.talk_to_bruno()
-	elif mission_giver:
-		text = MissionManager.talk_to_maya()
+	match mission_contact:
+		"bruno":
+			text = MissionManager.talk_to_bruno()
+		"jade":
+			text = MissionManager.talk_to_jade()
+		_:
+			if mission_giver:
+				text = MissionManager.talk_to_maya()
 	player.call("show_message", text if text.begins_with(citizen_name + ":") else citizen_name + ": “" + text + "”")
 
 
 func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
+	_hide_ambient()
 	_flee_direction = vehicle.global_position.direction_to(global_position)
 	if _flee_direction == Vector2.ZERO:
 		_flee_direction = Vector2.RIGHT
@@ -87,6 +106,7 @@ func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
 
 
 func react_to_danger(source_position: Vector2) -> void:
+	_hide_ambient()
 	_flee_direction = source_position.direction_to(global_position)
 	if _flee_direction == Vector2.ZERO:
 		_flee_direction = Vector2.RIGHT
@@ -111,3 +131,27 @@ func _set_state(next_state: State, duration: float) -> void:
 	state = next_state
 	_state_timer = duration
 
+
+func _update_ambient_chatter(delta: float) -> void:
+	if not ambient_chatter or ambient_lines.is_empty() or state == State.FLEE or state == State.TALK:
+		_hide_ambient()
+		return
+
+	if _ambient_visible_left > 0.0:
+		_ambient_visible_left = maxf(0.0, _ambient_visible_left - delta)
+		if _ambient_visible_left <= 0.0:
+			ambient_label.hide()
+			_ambient_timer = _rng.randf_range(ambient_interval_min, ambient_interval_max)
+		return
+
+	_ambient_timer -= delta
+	if _ambient_timer <= 0.0 and state == State.IDLE:
+		var line_index := _rng.randi_range(0, ambient_lines.size() - 1)
+		ambient_label.text = ambient_lines[line_index]
+		ambient_label.show()
+		_ambient_visible_left = 2.2
+
+
+func _hide_ambient() -> void:
+	_ambient_visible_left = 0.0
+	ambient_label.hide()
