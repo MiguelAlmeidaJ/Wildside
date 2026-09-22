@@ -113,7 +113,7 @@ func _update_wild_state(_delta: float) -> void:
 func _follow_player(delta: float) -> void:
 	var target := GameManager.get_controlled_position() + Vector2(55, 45)
 	if is_instance_valid(GameManager.player) and GameManager.player.has_method("get_companion_anchor"):
-		target = GameManager.player.call("get_companion_anchor", 0)
+		target = GameManager.player.call("get_companion_anchor", 0) as Vector2
 	var distance := global_position.distance_to(target)
 	if distance > 650.0:
 		global_position = target
@@ -182,15 +182,17 @@ func _nearest_hostile(max_range: float) -> Node2D:
 
 
 func _draw_ability_trail(target_position: Vector2) -> void:
-	var parent := get_parent()
+	var parent: Node2D = get_parent() as Node2D
 	if parent == null:
 		return
 	var trail := Line2D.new()
 	trail.width = 12.0
 	trail.default_color = Color(0.65, 0.45, 1.0, 0.9)
+	var trail_start: Vector2 = parent.to_local(global_position)
+	var trail_end: Vector2 = parent.to_local(target_position)
 	trail.points = PackedVector2Array([
-		parent.to_local(global_position),
-		parent.to_local(target_position),
+		trail_start,
+		trail_end,
 	])
 	parent.add_child(trail)
 	var tween := trail.create_tween()

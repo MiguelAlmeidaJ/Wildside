@@ -202,15 +202,17 @@ func _complete_reload() -> void:
 
 
 func _draw_tracer(end_position: Vector2) -> void:
-	var parent := get_parent()
+	var parent: Node2D = get_parent() as Node2D
 	if parent == null:
 		return
 	var tracer := Line2D.new()
 	tracer.width = 3.0
 	tracer.default_color = Color(1.0, 0.86, 0.48, 0.95)
+	var tracer_start: Vector2 = parent.to_local(global_position)
+	var tracer_end: Vector2 = parent.to_local(end_position)
 	tracer.points = PackedVector2Array([
-		parent.to_local(global_position),
-		parent.to_local(end_position),
+		tracer_start,
+		tracer_end,
 	])
 	parent.add_child(tracer)
 	var tween := tracer.create_tween()
