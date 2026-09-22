@@ -67,8 +67,6 @@ func grant_pistol(magazine_size: int = 8, initial_reserve: int = 24) -> bool:
 	pistol_magazine = magazine_size
 	pistol_reserve = maxi(0, initial_reserve)
 	weapon_changed.emit(pistol_unlocked, pistol_magazine, pistol_reserve)
-	inventory_changed.emit(medkits, snacks, energy_drinks)
-	store_state_changed.emit(false, "")
 	return true
 
 
@@ -198,4 +196,6 @@ func reset_run() -> void:
 	money_changed.emit(money)
 	capture_devices_changed.emit(capture_devices)
 	weapon_changed.emit(pistol_unlocked, pistol_magazine, pistol_reserve)
+	inventory_changed.emit(medkits, snacks, energy_drinks)
+	store_state_changed.emit(false, "")
 
