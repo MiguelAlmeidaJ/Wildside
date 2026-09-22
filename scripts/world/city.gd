@@ -196,7 +196,7 @@ func _create_building(rect: Rect2, color: Color, index: int) -> void:
 
 
 func _awning_color(index: int) -> Color:
-	var colors := [
+	var colors: Array[Color] = [
 		Color("#4dd0c0"), Color("#e2b45f"), Color("#df6f7b"),
 		Color("#6ba6e8"), Color("#9f7aea"), Color("#78b86b")
 	]
