@@ -149,4 +149,4 @@ func _emit_current_objective() -> void:
 		Stage.RETURN_TO_BRUNO:
 			objective_changed.emit("ANOMALIA #002", "Volte para Bruno.", BRUNO_POSITION, true)
 		Stage.MISSION_2_COMPLETE:
-			objective_changed.emit("DISTRITO EM ALERTA", "Raiders ocuparam os galpões. F para atacar; seus Wilds ajudam no combate.", Vector2.ZERO, false)
+			objective_changed.emit("DISTRITO EM ALERTA", "Raiders nos galpões • F atacar • 1 Impacto do Nib • 2 Sobrecarga do Volt.", Vector2.ZERO, false)
