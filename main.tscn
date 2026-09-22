@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://b2tfvl460eh3r"]
+
+[ext_resource type="Script" uid="uid://cg5fkj5ebsbs5" path="res://scripts/systems/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
+[ext_resource type="PackedScene" path="res://scenes/player/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/car.tscn" id="4_car"]
+[ext_resource type="PackedScene" path="res://scenes/world/npc.tscn" id="5_npc"]
+[ext_resource type="PackedScene" path="res://scenes/world/payphone.tscn" id="6_phone"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="7_hud"]
+
+[node name="Main" type="Node2D" unique_id=1604852437]
+script = ExtResource("1_main")
+
+[node name="City" parent="." unique_id=1724106614 instance=ExtResource("2_city")]
+
+[node name="Car" parent="." unique_id=1565640798 instance=ExtResource("4_car")]
+position = Vector2(-90, 65)
+rotation = 0.18
+
+[node name="Maya" parent="." unique_id=924809125 instance=ExtResource("5_npc")]
+position = Vector2(-282, 92)
+dialogue = "Ouvi barulhos estranhos perto da mata. Por enquanto, teste aquele carro vermelho."
+
+[node name="Davi" parent="." unique_id=1244480569 instance=ExtResource("5_npc")]
+position = Vector2(285, -95)
+citizen_name = "Davi"
+dialogue = "Quando a polícia chegar, estas avenidas vão virar rotas de fuga."
+
+[node name="Payphone" parent="." unique_id=112833175 instance=ExtResource("6_phone")]
+position = Vector2(280, 220)
+
+[node name="Player" parent="." unique_id=1986058963 instance=ExtResource("3_player")]
+position = Vector2(75, 503)
+
+[node name="HUD" parent="." unique_id=915772023 instance=ExtResource("7_hud")]

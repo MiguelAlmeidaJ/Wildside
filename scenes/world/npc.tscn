@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/npc.gd" id="1_npc"]
+[ext_resource type="Texture2D" path="res://assets/characters/citizen.svg" id="2_texture"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape_npc"]
+radius = 15.0
+height = 36.0
+
+[node name="Citizen" type="CharacterBody2D"]
+z_index = 7
+collision_layer = 8
+collision_mask = 1
+script = ExtResource("1_npc")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -6)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 4)
+shape = SubResource("CapsuleShape_npc")
+
