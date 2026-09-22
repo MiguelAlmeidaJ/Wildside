@@ -196,7 +196,7 @@ func _run() -> void:
 
 	var heat_after_first_shot: float = wanted.heat
 	player._shoot_cooldown_left = 0.0
-	player.fire_pistol_at(raider1.global_position)
+	player.fire_pistol_at(player.global_position + Vector2.LEFT * 300.0)
 	_check(is_equal_approx(wanted.heat, heat_after_first_shot), "Rajada curta não deve acumular heat a cada bala")
 	wanted.clear()
 
