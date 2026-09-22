@@ -21,3 +21,17 @@ texture = ExtResource("2_texture")
 position = Vector2(0, 4)
 shape = SubResource("CapsuleShape_npc")
 
+
+[node name="AmbientLabel" type="Label" parent="."]
+visible = false
+offset_left = -92.0
+offset_top = -82.0
+offset_right = 92.0
+offset_bottom = -55.0
+theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 13
+text = "Que noite estranha..."
+horizontal_alignment = 1
