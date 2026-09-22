@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3]
+[gd_scene load_steps=20 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -18,6 +18,7 @@
 [ext_resource type="PackedScene" path="res://scenes/vehicles/traffic_car.tscn" id="16_traffic"]
 [ext_resource type="PackedScene" path="res://scenes/world/anomaly_node.tscn" id="17_anomaly"]
 [ext_resource type="PackedScene" path="res://scenes/creatures/murno.tscn" id="18_murno"]
+[ext_resource type="Script" path="res://scripts/world/blackout_effect.gd" id="19_blackout_fx"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -26,6 +27,9 @@ script = ExtResource("1_main")
 script = ExtResource("12_district")
 
 [node name="World" type="Node2D" parent="."]
+
+[node name="BlackoutEffect" type="CanvasModulate" parent="World"]
+script = ExtResource("19_blackout_fx")
 
 [node name="City" parent="World" instance=ExtResource("2_city")]
 
