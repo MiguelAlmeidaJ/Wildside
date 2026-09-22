@@ -5,6 +5,7 @@ enum State { IDLE, WANDER, TALK, FLEE }
 @export var citizen_name := "Maya"
 @export_multiline var dialogue := "A cidade está estranha hoje."
 @export var mission_giver := false
+@export var mission_contact := ""
 @export var can_wander := true
 @export var wander_radius := 85.0
 
@@ -61,7 +62,9 @@ func get_interaction_text(_player: CharacterBody2D) -> String:
 func interact(player: CharacterBody2D) -> void:
 	_set_state(State.TALK, 2.5)
 	var text := dialogue
-	if mission_giver:
+	if mission_contact == "bruno":
+		text = MissionManager.talk_to_bruno()
+	elif mission_giver:
 		text = MissionManager.talk_to_maya()
 	player.call("show_message", text if text.begins_with(citizen_name + ":") else citizen_name + ": “" + text + "”")
 
