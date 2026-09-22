@@ -150,7 +150,8 @@ func _run() -> void:
 	_check(game_manager.capture_devices == 0, "Captura de Volt precisa consumir um dispositivo")
 	_check(mission.stage == mission.Stage.RETURN_TO_BRUNO, "Captura de Volt precisa liberar o retorno ao Bruno")
 	bruno.interact(player)
-	_check(mission.stage == mission.Stage.MISSION_2_COMPLETE, "Bruno precisa concluir a missão 2")
+	_check(mission.stage == mission.Stage.CLEAR_RAIDERS, "Bruno precisa liberar a limpeza dos galpões")
+	_check(mission.raiders_defeated == 0, "Missão dos Raiders precisa começar em 0/2")
 	_check(game_manager.money == 350, "Missão 2 precisa pagar $200 após a compra do dispositivo")
 
 	# Arsenal da Oficina Cobalto: pistola e munição.
@@ -258,11 +259,20 @@ func _run() -> void:
 	player.take_damage(12.0, raider1)
 	_check(player.health == health_after_hit, "Invulnerabilidade curta precisa impedir dano duplicado")
 
-	# Derrotar inimigo paga recompensa.
+	# Derrotar os dois Raiders precisa atualizar e concluir a missão.
 	var money_before_raider := game_manager.money
 	raider1.take_damage(999.0, player)
 	_check(raider1.dead, "Raider precisa ser derrotável")
-	_check(game_manager.money == money_before_raider + raider1.reward, "Derrotar Raider precisa pagar recompensa")
+	_check(mission.raiders_defeated == 1, "Primeiro Raider precisa atualizar o objetivo para 1/2")
+	_check(mission.stage == mission.Stage.CLEAR_RAIDERS, "Missão deve continuar após o primeiro Raider")
+	_check(game_manager.money == money_before_raider + raider1.reward, "Primeiro Raider precisa pagar recompensa própria")
+
+	var money_before_second_raider := game_manager.money
+	raider2.take_damage(999.0, player)
+	_check(raider2.dead, "Segundo Raider precisa ser derrotável")
+	_check(mission.raiders_defeated == 2, "Segundo Raider precisa atualizar o objetivo para 2/2")
+	_check(mission.stage == mission.Stage.MISSION_3_COMPLETE, "Segundo Raider precisa concluir a limpeza dos galpões")
+	_check(game_manager.money == money_before_second_raider + raider2.reward + mission.MISSION_3_REWARD, "Segundo Raider precisa pagar recompensa própria e bônus da missão")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
 	var money_before_defeat := game_manager.money
