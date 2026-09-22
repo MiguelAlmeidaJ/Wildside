@@ -463,7 +463,7 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.9.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.10.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -472,20 +472,37 @@ func _run() -> void:
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
 
-	# Save/load deve restaurar estado urbano essencial.
+	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
 	game_manager.add_item("energy", 1)
+	game_manager.unlock_personal_vehicle()
+	game_manager.collect_cache("center")
+	game_manager.collect_cache("north")
+	race_manager.best_time = 58.5
+	race_manager.wins = 2
+	personal_car.set_durability(63.0)
 	var saved_money := game_manager.money
 	var saved_position: Vector2 = player.global_position
 	safehouse.interact(player)
+
 	game_manager.money = 0
 	game_manager.medkits = 0
 	game_manager.energy_drinks = 0
+	game_manager.personal_vehicle_unlocked = false
+	game_manager.collected_caches.clear()
+	race_manager.best_time = -1.0
+	race_manager.wins = 0
+	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
-	_check(save_manager.load_game(), "Save 0.9 precisa ser carregável")
+
+	_check(save_manager.load_game(), "Save 0.10 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
+	_check(game_manager.personal_vehicle_unlocked, "Load precisa restaurar propriedade do veículo")
+	_check(game_manager.collected_caches.has("center") and game_manager.collected_caches.has("north"), "Load precisa restaurar esconderijos encontrados")
+	_check(is_equal_approx(race_manager.best_time, 58.5) and race_manager.wins == 2, "Load precisa restaurar recorde e vitórias de corrida")
+	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
 	var money_before_defeat := game_manager.money
