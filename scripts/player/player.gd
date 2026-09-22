@@ -4,6 +4,7 @@ signal prompt_changed(text: String)
 signal message_requested(text: String)
 signal health_changed(current: float, maximum: float)
 signal player_defeated
+signal arrest_progress_changed(value: float)
 
 enum MotionState { IDLE, WALK, RUN }
 
@@ -44,6 +45,8 @@ var _spawn_position := Vector2.ZERO
 var pistol_equipped := false
 var _shoot_cooldown_left := 0.0
 var _reload_left := 0.0
+var _arrest_progress := 0.0
+var _arrest_source: Node2D
 
 
 func _ready() -> void:
@@ -270,7 +273,11 @@ func enter_vehicle(vehicle: CharacterBody2D) -> void:
 	interaction_area.set_deferred("monitoring", false)
 	collision_shape.set_deferred("disabled", true)
 	player_camera.enabled = false
-	show_message("Motor ligado • Espaço freia/derrapa • E sai do veículo")
+	var evaded := WantedManager.notify_vehicle_change(vehicle)
+	if evaded:
+		show_message("Veículo trocado • procura reduzida em 15.")
+	else:
+		show_message("Motor ligado • Espaço freia/derrapa • E sai do veículo")
 
 
 func leave_vehicle(vehicle: CharacterBody2D, exit_position: Vector2) -> void:
@@ -289,6 +296,43 @@ func leave_vehicle(vehicle: CharacterBody2D, exit_position: Vector2) -> void:
 
 func show_message(text: String) -> void:
 	message_requested.emit(text)
+
+
+func set_arrest_progress(value: float, source: Node2D) -> void:
+	value = clampf(value, 0.0, 1.0)
+	if value <= 0.0:
+		if is_instance_valid(_arrest_source) and _arrest_source != source:
+			return
+		_arrest_progress = 0.0
+		_arrest_source = null
+		arrest_progress_changed.emit(_arrest_progress)
+		return
+
+	if not is_instance_valid(_arrest_source) or _arrest_source == source or value >= _arrest_progress:
+		_arrest_source = source
+		_arrest_progress = value
+		arrest_progress_changed.emit(_arrest_progress)
+
+
+func arrest_by_police(source: Node2D) -> void:
+	if is_instance_valid(_arrest_source) and _arrest_source != source:
+		return
+
+	var penalty := mini(75, GameManager.money)
+	if penalty > 0:
+		GameManager.add_money(-penalty)
+
+	_arrest_progress = 0.0
+	_arrest_source = null
+	arrest_progress_changed.emit(0.0)
+
+	global_position = _spawn_position
+	velocity = Vector2.ZERO
+	health = max_health
+	_invulnerability_left = 1.5
+	health_changed.emit(health, max_health)
+	WantedManager.clear()
+	show_message("PRESO • Você pagou $%d de fiança e voltou ao centro." % penalty)
 
 
 func perform_attack() -> bool:
