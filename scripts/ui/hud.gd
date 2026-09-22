@@ -17,6 +17,10 @@ extends CanvasLayer
 @onready var volt_ability_label: Label = %VoltAbilityLabel
 @onready var weapon_label: Label = %WeaponLabel
 @onready var weapon_hint_label: Label = %WeaponHintLabel
+@onready var pursuit_label: Label = %PursuitLabel
+@onready var arrest_panel: PanelContainer = %ArrestPanel
+@onready var arrest_bar: ProgressBar = %ArrestBar
+@onready var arrest_label: Label = %ArrestLabel
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -29,11 +33,14 @@ func _ready() -> void:
 	MissionManager.mission_completed.connect(_on_mission_completed)
 	WantedManager.wanted_changed.connect(_on_wanted_changed)
 	WantedManager.crime_committed.connect(_on_crime_committed)
+	WantedManager.pursuit_state_changed.connect(_on_pursuit_state_changed)
 	GameManager.money_changed.connect(_on_money_changed)
 	GameManager.capture_devices_changed.connect(_on_capture_devices_changed)
 	GameManager.district_changed.connect(_on_district_changed)
 	GameManager.weapon_changed.connect(_on_weapon_changed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
+	_on_pursuit_state_changed(WantedManager.is_visible_to_police)
+	set_arrest_progress(0.0)
 	_on_money_changed(GameManager.money)
 	_on_capture_devices_changed(GameManager.capture_devices)
 	_on_weapon_changed(GameManager.pistol_unlocked, GameManager.pistol_magazine, GameManager.pistol_reserve)
@@ -56,6 +63,13 @@ func set_health(current: float, maximum: float) -> void:
 	health_bar.max_value = maximum
 	health_bar.value = current
 	health_label.text = "VIDA  %d / %d" % [roundi(current), roundi(maximum)]
+
+
+func set_arrest_progress(value: float) -> void:
+	value = clampf(value, 0.0, 1.0)
+	arrest_bar.value = value * 100.0
+	arrest_label.text = "PRISÃO  %d%%" % roundi(value * 100.0)
+	arrest_panel.visible = value > 0.0
 
 
 func set_wild_ability(slot: String, unlocked: bool, remaining: float, _total: float) -> void:
@@ -89,6 +103,27 @@ func _on_objective_changed(title: String, description: String, target: Vector2, 
 func _on_wanted_changed(level: int, heat: float) -> void:
 	wanted_label.text = "%s%s  %02d" % ["★".repeat(level), "☆".repeat(5 - level), roundi(heat)]
 	wanted_label.modulate = Color("#ffcf5c") if level > 0 else Color("#aeb7bd")
+	if level <= 0:
+		pursuit_label.text = "SEM PROCURA"
+		pursuit_label.modulate = Color("#aeb7bd")
+	elif WantedManager.is_visible_to_police:
+		pursuit_label.text = "VISTO"
+		pursuit_label.modulate = Color("#ff7b7b")
+	else:
+		pursuit_label.text = "ESCAPANDO"
+		pursuit_label.modulate = Color("#7de3cf")
+
+
+func _on_pursuit_state_changed(seen: bool) -> void:
+	if WantedManager.wanted_level <= 0:
+		pursuit_label.text = "SEM PROCURA"
+		pursuit_label.modulate = Color("#aeb7bd")
+	elif seen:
+		pursuit_label.text = "VISTO"
+		pursuit_label.modulate = Color("#ff7b7b")
+	else:
+		pursuit_label.text = "ESCAPANDO"
+		pursuit_label.modulate = Color("#7de3cf")
 
 
 func _on_money_changed(total: int) -> void:
