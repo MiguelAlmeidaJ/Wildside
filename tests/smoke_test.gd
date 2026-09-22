@@ -190,6 +190,12 @@ func _run() -> void:
 	player._complete_reload()
 	_check(game_manager.pistol_magazine == 8 and game_manager.pistol_reserve == 4, "Recarga precisa transferir munição da reserva")
 
+	var ammo_money_before := game_manager.money
+	var ammo_reserve_before := game_manager.pistol_reserve
+	workshop.interact(player)
+	_check(game_manager.money == ammo_money_before - 40, "Pacote de munição precisa custar $40")
+	_check(game_manager.pistol_reserve == ammo_reserve_before + 16, "Pacote precisa adicionar 16 munições")
+
 	# Habilidade ativa do Nib: dano forte em um alvo + knockback.
 	raider1.health = raider1.max_health
 	raider1._update_health_label()
