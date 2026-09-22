@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.6 · Godot 4.7.x**
+**Prototype 0.7 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -81,6 +81,11 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
+- Perseguição agora distingue `VISTO` e `ESCAPANDO`: o heat não cai enquanto uma unidade mantém contato e passa a cair mais rápido depois que você quebra a perseguição.
+- Viaturas não se teleportam continuamente durante a fuga; é possível abrir distância de verdade.
+- Ao alcançar o jogador a pé, a viatura pode parar e desembarcar um policial que persegue e inicia uma barra de prisão.
+- Se a barra de prisão completar, a procura zera, o player volta ao ponto inicial e paga até `$75` de fiança.
+- Trocar para um veículo diferente durante a fuga reduz `15` de heat, com cooldown para impedir abuso.
 - Gerenciadores globais pequenos para jogo, missões, procura, save e áudio.
 
 ## Arquitetura da cena principal
@@ -107,7 +112,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, veículos, procura, regiões, missões, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído de disparo, fuga de civis, investigação de Raiders, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
+O teste cobre movimento, corrida, veículos, procura, contato policial, troca de veículo para evasão, prisão e fiança, regiões, missões, economia, captura de Wilds, prioridade de interação, formação, pistola, munição, recarga, ruído de disparo, fuga de civis, investigação de Raiders, resposta policial, combate, habilidades dos Wilds, recompensas e respawn.
 
 ## Critério de conclusão
 
