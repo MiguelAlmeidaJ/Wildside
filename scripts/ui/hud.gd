@@ -14,6 +14,7 @@ extends CanvasLayer
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
 var _objective_has_target := false
+var _district_tween: Tween
 
 
 func _ready() -> void:
@@ -74,17 +75,20 @@ func _on_mission_completed(reward: int) -> void:
 func _on_district_changed(name: String) -> void:
 	if name.is_empty():
 		return
+	if _district_tween != null and _district_tween.is_valid():
+		_district_tween.kill()
+
 	district_label.text = name
 	district_label.show()
 	district_label.modulate.a = 0.0
 
-	var tween := create_tween()
-	tween.set_trans(Tween.TRANS_QUAD)
-	tween.set_ease(Tween.EASE_OUT)
-	tween.tween_property(district_label, "modulate:a", 1.0, 0.22)
-	tween.tween_interval(1.65)
-	tween.tween_property(district_label, "modulate:a", 0.0, 0.65)
-	tween.tween_callback(district_label.hide)
+	_district_tween = create_tween()
+	_district_tween.set_trans(Tween.TRANS_QUAD)
+	_district_tween.set_ease(Tween.EASE_OUT)
+	_district_tween.tween_property(district_label, "modulate:a", 1.0, 0.22)
+	_district_tween.tween_interval(1.65)
+	_district_tween.tween_property(district_label, "modulate:a", 0.0, 0.65)
+	_district_tween.tween_callback(district_label.hide)
 
 
 func _on_message_timer_timeout() -> void:
