@@ -28,9 +28,15 @@ func _run() -> void:
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
 	var police = game.get_node("World/Entities/NPCs/Police1")
+	var district_tracker = game.get_node("DistrictTracker")
 	_check(player != null, "Player precisa existir")
 	_check(car != null, "Car precisa existir")
-	_check(get_nodes_in_group("interactable").size() >= 5, "NPCs, telefone, carro e Nib precisam ser interativos")
+	_check(get_nodes_in_group("interactable").size() >= 11, "Cidade ampliada precisa ter NPCs, veículos, telefone e Nib interativos")
+	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
+	_check(district_tracker._district_for(Vector2(-1400, 400)) == "BAIRRO RESIDENCIAL", "Residencial precisa ser identificado")
+	_check(district_tracker._district_for(Vector2(1400, 400)) == "DISTRITO INDUSTRIAL", "Industrial precisa ser identificado")
+	_check(district_tracker._district_for(Vector2(0, 1400)) == "ZONA SUL", "Zona Sul precisa ser identificada")
+	_check(district_tracker._district_for(Vector2(0, -1300)) == "MATA NORTE", "Mata Norte precisa ser identificada")
 
 	var player_start: Vector2 = player.global_position
 	Input.action_press("move_up")
