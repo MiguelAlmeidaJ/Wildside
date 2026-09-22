@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.3 · Godot 4.7.x**
+**Prototype 0.4 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição e captura de criaturas. O foco desta versão é validar um pequeno loop completo antes de expandir inventário, combate, crafting ou o tamanho do mundo.
 
@@ -18,6 +18,8 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | Correr | `Shift` |
 | Interagir / entrar / sair | `E` |
 | Atacar | `F` |
+| Habilidade do Nib — Impacto | `1` |
+| Habilidade do Volt — Sobrecarga | `2` |
 | Capturar Wild | `Q` |
 | Freio de mão / derrapagem | `Espaço` |
 
@@ -62,6 +64,8 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Raiders hostis no Distrito Industrial, liberados após a `ANOMALIA #002`, com perseguição, ataque, vida e recompensa em dinheiro.
 - Carros em movimento podem atropelar e causar dano aos Raiders.
 - Nib e Volt ajudam automaticamente no combate quando há inimigos próximos.
+- Habilidades ativas de Wild: Nib usa `Impacto`, um golpe de alvo único com alto dano e knockback; Volt usa `Sobrecarga`, que encadeia eletricidade entre até três inimigos e aplica stun.
+- Cooldowns das habilidades aparecem no HUD e mudam para `PRONTO` quando podem ser usados novamente.
 - Inventário simples de Dispositivos Wild exibido no HUD e persistido no save.
 - Missão guiada, distância do objetivo, dinheiro e recompensa.
 - Heat, estrelas de procura e até duas viaturas em perseguição.
@@ -91,7 +95,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, corrida, veículos, procura, regiões, as duas missões, economia, captura de Wilds, combate corpo a corpo, dano ao player, invulnerabilidade, Raiders, recompensas e respawn.
+O teste cobre movimento, corrida, veículos, procura, regiões, as duas missões, economia, captura de Wilds, combate corpo a corpo, habilidades ativas de Nib e Volt, knockback, stun, dano ao player, Raiders, recompensas e respawn.
 
 ## Critério de conclusão
 
