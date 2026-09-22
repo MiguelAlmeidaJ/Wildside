@@ -11,6 +11,8 @@ extends CanvasLayer
 @onready var mission_title: Label = %MissionTitle
 @onready var mission_description: Label = %MissionDescription
 @onready var district_label: Label = %DistrictLabel
+@onready var health_bar: ProgressBar = %HealthBar
+@onready var health_label: Label = %HealthLabel
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -42,6 +44,12 @@ func _process(_delta: float) -> void:
 func set_prompt(text: String) -> void:
 	prompt_label.text = text
 	prompt_label.visible = not text.is_empty()
+
+
+func set_health(current: float, maximum: float) -> void:
+	health_bar.max_value = maximum
+	health_bar.value = current
+	health_label.text = "VIDA  %d / %d" % [roundi(current), roundi(maximum)]
 
 
 func show_message(text: String) -> void:
