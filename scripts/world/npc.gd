@@ -99,6 +99,7 @@ func _on_noise_emitted(position: Vector2, radius: float, kind: String, _source: 
 	if global_position.distance_to(position) > radius:
 		return
 	react_to_danger(position)
+	WantedManager.report_gunshot(true)
 
 
 func _begin_wander() -> void:
