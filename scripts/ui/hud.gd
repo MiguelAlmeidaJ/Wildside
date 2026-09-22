@@ -13,6 +13,8 @@ extends CanvasLayer
 @onready var district_label: Label = %DistrictLabel
 @onready var health_bar: ProgressBar = %HealthBar
 @onready var health_label: Label = %HealthLabel
+@onready var nib_ability_label: Label = %NibAbilityLabel
+@onready var volt_ability_label: Label = %VoltAbilityLabel
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -50,6 +52,20 @@ func set_health(current: float, maximum: float) -> void:
 	health_bar.max_value = maximum
 	health_bar.value = current
 	health_label.text = "VIDA  %d / %d" % [roundi(current), roundi(maximum)]
+
+
+func set_wild_ability(slot: String, unlocked: bool, remaining: float, _total: float) -> void:
+	var label := nib_ability_label if slot == "nib" else volt_ability_label
+	var key := "1" if slot == "nib" else "2"
+	var wild_name := "NIB" if slot == "nib" else "VOLT"
+	var ability_name := "IMPACTO" if slot == "nib" else "SOBRECARGA"
+
+	if not unlocked:
+		label.text = "%s  %s • %s  [BLOQUEADO]" % [key, wild_name, ability_name]
+	elif remaining <= 0.05:
+		label.text = "%s  %s • %s  [PRONTO]" % [key, wild_name, ability_name]
+	else:
+		label.text = "%s  %s • %s  [%.1fs]" % [key, wild_name, ability_name, remaining]
 
 
 func show_message(text: String) -> void:
