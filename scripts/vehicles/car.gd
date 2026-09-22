@@ -176,7 +176,8 @@ func _set_owned_available(value: bool) -> void:
 	else:
 		if is_in_group("interactable"):
 			remove_from_group("interactable")
-		_set_parked_collision(false)
+		collision_layer = 0
+		parked_blocker_shape.set_deferred("disabled", true)
 		velocity = Vector2.ZERO
 		current_speed = 0.0
 
