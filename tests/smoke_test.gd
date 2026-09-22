@@ -118,7 +118,7 @@ func _run() -> void:
 	var money_before_car := game_manager.money
 	garage.interact(player)
 	_check(game_manager.personal_vehicle_unlocked, "Garagem precisa vender o veículo próprio")
-	_check(game_manager.money == money_before_car - garage.PERSONAL_VEHICLE_PRICE, "Veículo próprio precisa custar $350")
+	_check(game_manager.money == money_before_car - 350, "Veículo próprio precisa custar $350")
 	await process_frame
 	await physics_frame
 	_check(personal_car.visible, "Veículo próprio precisa aparecer após a compra")
@@ -158,14 +158,15 @@ func _run() -> void:
 	_check(race_manager.wins == 1, "Corrida concluída precisa entrar no histórico")
 	_check(is_equal_approx(race_manager.best_time, 60.0), "Primeira corrida precisa registrar melhor tempo")
 	_check(game_manager.money == money_before_race + 230, "Volta de 60s precisa pagar prêmio base + bônus")
+	personal_car.global_position = Vector2(1000, 1000)
 	personal_car.request_exit()
 	await physics_frame
+	_check(player.current_vehicle == null, "Player precisa conseguir sair do veículo próprio após a corrida")
 
 	game_manager.reset_run()
 	side_job.reset_run()
 	race_manager.reset_run()
 	player.energy_boost_left = 0.0
-	player.heal(player.max_health)
 	player.heal(player.max_health)
 
 	var player_start: Vector2 = player.global_position
@@ -471,6 +472,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
+	_check(save_manager.SAVE_VERSION == 6, "Prototype 0.10 precisa usar save version 6")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
