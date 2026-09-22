@@ -251,6 +251,7 @@ attack_damage = 14.0
 reward = 45
 
 [node name="BlackoutRaider1" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
+modulate = Color(0.88, 0.78, 1, 1)
 position = Vector2(-760, 1360)
 active_after_anomaly_2 = false
 mission_key = "blackout"
@@ -258,6 +259,7 @@ move_speed = 142.0
 reward = 25
 
 [node name="BlackoutRaider2" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
+modulate = Color(0.78, 0.86, 1, 1)
 position = Vector2(-270, 1440)
 active_after_anomaly_2 = false
 mission_key = "blackout"
@@ -266,6 +268,7 @@ attack_damage = 14.0
 reward = 25
 
 [node name="BlackoutRaider3" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
+modulate = Color(1, 0.72, 0.88, 1)
 position = Vector2(0, 1660)
 active_after_anomaly_2 = false
 mission_key = "blackout"
