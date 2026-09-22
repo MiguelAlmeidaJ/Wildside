@@ -18,6 +18,10 @@ func _ready() -> void:
 	WantedManager.wanted_changed.connect(_on_wanted_changed)
 
 
+func set_source_car(value: Node2D) -> void:
+	source_car = value
+
+
 func _physics_process(delta: float) -> void:
 	if WantedManager.wanted_level <= 0:
 		_clear_arrest_progress()
@@ -28,7 +32,8 @@ func _physics_process(delta: float) -> void:
 	if not is_instance_valid(player):
 		return
 
-	if is_instance_valid(player.current_vehicle):
+	var player_vehicle = player.get("current_vehicle")
+	if is_instance_valid(player_vehicle):
 		returning_to_car = true
 		_return_to_car(delta)
 		return
