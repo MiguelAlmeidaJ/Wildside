@@ -454,6 +454,9 @@ func _run() -> void:
 		_check(player.global_position == player._spawn_position, "Prisão precisa levar o player ao ponto inicial")
 		_check(game_manager.money == money_before_arrest - mini(75, money_before_arrest), "Prisão precisa cobrar até $75 de fiança")
 
+	if FileAccess.file_exists("user://wildside_save.json"):
+		DirAccess.remove_absolute(save_path)
+
 	game.queue_free()
 	await process_frame
 	await process_frame
