@@ -47,6 +47,10 @@ func _physics_process(delta: float) -> void:
 	sprite.position.y = -5.0 + sin(Time.get_ticks_msec() * 0.006) * 2.0
 
 
+func get_interaction_priority(_player: CharacterBody2D) -> int:
+	return 8 if captured else 70
+
+
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	return "Fazer carinho em Nib" if captured else "Tentar capturar Nib  [Q]"
 
@@ -108,6 +112,8 @@ func _update_wild_state(_delta: float) -> void:
 
 func _follow_player(delta: float) -> void:
 	var target := GameManager.get_controlled_position() + Vector2(55, 45)
+	if is_instance_valid(GameManager.player) and GameManager.player.has_method("get_companion_anchor"):
+		target = GameManager.player.call("get_companion_anchor", 0)
 	var distance := global_position.distance_to(target)
 	if distance > 650.0:
 		global_position = target
