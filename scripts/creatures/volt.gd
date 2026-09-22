@@ -131,7 +131,7 @@ func _update_wild_state(delta: float) -> void:
 func _follow_player(delta: float) -> void:
 	var target := GameManager.get_controlled_position() + Vector2(-58, 48)
 	if is_instance_valid(GameManager.player) and GameManager.player.has_method("get_companion_anchor"):
-		target = GameManager.player.call("get_companion_anchor", 1)
+		target = GameManager.player.call("get_companion_anchor", 1) as Vector2
 	var distance := global_position.distance_to(target)
 	if distance > 650.0:
 		global_position = target
@@ -217,16 +217,16 @@ func _nearest_hostile_from(origin: Vector2, max_range: float, excluded: Array[No
 
 
 func _draw_lightning(from_position: Vector2, to_position: Vector2, segment_index: int) -> void:
-	var parent := get_parent()
+	var parent: Node2D = get_parent() as Node2D
 	if parent == null:
 		return
 	var bolt := Line2D.new()
 	bolt.width = 7.0 if segment_index == 0 else 5.0
 	bolt.default_color = Color(0.45, 0.9, 1.0, 0.95)
-	var start := parent.to_local(from_position)
-	var finish := parent.to_local(to_position)
-	var mid := (start + finish) * 0.5
-	var perpendicular := (finish - start).orthogonal().normalized() * (18.0 if segment_index % 2 == 0 else -18.0)
+	var start: Vector2 = parent.to_local(from_position)
+	var finish: Vector2 = parent.to_local(to_position)
+	var mid: Vector2 = (start + finish) * 0.5
+	var perpendicular: Vector2 = (finish - start).orthogonal().normalized() * (18.0 if segment_index % 2 == 0 else -18.0)
 	bolt.points = PackedVector2Array([start, mid + perpendicular, finish])
 	parent.add_child(bolt)
 	var tween := bolt.create_tween()
