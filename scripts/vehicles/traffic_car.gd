@@ -38,6 +38,8 @@ func _physics_process(delta: float) -> void:
 	if velocity.length() > 5.0:
 		rotation = lerp_angle(rotation, velocity.angle() + PI / 2.0, 1.0 - exp(-6.0 * delta))
 	move_and_slide()
+	if get_slide_collision_count() > 0:
+		velocity *= 0.18
 
 
 func _route_points(id: int) -> Array[Vector2]:
