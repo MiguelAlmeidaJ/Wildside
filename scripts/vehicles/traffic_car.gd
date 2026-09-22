@@ -44,24 +44,24 @@ func _route_points(id: int) -> Array[Vector2]:
 	match id:
 		0:
 			return [
-				Vector2(-1650, -70), Vector2(-250, -70), Vector2(250, -70),
-				Vector2(1650, -70), Vector2(1650, 70), Vector2(250, 70),
-				Vector2(-250, 70), Vector2(-1650, 70)
+				Vector2(-1650, -80), Vector2(-250, -80), Vector2(250, -80),
+				Vector2(1650, -80), Vector2(1650, 120), Vector2(250, 120),
+				Vector2(-250, 120), Vector2(-1650, 120)
 			]
 		1:
 			return [
-				Vector2(1650, 930), Vector2(250, 930), Vector2(-250, 930),
-				Vector2(-1650, 930), Vector2(-1650, 1070), Vector2(-250, 1070),
-				Vector2(250, 1070), Vector2(1650, 1070)
+				Vector2(1650, 875), Vector2(250, 875), Vector2(-250, 875),
+				Vector2(-1650, 875), Vector2(-1650, 1125), Vector2(-250, 1125),
+				Vector2(250, 1125), Vector2(1650, 1125)
 			]
 		2:
 			return [
-				Vector2(-1080, -820), Vector2(-1080, 760), Vector2(-1080, 1660),
-				Vector2(-940, 1660), Vector2(-940, 760), Vector2(-940, -820)
+				Vector2(-1120, -820), Vector2(-1120, 760), Vector2(-1120, 1660),
+				Vector2(-880, 1660), Vector2(-880, 760), Vector2(-880, -820)
 			]
 		3:
 			return [
-				Vector2(940, 1660), Vector2(940, 760), Vector2(940, -820),
-				Vector2(1080, -820), Vector2(1080, 760), Vector2(1080, 1660)
+				Vector2(870, 1660), Vector2(870, 760), Vector2(870, -820),
+				Vector2(1150, -820), Vector2(1150, 760), Vector2(1150, 1660)
 			]
 	return []
