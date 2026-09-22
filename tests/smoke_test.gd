@@ -314,6 +314,9 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.TALK_TO_JADE, "Bruno precisa liberar o contato com Jade após limpar os galpões")
 	jade.interact(player)
 	_check(mission.stage == mission.Stage.INVESTIGATE_BLACKOUT, "Jade precisa iniciar a investigação do apagão")
+	await process_frame
+	await physics_frame
+	_check(blackout_anomaly.active, "Distorção precisa aparecer quando Jade liberar a investigação")
 	blackout_anomaly.interact(player)
 	_check(mission.stage == mission.Stage.CLEAR_BLACKOUT, "Distorção precisa iniciar a emboscada da Zona Sul")
 
