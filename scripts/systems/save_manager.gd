@@ -8,13 +8,15 @@ func save_game() -> bool:
 	if file == null:
 		return false
 	file.store_string(JSON.stringify({
-		"version": 3,
+		"version": 4,
 		"money": GameManager.money,
 		"capture_devices": GameManager.capture_devices,
 		"pistol_unlocked": GameManager.pistol_unlocked,
 		"pistol_magazine": GameManager.pistol_magazine,
 		"pistol_reserve": GameManager.pistol_reserve,
 		"mission_stage": MissionManager.stage,
+		"raiders_defeated": MissionManager.raiders_defeated,
+		"blackout_raiders_defeated": MissionManager.blackout_raiders_defeated,
 	}))
 	return true
 
@@ -32,6 +34,8 @@ func load_game() -> bool:
 	GameManager.pistol_magazine = int(data.get("pistol_magazine", 0))
 	GameManager.pistol_reserve = int(data.get("pistol_reserve", 0))
 	MissionManager.stage = int(data.get("mission_stage", MissionManager.Stage.TALK_TO_MAYA))
+	MissionManager.raiders_defeated = int(data.get("raiders_defeated", 0))
+	MissionManager.blackout_raiders_defeated = int(data.get("blackout_raiders_defeated", 0))
 	GameManager.money_changed.emit(GameManager.money)
 	GameManager.capture_devices_changed.emit(GameManager.capture_devices)
 	GameManager.weapon_changed.emit(GameManager.pistol_unlocked, GameManager.pistol_magazine, GameManager.pistol_reserve)
