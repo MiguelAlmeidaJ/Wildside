@@ -119,8 +119,12 @@ func _draw() -> void:
 	_draw_parking_rows(Vector2(-2580, 215), 3, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(-2050, 715), 3, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(-1510, 865), 4, Vector2.RIGHT)
+	_draw_parking_rows(Vector2(-820, 195), 4, Vector2.RIGHT)
+	_draw_parking_rows(Vector2(1230, 195), 4, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(1280, 865), 4, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(1280, -135), 4, Vector2.RIGHT)
+	_draw_parking_rows(Vector2(1880, 2085), 4, Vector2.RIGHT)
+	_draw_parking_rows(Vector2(2440, 2085), 4, Vector2.RIGHT)
 
 	for y in range(-760, -250, 65):
 		draw_line(Vector2(1275, y), Vector2(1330, y + 28), Color(0.94, 0.62, 0.22, 0.55), 7.0)
