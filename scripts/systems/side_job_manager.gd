@@ -13,7 +13,7 @@ enum Stage {
 
 const MARKET_POSITION := Vector2(-520, 755)
 const VERA_POSITION := Vector2(-1240, 585)
-const MALIK_POSITION := Vector2(2500, 1215)
+const MALIK_POSITION := Vector2(2300, 1215)
 const DANTE_POSITION := Vector2(2720, 1745)
 const DELIVERY_REWARD := 120
 const PORT_DELIVERY_REWARD := 160
