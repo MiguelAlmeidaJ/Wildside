@@ -138,7 +138,10 @@ func _draw_police() -> void:
 	for officer in get_tree().get_nodes_in_group("law_enforcement"):
 		if not (officer is Node2D) or not officer.visible:
 			continue
-		draw_circle(_to_map(officer.global_position), 2.4, Color(1.0, 0.38, 0.38, 1.0))
+		if officer.is_in_group("military_unit"):
+			_draw_diamond(_to_map(officer.global_position), 4.0, Color(1.0, 0.62, 0.22, 1.0))
+		else:
+			draw_circle(_to_map(officer.global_position), 2.4, Color(1.0, 0.38, 0.38, 1.0))
 
 
 func _draw_personal_vehicle() -> void:
