@@ -23,6 +23,9 @@ const SIDEWALK_EDGE := Color("#c5cdd1")
 const LANE_COLOR := Color("#e8c65e")
 const WINDOW_COLOR := Color("#f6d98d")
 
+var _lamp_glows: Array[Polygon2D] = []
+var _lamp_bulbs: Array[Polygon2D] = []
+
 
 func _ready() -> void:
 	for index in range(BUILDINGS.size()):
