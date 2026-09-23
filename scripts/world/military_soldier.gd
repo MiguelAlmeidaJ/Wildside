@@ -255,20 +255,35 @@ func _set_dormant() -> void:
 
 
 func _find_spawn_position(target: Vector2) -> Vector2:
-	var distance := lerpf(spawn_min_distance, spawn_max_distance, float(response_slot) / 2.0)
-	var best_position := target
-	var best_distance := -1.0
-	var base_angle := PI * 0.35 + float(response_slot) * 2.05
-
-	for step in range(8):
-		var angle := base_angle + float(step) * (TAU / 8.0)
-		var candidate := target + Vector2.from_angle(angle) * distance
-		candidate.x = clampf(candidate.x, -2580.0, 2880.0)
-		candidate.y = clampf(candidate.y, -1480.0, 2100.0)
-		var candidate_distance := candidate.distance_to(target)
-		if candidate_distance > best_distance:
-			best_distance = candidate_distance
+	var anchors: Array[Vector2] = [
+		Vector2(-2250, -720),
+		Vector2(-2250, 1600),
+		Vector2(-1010, -720),
+		Vector2(-1010, 1600),
+		Vector2(1010, -720),
+		Vector2(1010, 1600),
+		Vector2(2320, -720),
+		Vector2(2320, 1600),
+	]
+	var preferred := lerpf(spawn_min_distance, spawn_max_distance, float(response_slot) / 2.0)
+	var best_position := anchors[0]
+	var best_score := INF
+	for candidate in anchors:
+		var distance := candidate.distance_to(target)
+		if distance < spawn_min_distance * 0.82:
+			continue
+		var score := absf(distance - preferred)
+		if score < best_score:
+			best_score = score
 			best_position = candidate
+
+	if best_score == INF:
+		var farthest := -1.0
+		for candidate in anchors:
+			var distance := candidate.distance_to(target)
+			if distance > farthest:
+				farthest = distance
+				best_position = candidate
 	return best_position
 
 
