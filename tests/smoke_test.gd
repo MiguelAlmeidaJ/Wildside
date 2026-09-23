@@ -265,7 +265,12 @@ func _run() -> void:
 	_check(parked_blocker.disabled, "Bloqueio estático deve desligar enquanto o carro é dirigido")
 	_check(car.driver == player, "Carro precisa registrar o motorista")
 	_check(wanted.wanted_level == 1, "Roubar o carro precisa gerar uma estrela")
-	_check(police.active, "Polícia precisa aparecer com uma estrela")
+	_check(police.responding and not police.active, "Polícia precisa entrar em despacho antes de aparecer")
+	var dispatch_target: Vector2 = game_manager.get_controlled_position()
+	police.response_left = 0.0
+	await physics_frame
+	_check(police.active, "Primeira viatura precisa chegar depois do tempo de resposta")
+	_check(police.global_position.distance_to(dispatch_target) >= police.spawn_min_distance * 0.70, "Viatura precisa nascer longe do local do crime")
 	wanted.report_police_contact(1.0)
 	_check(wanted.is_visible_to_police, "Contato policial precisa marcar o player como VISTO")
 
@@ -343,12 +348,15 @@ func _run() -> void:
 	# Escalada completa de procura: 3, 4 e 5 estrelas adicionam respostas mais pesadas.
 	wanted.add_heat(100.0, "Teste 3 estrelas")
 	_check(wanted.wanted_level == 3, "100 heat precisa gerar 3 estrelas")
-	_check(police3.active and not police4.active and not police5.active, "3 estrelas precisam ativar a terceira unidade")
+	_check(police3.responding and not police4.responding and not police5.responding, "3 estrelas precisam despachar a terceira unidade")
 	wanted.add_heat(40.0, "Teste 4 estrelas")
-	_check(wanted.wanted_level == 4 and police4.active, "140 heat precisa ativar a quarta unidade")
+	_check(wanted.wanted_level == 4 and police4.responding, "140 heat precisa despachar a quarta unidade")
 	wanted.add_heat(40.0, "Teste 5 estrelas")
-	_check(wanted.wanted_level == 5 and police5.active, "180 heat precisa ativar resposta máxima")
+	_check(wanted.wanted_level == 5 and police5.responding, "180 heat precisa despachar resposta máxima")
 	_check(wanted.get_arrest_bail() == 200, "Cinco estrelas precisam ter fiança máxima de $200")
+	police5.response_left = 0.0
+	await physics_frame
+	_check(police5.active, "Resposta máxima precisa chegar após o despacho")
 	police5._deploy_officer()
 	await process_frame
 	await physics_frame
@@ -470,7 +478,7 @@ func _run() -> void:
 	_check(davi.state == davi.State.FLEE, "Civil próximo precisa fugir ao ouvir tiro")
 	_check(raider2._investigate_left > 0.0, "Raider fora da visão precisa investigar o disparo")
 	_check(wanted.wanted_level == 1, "Disparo urbano precisa gerar uma estrela")
-	_check(police.active, "Polícia precisa reagir ao disparo urbano")
+	_check(police.responding and not police.active, "Disparo urbano precisa despachar a polícia sem spawn instantâneo")
 
 	var heat_after_first_shot: float = wanted.heat
 	player._shoot_cooldown_left = 0.0
