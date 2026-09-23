@@ -273,10 +273,10 @@ func _update_pursuit_label() -> void:
 
 	match level:
 		5:
-			pursuit_label.text = "CAÇADA TOTAL"
+			pursuit_label.text = "CAÇADA MILITAR"
 			pursuit_label.modulate = Color("#ff5555")
 		4:
-			pursuit_label.text = "RESPOSTA TÁTICA"
+			pursuit_label.text = "INTERVENÇÃO MILITAR"
 			pursuit_label.modulate = Color("#ff6868")
 		3:
 			pursuit_label.text = "CERCO ATIVO"
