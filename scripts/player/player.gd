@@ -309,7 +309,7 @@ func get_companion_anchor(slot: int) -> Vector2:
 
 func _has_nearby_priority_interactable() -> bool:
 	for candidate in get_tree().get_nodes_in_group("interactable"):
-		if not candidate is Node2D:
+		if not (candidate is Node2D):
 			continue
 		if candidate.has_method("get_interaction_priority") and int(candidate.call("get_interaction_priority", self)) < 50:
 			continue
@@ -584,7 +584,7 @@ func _nearby_interactables() -> Array[Node2D]:
 	# Fallback para interações importantes (telefone, NPCs e veículos).
 	# Evita perder o alvo quando o overlap ainda não foi atualizado no mesmo frame.
 	for candidate in get_tree().get_nodes_in_group("interactable"):
-		if not candidate is Node2D or not candidate.has_method("interact"):
+		if not (candidate is Node2D) or not candidate.has_method("interact"):
 			continue
 		if result.has(candidate):
 			continue
@@ -638,7 +638,7 @@ func _nearest_capturable() -> Node2D:
 	if not interaction_area.monitoring:
 		return nearest
 	for body in interaction_area.get_overlapping_bodies():
-		if not body is Node2D or not body.is_in_group("capturable"):
+		if not (body is Node2D) or not body.is_in_group("capturable"):
 			continue
 		var distance := global_position.distance_squared_to(body.global_position)
 		if distance < nearest_distance:
