@@ -349,8 +349,41 @@ func _is_essential() -> bool:
 
 
 func _begin_wander() -> void:
-	_target = _home + Vector2.from_angle(_rng.randf_range(0.0, TAU)) * _rng.randf_range(25.0, wander_radius)
+	# Civis tentam escolher pontos fora do leito das vias. Isso evita
+	# pedestres parados no meio da rua depois de alguns ciclos de wander.
+	var candidate := _home
+	var found := false
+	for _attempt in range(10):
+		candidate = _home + Vector2.from_angle(_rng.randf_range(0.0, TAU)) * _rng.randf_range(25.0, wander_radius)
+		if _is_pedestrian_space(candidate):
+			found = true
+			break
+
+	_target = candidate if found else _home
 	_set_state(State.WANDER, 4.0)
+
+
+func _is_pedestrian_space(position: Vector2) -> bool:
+	# Avenidas horizontais.
+	if absf(position.y) < 190.0:
+		return false
+	if absf(position.y - 1000.0) < 190.0:
+		return false
+	if position.x >= 1800.0 and absf(position.y - 1930.0) < 165.0:
+		return false
+
+	# Eixos verticais.
+	if absf(position.x) < 230.0:
+		return false
+	if absf(position.x + 1010.0) < 200.0:
+		return false
+	if absf(position.x - 1010.0) < 200.0:
+		return false
+	if position.x >= 1800.0 and absf(position.x - 2320.0) < 135.0:
+		return false
+	if position.x <= -1800.0 and absf(position.x + 2250.0) < 145.0:
+		return false
+	return true
 
 
 func _set_state(next_state: State, duration: float) -> void:
