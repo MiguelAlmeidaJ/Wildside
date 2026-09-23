@@ -38,11 +38,15 @@ func _process(_delta: float) -> void:
 
 	var current_vehicle = player.get("current_vehicle")
 	if is_instance_valid(current_vehicle):
+		var speed_kmh := 0
+		if current_vehicle.has_method("get_speed_kmh"):
+			speed_kmh = int(current_vehicle.call("get_speed_kmh"))
 		hud.set_vehicle_status(
 			true,
 			str(current_vehicle.get("vehicle_name")),
 			float(current_vehicle.get("durability")),
-			float(current_vehicle.get("maximum_durability"))
+			float(current_vehicle.get("maximum_durability")),
+			speed_kmh
 		)
 	else:
 		hud.set_vehicle_status(false)
