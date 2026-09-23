@@ -64,7 +64,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.14\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt   3  Murno\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis   M  Mapa\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.15\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt   3  Murno\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis   M  Mapa\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
@@ -156,7 +156,7 @@ theme_override_constants/separation = 5
 unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.47, 0.93, 0.87, 1)
 theme_override_font_sizes/font_size = 14
-text = "VEÍCULO  •  100%"
+text = "VEÍCULO  •  100%  •  0 KM/H"
 
 [node name="VehicleBar" type="ProgressBar" parent="VehiclePanel/VehicleContent"]
 unique_name_in_owner = true
