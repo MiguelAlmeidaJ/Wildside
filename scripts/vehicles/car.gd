@@ -140,7 +140,9 @@ func get_interaction_text(_player: CharacterBody2D) -> String:
 	if requires_ownership:
 		return "Entrar no seu veículo"
 	if job_vehicle_id == "hot_cargo":
-		return "Roubar caminhão marcado"
+		if SideJobManager.stage == SideJobManager.Stage.HOT_CARGO_STEAL:
+			return "Roubar caminhão marcado"
+		return "Entrar no caminhão marcado"
 	if illegal_to_take and not was_taken:
 		return "Roubar %s" % _vehicle_noun()
 	return "Entrar no %s" % _vehicle_noun()
