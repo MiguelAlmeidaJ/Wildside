@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.17 · Godot 4.7.x**
+**Prototype 0.17.1 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -240,6 +240,19 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 10 continua válido, pois a atualização altera o mundo e não a estrutura do progresso salvo.
 
 
+#### Limpeza viária — 0.17.1
+
+- calçadas horizontais e verticais passam a ser recortadas automaticamente nas interseções;
+- nenhuma faixa de calçada deve atravessar o asfalto de uma avenida perpendicular;
+- meio-fios horizontais e verticais também são interrompidos nos cruzamentos, evitando linhas fechando a pista;
+- faixas de pedestre foram redesenhadas para respeitar a largura real de cada avenida;
+- linhas de retenção deixam os cruzamentos mais legíveis;
+- vagas de estacionamento agora têm divisórias, profundidade visual e limitadores de roda;
+- textura de piso nas calçadas foi mantida somente nos trechos realmente caminháveis;
+- o smoke test valida geometricamente que as calçadas do Centro são cortadas nas avenidas;
+- save version 10 continua válido.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
@@ -247,7 +260,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Movimento com aceleração, desaceleração, corrida, direção visual e estados idle/walk/run.
 - Câmera suave com look-ahead e limites compatíveis com a área ampliada.
 - Cidade ampliada para 23 quarteirões, cinco eixos verticais, duas avenidas principais, uma via de cais e a nova Vila Oeste.
-- `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas receberam marcações, estacionamento e bordas mais legíveis.
+- `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas agora têm calçadas segmentadas, cruzamentos limpos, faixas de pedestre proporcionais, estacionamento e bordas mais legíveis.
 - Props urbanos distribuídos pelos distritos: postes, árvores, bancos, vasos, caçambas, cones, containers, placas de região, estacionamentos e letreiros.
 - Dez carros civis circulam continuamente em rotas pelas avenidas principais, Porto Ferrugem e Vila Oeste.
 - Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte, Porto Ferrugem e Vila Oeste.
