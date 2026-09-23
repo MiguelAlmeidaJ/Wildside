@@ -1,0 +1,37 @@
+[gd_scene format=3]
+
+[node name="Hospital" type="Node2D"]
+z_index = 5
+
+[node name="Awning" type="Polygon2D" parent="."]
+position = Vector2(0, -10)
+polygon = PackedVector2Array(-62, -16, 62, -16, 54, 16, -54, 16)
+color = Color(0.94, 0.96, 0.98, 1)
+
+[node name="CrossVertical" type="Polygon2D" parent="."]
+position = Vector2(-38, -10)
+polygon = PackedVector2Array(-5, -16, 5, -16, 5, 16, -5, 16)
+color = Color(0.9, 0.18, 0.2, 1)
+
+[node name="CrossHorizontal" type="Polygon2D" parent="."]
+position = Vector2(-38, -10)
+polygon = PackedVector2Array(-16, -5, 16, -5, 16, 5, -16, 5)
+color = Color(0.9, 0.18, 0.2, 1)
+
+[node name="Label" type="Label" parent="."]
+offset_left = -28.0
+offset_top = -24.0
+offset_right = 62.0
+offset_bottom = 6.0
+theme_override_colors/font_color = Color(0.1, 0.16, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(1, 1, 1, 0.65)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 14
+text = "HOSPITAL"
+horizontal_alignment = 1
+
+[node name="Entrance" type="Polygon2D" parent="."]
+position = Vector2(0, 23)
+polygon = PackedVector2Array(-24, -7, 24, -7, 24, 7, -24, 7)
+color = Color(0.32, 0.48, 0.56, 1)
