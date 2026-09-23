@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.15 · Godot 4.7.x**
+**Prototype 0.15.1 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -187,6 +187,22 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - personagens essenciais de missão podem reagir/fugir, mas não ficam permanentemente indisponíveis;
 - testemunhas próximas reagem a agressões e roubos de veículos;
 - save version 9 continua válido porque os novos estados de rua são deliberadamente temporários.
+
+
+#### Ajuste de dirigibilidade e polícia — 0.15.1
+
+- velocidade do carro comum reduzida para uma faixa mais compatível com a escala atual da cidade;
+- Raptor 250 continua sendo o veículo mais rápido, mas deixa de acelerar e virar de forma excessiva;
+- Atlas Cargo recebe velocidade menor e comportamento mais pesado;
+- direção fica mais suave em alta velocidade e ganha assistência leve de estabilidade fora do freio de mão;
+- grip lateral aumentado para o veículo não escapar da trajetória em curvas normais;
+- look-ahead da câmera reduzido e resposta da câmera acelerada para o cenário acompanhar melhor o veículo;
+- polícia não aparece mais imediatamente no local do crime;
+- crimes agora iniciam um estado de despacho com atraso antes da chegada da primeira viatura;
+- viaturas surgem fora da área imediata do jogador, a aproximadamente 900–1180 px;
+- reforços de estrelas altas chegam de forma escalonada;
+- bônus de velocidade policial por estrela foi drasticamente reduzido;
+- velocidades das viaturas foram rebalanceadas para permitir fuga real com direção boa e quebra de contato.
 
 
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
