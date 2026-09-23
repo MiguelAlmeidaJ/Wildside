@@ -31,6 +31,7 @@ extends CanvasLayer
 @onready var side_job_title: Label = %SideJobTitle
 @onready var side_job_description: Label = %SideJobDescription
 @onready var cache_label: Label = %CacheLabel
+@onready var event_stats_label: Label = %EventStatsLabel
 @onready var vehicle_panel: PanelContainer = %VehiclePanel
 @onready var vehicle_label: Label = %VehicleLabel
 @onready var vehicle_bar: ProgressBar = %VehicleBar
@@ -75,6 +76,7 @@ func _ready() -> void:
 	WorldTimeManager.time_changed.connect(_on_time_changed)
 	WorldEventManager.event_changed.connect(_on_world_event_changed)
 	WorldEventManager.event_completed.connect(_on_world_event_completed)
+	WorldEventManager.event_history_changed.connect(_on_event_history_changed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_pursuit_state_changed(WantedManager.is_visible_to_police)
 	set_arrest_progress(0.0)
@@ -84,6 +86,7 @@ func _ready() -> void:
 	_on_inventory_changed(GameManager.medkits, GameManager.snacks, GameManager.energy_drinks)
 	_on_store_state_changed(false, "")
 	_on_cache_progress_changed(GameManager.collected_caches.size(), GameManager.CACHE_TOTAL)
+	_on_event_history_changed(WorldEventManager.events_completed)
 	_on_race_state_changed(StreetRaceManager.state)
 	_on_time_changed(WorldTimeManager.get_hour(), WorldTimeManager.get_minute(), WorldTimeManager.get_phase())
 	event_panel.hide()
@@ -255,6 +258,10 @@ func _on_world_event_changed(title: String, description: String, target: Vector2
 func _on_world_event_completed(title: String, reward: int) -> void:
 	var reward_text := " • +$%d" % reward if reward > 0 else ""
 	show_message("%s%s" % [title, reward_text])
+
+
+func _on_event_history_changed(total: int) -> void:
+	event_stats_label.text = "EVENTOS URBANOS  %d" % total
 
 
 func _on_cache_progress_changed(found: int, total: int) -> void:
