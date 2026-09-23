@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.15.1 · Godot 4.7.x**
+**Prototype 0.16 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -205,6 +205,23 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - velocidades das viaturas foram rebalanceadas para permitir fuga real com direção boa e quebra de contato.
 
 
+### Carga Quente — Prototype 0.16
+
+- Nika aparece no Distrito Industrial depois da ANOMALIA #004 e libera um novo serviço de roubo de veículo;
+- o trabalho `CARGA QUENTE` cria um Atlas Cargo especial com lacre vermelho no Porto Ferrugem;
+- roubar o caminhão gera duas estrelas de procura imediatamente;
+- o objetivo muda de roubo para fuga, exigindo quebrar contato com a polícia antes da entrega;
+- depois de perder a polícia, o minimapa aponta para um novo desmanche clandestino no Distrito Industrial;
+- o caminhão precisa ser estacionado próximo ao desmanche e entregue a pé;
+- o pagamento varia conforme a integridade do veículo: base de `$220` + até `$280` de bônus;
+- um caminhão entregue a 100% rende `$500`; um caminhão muito danificado rende bem menos;
+- se o veículo for destruído durante a fuga, o serviço é cancelado;
+- eventos urbanos ficam pausados enquanto uma atividade secundária está ativa para evitar excesso de objetivos;
+- o total de Cargas Quentes concluídas é persistido no save;
+- atividades de Carga Quente interrompidas não são retomadas automaticamente após carregar um save, evitando estados quebrados;
+- save version 10 mantém compatibilidade com os saves anteriores.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
@@ -269,8 +286,9 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas; roubo de veículo, agressão, atropelamento, disparos e roubo de pedestres alimentam o heat.
 - Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
 - Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
-- Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004 e Frete do Cais repetível.
+- Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004, Frete do Cais e Carga Quente.
 - Raptor 250 e Atlas Cargo como primeiras classes de veículo além do carro comum, cada uma com física própria.
+- Nika e o desmanche clandestino adicionam um loop de roubo, fuga policial e pagamento variável por integridade.
 
 ## Arquitetura da cena principal
 
@@ -296,7 +314,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, reação e roubo de civis, trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
