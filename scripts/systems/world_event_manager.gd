@@ -10,7 +10,7 @@ enum EventType {
 	RAIDERS,
 }
 
-const EVENT_ANCHORS = [
+const EVENT_ANCHORS: Array[Vector2] = [
 	Vector2(-1240, 1210),
 	Vector2(1240, 1210),
 	Vector2(1240, -240),
@@ -48,7 +48,7 @@ func _can_tick_events() -> bool:
 	if StreetRaceManager.state == StreetRaceManager.State.RACING:
 		return false
 
-	var stage := MissionManager.stage
+	var stage: int = int(MissionManager.stage)
 	if (
 		stage == MissionManager.Stage.CAPTURE_NIB
 		or stage == MissionManager.Stage.ESCAPE_POLICE
@@ -99,10 +99,10 @@ func force_event(event_type: int, anchor_index: int = 0) -> bool:
 	current_type = event_type
 	current_anchor = anchor_index
 	raiders_defeated = 0
-	var target := EVENT_ANCHORS[anchor_index]
+	var target: Vector2 = EVENT_ANCHORS[anchor_index]
 
 	if event_type == EventType.CARGO:
-		var crate := _event_crate()
+		var crate: Node = _event_crate()
 		if not is_instance_valid(crate):
 			_reset_after_failure()
 			return false
@@ -115,8 +115,8 @@ func force_event(event_type: int, anchor_index: int = 0) -> bool:
 		crate.call("activate_event", target, reward, item_id)
 		event_changed.emit("CARGA PERDIDA", "Uma carga sem dono apareceu na cidade. Chegue antes de outra pessoa.", target, true)
 	else:
-		var raider1 := _event_raider("EventRaider1")
-		var raider2 := _event_raider("EventRaider2")
+		var raider1: Node = _event_raider("EventRaider1")
+		var raider2: Node = _event_raider("EventRaider2")
 		if not is_instance_valid(raider1) or not is_instance_valid(raider2):
 			_reset_after_failure()
 			return false
@@ -192,10 +192,10 @@ func _event_raider(node_name: String) -> Node:
 
 
 func _hide_event_nodes() -> void:
-	var crate := _event_crate()
+	var crate: Node = _event_crate()
 	if is_instance_valid(crate):
 		crate.call("deactivate_event")
 	for node_name in ["EventRaider1", "EventRaider2"]:
-		var raider := _event_raider(node_name)
+		var raider: Node = _event_raider(node_name)
 		if is_instance_valid(raider):
 			raider.call("deactivate_world_event")
