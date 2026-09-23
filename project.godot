@@ -15,7 +15,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 [application]
 
 config/name="Wildside"
-config/version="0.18.1"
+config/version="0.18.2"
 run/main_scene="res://main.tscn"
 config/features=PackedStringArray("4.7")
 config/icon="res://assets/ui/icon.svg"
@@ -31,6 +31,7 @@ WorldTimeManager="*res://scripts/systems/world_time_manager.gd"
 WorldEventManager="*res://scripts/systems/world_event_manager.gd"
 SaveManager="*res://scripts/systems/save_manager.gd"
 AudioManager="*res://scripts/systems/audio_manager.gd"
+PerformanceManager="*res://scripts/systems/performance_manager.gd"
 
 [display]
 
