@@ -175,13 +175,17 @@ func set_energy_boost(remaining: float) -> void:
 		energy_label.text = "J  ENERGÉTICO  x%d" % GameManager.energy_drinks
 
 
-func set_vehicle_status(active: bool, vehicle_name: String = "", current: float = 0.0, maximum: float = 100.0) -> void:
+func set_vehicle_status(active: bool, vehicle_name: String = "", current: float = 0.0, maximum: float = 100.0, speed_kmh: int = 0) -> void:
 	vehicle_panel.visible = active
 	if not active:
 		return
 	vehicle_bar.max_value = maximum
 	vehicle_bar.value = current
-	vehicle_label.text = "%s  •  %d%%" % [vehicle_name.to_upper(), roundi((current / maxf(1.0, maximum)) * 100.0)]
+	vehicle_label.text = "%s  •  %d%%  •  %d KM/H" % [
+		vehicle_name.to_upper(),
+		roundi((current / maxf(1.0, maximum)) * 100.0),
+		speed_kmh,
+	]
 
 
 func set_arrest_progress(value: float) -> void:
