@@ -172,7 +172,7 @@ func talk_to_cora() -> String:
 		_emit_current_objective()
 		return "Cora: Esse núcleo não é equipamento do porto. Alguém adaptou tecnologia Wild para retransmitir os pulsos. Fique com o pagamento e um dispositivo extra.  +$%d" % ANOMALY_4_REWARD
 	if stage == Stage.ANOMALY_4_COMPLETE:
-		return "Cora: O porto voltou ao normal, mas agora eu verifico cada contêiner duas vezes."
+		return "Cora: O porto voltou ao normal. Se estiver atrás de dinheiro sujo, Nika vive rondando o Industrial."
 	return "Cora: Se veio falar do relé, resolva primeiro a pista que já está seguindo."
 
 
