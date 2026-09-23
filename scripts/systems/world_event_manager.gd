@@ -2,6 +2,7 @@ extends Node
 
 signal event_changed(title: String, description: String, target: Vector2, active: bool)
 signal event_completed(title: String, reward: int)
+signal event_history_changed(total: int)
 
 enum EventType {
 	NONE,
@@ -47,6 +48,7 @@ func reset_run() -> void:
 	raiders_defeated = 0
 	time_until_next = 45.0
 	events_completed = 0
+	event_history_changed.emit(events_completed)
 	event_changed.emit("", "", Vector2.ZERO, false)
 	_hide_event_nodes()
 
@@ -139,6 +141,7 @@ func cancel_event() -> void:
 
 func _complete_event(title: String, reward: int) -> void:
 	events_completed += 1
+	event_history_changed.emit(events_completed)
 	event_completed.emit(title, reward)
 	_hide_event_nodes()
 	current_type = EventType.NONE
