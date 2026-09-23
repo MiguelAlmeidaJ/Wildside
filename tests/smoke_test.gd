@@ -54,6 +54,7 @@ func _run() -> void:
 	var blackout_anomaly = game.get_node("World/Props/BlackoutAnomaly")
 	var market = game.get_node("World/Props/Market24")
 	var safehouse = game.get_node("World/Props/Safehouse")
+	var wild_terminal = game.get_node("World/Props/WildTerminal")
 	var garage = game.get_node("World/Props/GarageCobalto")
 	var personal_car = game.get_node("World/Entities/Vehicles/PersonalCar")
 	var cache_center = game.get_node("World/Props/CacheCenter")
@@ -90,6 +91,7 @@ func _run() -> void:
 	_check(get_nodes_in_group("ambient_traffic").size() >= 6, "Cidade Viva precisa ter trânsito civil")
 	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
 	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
+	_check(wild_terminal != null, "Terminal Wild precisa existir no apartamento")
 	_check(garage != null and personal_car != null, "Garagem Cobalto e veículo próprio precisam existir")
 	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
 	_check(police3 != null and police4 != null and police5 != null, "Procura 3–5 estrelas precisa ter unidades dedicadas")
@@ -318,6 +320,7 @@ func _run() -> void:
 	nib.attempt_capture(player)
 	await physics_frame
 	_check(nib.captured, "Nib precisa ser capturável")
+	_check(game_manager.is_wild_captured("nib") and game_manager.is_wild_active("nib"), "Nib capturado precisa entrar na equipe ativa")
 
 	# Wild capturado nunca deve roubar o foco de conversa de um NPC próximo.
 	player.global_position = maya.global_position + Vector2(0, 82)
@@ -355,6 +358,8 @@ func _run() -> void:
 	await physics_frame
 	_check(volt.captured, "Volt precisa ser capturável")
 	_check(game_manager.capture_devices == 0, "Captura de Volt precisa consumir um dispositivo")
+	_check(game_manager.is_wild_active("volt") and game_manager.active_wilds.size() == 2, "Volt precisa ocupar a segunda vaga da equipe")
+	_check(InputMap.has_action("wild_murno"), "Ação da habilidade do Murno precisa existir")
 	_check(mission.stage == mission.Stage.RETURN_TO_BRUNO, "Captura de Volt precisa liberar o retorno ao Bruno")
 	bruno.interact(player)
 	_check(mission.stage == mission.Stage.CLEAR_RAIDERS, "Bruno precisa liberar a limpeza dos galpões")
@@ -531,6 +536,8 @@ func _run() -> void:
 
 	murno.attempt_capture(player)
 	_check(murno.captured, "Murno precisa ser capturável com o dispositivo")
+	_check(game_manager.is_wild_captured("murno"), "Murno capturado precisa entrar na coleção")
+	_check(not game_manager.is_wild_active("murno"), "Murno precisa começar na reserva quando a equipe já tem dois Wilds")
 	_check(mission.stage == mission.Stage.ESCAPE_BLACKOUT, "Capturar Murno precisa disparar a fuga da Zona Sul")
 	_check(wanted.wanted_level == 2, "Pulso de Murno precisa gerar duas estrelas de procura")
 
@@ -541,7 +548,18 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.11.
+	# Prototype 0.13: Terminal Wild permite formar equipe de até dois companheiros.
+	wild_terminal.interact(player)
+	_check(game_manager.wild_terminal_open, "Terminal Wild precisa abrir no apartamento")
+	game_manager.toggle_wild_active("volt")
+	game_manager.toggle_wild_active("murno")
+	await physics_frame
+	_check(game_manager.active_wilds.size() == 2, "Equipe ativa precisa continuar limitada a dois Wilds")
+	_check(game_manager.is_wild_active("nib") and game_manager.is_wild_active("murno"), "Terminal precisa permitir trocar Volt por Murno")
+	_check(not volt.visible and murno.visible, "Wild na reserva precisa sumir e Murno ativo precisa aparecer")
+	game_manager.close_wild_terminal()
+
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.13.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -549,7 +567,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 7, "Prototype 0.11 precisa usar save version 7")
+	_check(save_manager.SAVE_VERSION == 8, "Prototype 0.13 precisa usar save version 8")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
@@ -577,10 +595,11 @@ func _run() -> void:
 	time_manager.set_time(8, 0)
 	time_manager.day_count = 1
 	event_manager.events_completed = 0
+	game_manager.set_wild_roster([], [])
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
-	_check(save_manager.load_game(), "Save 0.11 precisa ser carregável")
+	_check(save_manager.load_game(), "Save 0.13 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
@@ -589,6 +608,8 @@ func _run() -> void:
 	_check(is_equal_approx(race_manager.best_time, 58.5) and race_manager.wins == 2, "Load precisa restaurar recorde e vitórias de corrida")
 	_check(time_manager.get_hour() == 23 and time_manager.get_minute() == 15 and time_manager.day_count == 3, "Load precisa restaurar relógio e dia")
 	_check(event_manager.events_completed == 4, "Load precisa restaurar histórico de eventos urbanos")
+	_check(game_manager.is_wild_active("nib") and game_manager.is_wild_active("murno"), "Load precisa restaurar a formação Wild ativa")
+	_check(game_manager.is_wild_captured("volt"), "Load precisa manter Wilds da reserva na coleção")
 	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
