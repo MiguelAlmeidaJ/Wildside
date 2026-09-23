@@ -267,9 +267,13 @@ func _sync_team_state() -> void:
 	status_label.visible = team_active
 	collision_shape.set_deferred("disabled", true)
 	if team_active:
+		if not is_in_group("interactable"):
+			add_to_group("interactable")
 		status_label.text = "MURNO  ◆  SEU WILD"
 		sprite.scale = Vector2.ONE
 		sprite.modulate = Color.WHITE
+	elif is_in_group("interactable"):
+		remove_from_group("interactable")
 
 
 func _finish_capture_hide() -> void:
