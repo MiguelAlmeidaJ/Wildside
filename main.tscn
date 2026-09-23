@@ -260,7 +260,7 @@ appearance_tint = Color(0.94, 0.84, 1, 1)
 ambient_lines = PackedStringArray("Cheiro de óleo hoje está forte.", "Turno noturno paga melhor.")
 
 [node name="Rui" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2720, 1700)
+position = Vector2(2805, 1450)
 citizen_name = "Rui"
 appearance_variant = 0
 dialogue = "Pesco aqui há vinte anos. Nunca vi a água vibrar como naquela noite."
@@ -305,7 +305,7 @@ appearance_tint = Color(1, 0.86, 0.92, 1)
 ambient_lines = PackedStringArray("Vou cortar caminho pela praça.", "As árvores cresceram rápido.")
 
 [node name="Teo" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(-2050, 1660)
+position = Vector2(-2550, 1550)
 citizen_name = "Teo"
 appearance_variant = 0
 dialogue = "Esse canto ainda parece outra cidade."
