@@ -38,6 +38,8 @@ func _run() -> void:
 	var mini_map_panel = game.get_node("UI/HUD/MiniMapPanel")
 	var car = game.get_node("World/Entities/Vehicles/Car")
 	var car_residential = game.get_node("World/Entities/Vehicles/CarResidential")
+	var motorcycle = game.get_node("World/Entities/Vehicles/MotorcycleCenter")
+	var truck = game.get_node("World/Entities/Vehicles/TruckIndustrial")
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var bruno = game.get_node("World/Entities/NPCs/Bruno")
@@ -49,6 +51,7 @@ func _run() -> void:
 	var vera = game.get_node("World/Entities/NPCs/Vera")
 	var nando = game.get_node("World/Entities/NPCs/Nando")
 	var davi = game.get_node("World/Entities/NPCs/Davi")
+	var ravi = game.get_node("World/Entities/NPCs/Ravi")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
 	var volt = game.get_node("World/Entities/Creatures/Volt")
@@ -90,6 +93,11 @@ func _run() -> void:
 	_check(mini_map.main_target == mission.MAYA_POSITION, "Objetivo inicial do minimapa precisa apontar para Maya")
 	_check(race_manager.CHECKPOINT_POSITIONS.size() == race_manager.CHECKPOINT_COUNT, "Minimapa precisa conhecer todos os checkpoints da corrida")
 	_check(car != null, "Car precisa existir")
+	_check(motorcycle != null and truck != null, "Moto e caminhão precisam existir no mapa")
+	_check(motorcycle.vehicle_kind == "motorcycle" and truck.vehicle_kind == "truck", "Novos veículos precisam carregar perfis próprios")
+	_check(motorcycle.maximum_speed > car.maximum_speed, "Moto precisa ser mais rápida que o carro comum")
+	_check(truck.maximum_durability > car.maximum_durability and truck.maximum_speed < car.maximum_speed, "Caminhão precisa ser mais resistente e mais lento")
+	_check(ravi != null and ravi.is_in_group("civilian_damageable"), "Civis precisam aceitar agressão do jogador")
 	await physics_frame
 	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
 	_check(not parked_blocker.disabled, "Carro estacionado precisa manter o bloqueio estático ativo")
@@ -281,6 +289,52 @@ func _run() -> void:
 	_check(swapped, "Trocar para outro veículo durante a perseguição precisa ajudar na fuga")
 	_check(wanted.heat == maxf(0.0, heat_before_swap - 15.0), "Troca de veículo precisa reduzir 15 de heat")
 
+	# Prototype 0.15: veículos diferentes e roubo de rua.
+	wanted.clear()
+	motorcycle.interact(player)
+	await physics_frame
+	_check(player.current_vehicle == motorcycle, "Player precisa conseguir roubar a moto")
+	_check(motorcycle.was_taken, "Moto roubada precisa registrar o furto")
+	_check(wanted.wanted_level == 1, "Roubar moto precisa gerar procura")
+	_check(motorcycle.get_interaction_text(player).contains("Entrar"), "Depois do furto a moto precisa deixar de mostrar prompt de roubo")
+	motorcycle.request_exit()
+	await physics_frame
+	_check(player.current_vehicle == null, "Player precisa conseguir sair da moto")
+
+	wanted.clear()
+	truck.interact(player)
+	await physics_frame
+	_check(player.current_vehicle == truck, "Player precisa conseguir roubar o caminhão")
+	_check(truck.was_taken, "Caminhão roubado precisa registrar o furto")
+	_check(wanted.heat >= truck.theft_heat, "Roubo do caminhão precisa usar heat próprio")
+	truck.request_exit()
+	await physics_frame
+	_check(player.current_vehicle == null, "Player precisa conseguir sair do caminhão")
+	wanted.clear()
+
+	# Civis podem revidar, ser derrubados e ter dinheiro roubado.
+	player.global_position = ravi.global_position + Vector2(0, 78)
+	player.velocity = Vector2.ZERO
+	player.facing_direction = Vector2.UP
+	player._attack_cooldown_left = 0.0
+	ravi.health = ravi.max_health
+	var ravi_health_before: float = ravi.health
+	var civilian_hit = player.perform_attack()
+	_check(civilian_hit and ravi.health < ravi_health_before, "Soco do player precisa atingir um civil à frente")
+	await physics_frame
+	_check(ravi.state == ravi.State.FIGHT, "Civil com coragem alta precisa revidar a agressão")
+	_check(ravi.is_in_group("hostile"), "Civil que revida precisa virar alvo hostil temporário")
+	_check(wanted.wanted_level >= 1, "Agressão a pedestre precisa gerar procura")
+
+	ravi.take_damage(999.0, player)
+	_check(ravi.state == ravi.State.DOWNED, "Civil não essencial precisa poder ser derrubado")
+	var money_before_robbery = game_manager.money
+	ravi.interact(player)
+	_check(ravi._wallet_looted, "Interagir com civil caído precisa marcar a carteira como coletada")
+	_check(game_manager.money > money_before_robbery, "Roubar civil caído precisa render dinheiro")
+	var money_after_robbery = game_manager.money
+	ravi.interact(player)
+	_check(game_manager.money == money_after_robbery, "Carteira do mesmo civil não pode pagar duas vezes")
 	wanted.clear()
 	_check(not wanted.is_visible_to_police, "Limpar procura precisa remover estado VISTO")
 
