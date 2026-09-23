@@ -20,6 +20,8 @@ func _district_for(position: Vector2) -> String:
 		return "MATA NORTE"
 	if position.x >= 1800.0:
 		return "PORTO FERRUGEM"
+	if position.x <= -1800.0:
+		return "VILA OESTE"
 	if position.y >= 800.0:
 		return "ZONA SUL"
 	if position.x <= -800.0:
