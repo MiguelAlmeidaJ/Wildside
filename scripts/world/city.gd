@@ -36,6 +36,8 @@ func _ready() -> void:
 	_create_city_props()
 	_create_district_signs()
 	_create_world_boundaries()
+	WorldTimeManager.period_changed.connect(_on_period_changed)
+	_update_lamp_lighting(WorldTimeManager.get_phase())
 	queue_redraw()
 
 
@@ -258,8 +260,9 @@ func _create_lamp(at: Vector2) -> void:
 	glow.polygon = PackedVector2Array([
 		Vector2(0, -42), Vector2(32, -12), Vector2(0, 18), Vector2(-32, -12)
 	])
-	glow.color = Color(1.0, 0.82, 0.42, 0.18)
+	glow.color = Color(1.0, 0.82, 0.42, 0.26)
 	node.add_child(glow)
+	_lamp_glows.append(glow)
 
 	var pole := Line2D.new()
 	pole.points = PackedVector2Array([Vector2(0, 5), Vector2(0, -33)])
@@ -274,7 +277,36 @@ func _create_lamp(at: Vector2) -> void:
 	])
 	bulb.color = Color("#ffd878")
 	node.add_child(bulb)
+	_lamp_bulbs.append(bulb)
 	add_child(node)
+
+
+func _on_period_changed(phase: String) -> void:
+	_update_lamp_lighting(phase)
+
+
+func _update_lamp_lighting(phase: String) -> void:
+	var glow_alpha := 0.08
+	var bulb_tint := Color(0.78, 0.78, 0.72, 1.0)
+	match phase:
+		"NOITE":
+			glow_alpha = 1.0
+			bulb_tint = Color(1.0, 0.9, 0.62, 1.0)
+		"ENTARDECER":
+			glow_alpha = 0.58
+			bulb_tint = Color(1.0, 0.86, 0.56, 1.0)
+		"AMANHECER":
+			glow_alpha = 0.42
+			bulb_tint = Color(1.0, 0.88, 0.64, 1.0)
+		_:
+			glow_alpha = 0.08
+
+	for glow in _lamp_glows:
+		if is_instance_valid(glow):
+			glow.modulate.a = glow_alpha
+	for bulb in _lamp_bulbs:
+		if is_instance_valid(bulb):
+			bulb.modulate = bulb_tint
 
 
 func _create_bench(at: Vector2) -> void:
