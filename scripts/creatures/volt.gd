@@ -5,6 +5,7 @@ enum State { IDLE, WANDER, FLEE, FOLLOW }
 @export var capture_chance := 1.0
 @export var assist_range := 260.0
 @export var assist_damage := 18.0
+@export var assist_scan_interval := 0.18
 @export var assist_cooldown := 0.85
 @export var ability_range := 390.0
 @export var chain_range := 300.0
@@ -25,6 +26,7 @@ var _wander_target := Vector2.ZERO
 var _state_timer := 1.0
 var _rng := RandomNumberGenerator.new()
 var _assist_cooldown_left := 0.0
+var _assist_scan_left := 0.0
 var ability_cooldown_left := 0.0
 
 
@@ -43,6 +45,7 @@ func _physics_process(delta: float) -> void:
 
 	_state_timer -= delta
 	_assist_cooldown_left = maxf(0.0, _assist_cooldown_left - delta)
+	_assist_scan_left = maxf(0.0, _assist_scan_left - delta)
 	ability_cooldown_left = maxf(0.0, ability_cooldown_left - delta)
 	if captured:
 		_sync_team_state()
@@ -174,8 +177,9 @@ func _follow_player(delta: float) -> void:
 
 
 func _assist_player() -> void:
-	if _assist_cooldown_left > 0.0:
+	if _assist_cooldown_left > 0.0 or _assist_scan_left > 0.0:
 		return
+	_assist_scan_left = assist_scan_interval
 	var target: Node2D
 	var nearest_distance := INF
 	for enemy in get_tree().get_nodes_in_group("hostile"):

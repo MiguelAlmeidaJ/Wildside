@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.18.1 · Godot 4.7.x**
+**Prototype 0.18.2 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -286,6 +286,19 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - prisão continua sendo um sistema separado, usando o checkpoint e a fiança policial;
 - save version 10 continua válido.
 
+#### Performance Pass — 0.18.2
+
+- novo `PerformanceManager` faz culling por distância a cada 0,25 s, em vez de deixar toda a população simulando continuamente;
+- cidadãos acima de ~1280 px entram em sleep e acordam antes de voltar ao raio de interação;
+- Raiders distantes também suspendem física e IA até o jogador se aproximar;
+- trânsito ambiente distante deixa de ser simulado e é reposicionado fora da câmera quando volta a ficar relevante;
+- o minimapa separa o cenário estático em uma camada cacheada e atualiza somente jogador, polícia e objetivos a ~6 FPS;
+- buscas automáticas dos Wilds por inimigos passam a ocorrer em intervalos, evitando varrer o grupo `hostile` todo frame quando não há alvo;
+- direção de perseguição da polícia e dos militares recebe atualização reduzida à distância sem diminuir a frequência física do movimento;
+- HUD e telemetria de veículo deixam de reescrever textos a 60 Hz e passam a atualizar a 10 Hz;
+- `F3` alterna o painel de diagnóstico com FPS, NPCs ativos, trânsito ativo, polícia e entidades próximas;
+- save version 10 continua válido: a atualização altera apenas simulação e apresentação, não o formato do progresso.
+
 
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
@@ -296,7 +309,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Cidade ampliada para 23 quarteirões, cinco eixos verticais, duas avenidas principais, uma via de cais e a nova Vila Oeste.
 - `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas agora têm calçadas segmentadas, cruzamentos limpos, faixas de pedestre posicionadas fora do miolo das interseções, estacionamento e bordas mais legíveis.
 - Props urbanos distribuídos pelos distritos: postes, árvores, bancos, vasos, caçambas, cones, containers, placas de região, estacionamentos e letreiros.
-- Dez carros civis circulam continuamente em rotas pelas avenidas principais, Porto Ferrugem e Vila Oeste.
+- Até dez carros civis ocupam as rotas das avenidas principais, Porto Ferrugem e Vila Oeste; apenas os próximos ao jogador ficam simulados continuamente.
 - Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte, Porto Ferrugem e Vila Oeste.
 - Transição de bairro exibida no HUD ao cruzar de uma região para outra.
 - Mais cidadãos e veículos estacionados espalhados pelo mapa, agora posicionados em calçadas, bolsões e pátios em vez de ocupar as faixas de rodagem.

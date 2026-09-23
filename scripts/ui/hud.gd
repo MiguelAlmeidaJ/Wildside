@@ -63,6 +63,7 @@ var _event_has_target := false
 var _event_description_text := ""
 var _minimap_before_modal := true
 var _modal_focus_open := false
+var _dynamic_refresh_left := 0.0
 
 
 func _ready() -> void:
@@ -110,7 +111,12 @@ func _ready() -> void:
 	vehicle_panel.hide()
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_dynamic_refresh_left -= delta
+	if _dynamic_refresh_left > 0.0:
+		return
+	_dynamic_refresh_left = 0.10
+
 	_update_pursuit_label()
 	if _objective_has_target:
 		var distance := GameManager.get_controlled_position().distance_to(_objective_target)

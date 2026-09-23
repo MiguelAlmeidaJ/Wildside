@@ -11,6 +11,8 @@ const OFFICER_SCENE := preload("res://scenes/world/police_officer.tscn")
 @export var spawn_min_distance := 900.0
 @export var spawn_max_distance := 1180.0
 @export var acceleration := 390.0
+@export var far_ai_distance := 850.0
+@export var far_ai_interval := 0.12
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
@@ -19,6 +21,8 @@ var responding := false
 var response_left := 0.0
 var officer: CharacterBody2D
 var _officer_redeploy_left := 0.0
+var _far_ai_left := 0.0
+var _far_direction := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -59,7 +63,18 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	var direction: Vector2 = global_position.direction_to(target)
+	_far_ai_left = maxf(0.0, _far_ai_left - delta)
+	var direction: Vector2
+	if distance > far_ai_distance:
+		if _far_ai_left <= 0.0 or _far_direction == Vector2.ZERO:
+			_far_direction = global_position.direction_to(target)
+			_far_ai_left = far_ai_interval
+		direction = _far_direction
+	else:
+		_far_ai_left = 0.0
+		_far_direction = global_position.direction_to(target)
+		direction = _far_direction
+
 	var level_bonus := float(maxi(0, WantedManager.wanted_level - 1)) * 8.0
 	var target_speed := chase_speed + level_bonus
 	velocity = velocity.move_toward(direction * target_speed, acceleration * delta)
@@ -107,6 +122,8 @@ func _begin_response() -> void:
 	responding = true
 	response_left = response_delay + float(required_level - 1) * 0.55
 	_officer_redeploy_left = 0.0
+	_far_ai_left = 0.0
+	_far_direction = Vector2.ZERO
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	velocity = Vector2.ZERO
@@ -134,6 +151,8 @@ func _cancel_response() -> void:
 	responding = false
 	response_left = 0.0
 	_officer_redeploy_left = 0.0
+	_far_ai_left = 0.0
+	_far_direction = Vector2.ZERO
 	_hide_unit()
 	if is_instance_valid(officer):
 		officer.queue_free()

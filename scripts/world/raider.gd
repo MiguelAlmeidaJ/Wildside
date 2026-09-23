@@ -31,6 +31,7 @@ func _ready() -> void:
 	health = max_health
 	add_to_group("hostile")
 	add_to_group("damageable")
+	add_to_group("performance_raider")
 	GameManager.noise_emitted.connect(_on_noise_emitted)
 	if mission_key == "blackout" or mission_key == "world_event" or activation_stage >= 0:
 		_set_active(false)
