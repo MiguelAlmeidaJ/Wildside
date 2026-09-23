@@ -96,7 +96,10 @@ func _run() -> void:
 	_check(motorcycle != null and truck != null, "Moto e caminhão precisam existir no mapa")
 	_check(motorcycle.vehicle_kind == "motorcycle" and truck.vehicle_kind == "truck", "Novos veículos precisam carregar perfis próprios")
 	_check(motorcycle.maximum_speed > car.maximum_speed, "Moto precisa ser mais rápida que o carro comum")
+	_check(car.maximum_speed <= 450.0 and motorcycle.maximum_speed <= 530.0, "0.15.1 precisa manter velocidades compatíveis com a escala do mapa")
+	_check(car.road_grip >= 14.0 and car.steering_high_speed <= 1.1, "Carro comum precisa ter estabilidade reforçada em alta")
 	_check(truck.maximum_durability > car.maximum_durability and truck.maximum_speed < car.maximum_speed, "Caminhão precisa ser mais resistente e mais lento")
+	_check(police.response_delay >= 2.5 and police.chase_speed < car.maximum_speed, "Primeira viatura precisa ter atraso e velocidade de perseguição justa")
 	_check(ravi != null and ravi.is_in_group("civilian_damageable"), "Civis precisam aceitar agressão do jogador")
 	await physics_frame
 	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
