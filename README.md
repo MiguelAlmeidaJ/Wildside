@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.11 · Godot 4.7.x**
+**Prototype 0.12 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -24,6 +24,7 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | Habilidade do Volt — Sobrecarga | `2` |
 | Capturar Wild | `Q` |
 | Mochila | `Tab` |
+| Mostrar / ocultar minimapa | `M` |
 | Kit médico | `H` |
 | Energético | `J` |
 | Lanche | `K` |
@@ -113,6 +114,19 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 7 persiste horário, dia e histórico de eventos, mantendo compatibilidade com saves 5 e 6.
 
 
+### Navegação — Prototype 0.12
+
+- corrige o erro de parser do Godot 4.7.2 no bloqueio de eventos durante etapas críticas;
+- adiciona minimapa norte-fixo no canto inferior esquerdo;
+- o minimapa representa Mata Norte, bairros, avenidas e principais pontos de serviço;
+- marcador branco acompanha o jogador ou o veículo dirigido;
+- objetivo principal aparece em ciano, atividade secundária em laranja e evento urbano em rosa;
+- corrida de rua mostra largada ou próximo checkpoint diretamente no minimapa;
+- viaturas e policiais aparecem em vermelho quando há procura;
+- o Cobalto R aparece no mapa quando está estacionado e já pertence ao jogador;
+- `M` mostra ou oculta o minimapa.
+
+
 
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
@@ -176,6 +190,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Ciclo contínuo de dia/noite com relógio, fases visuais e postes que respondem ao horário.
 - Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha.
 - Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas e agentes mais agressivos nos níveis altos.
+- Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio e polícia.
 
 ## Arquitetura da cena principal
 
@@ -201,7 +216,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, safehouse/save, persistência de relógio/eventos/recordes/exploração, regiões, as três anomalias, boss Murno, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, safehouse/save, persistência de relógio/eventos/recordes/exploração, regiões, as três anomalias, boss Murno, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 

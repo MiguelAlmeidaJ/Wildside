@@ -1,6 +1,7 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="1_hud"]
+[ext_resource type="Script" path="res://scripts/ui/minimap.gd" id="2_minimap"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBox_info"]
 bg_color = Color(0.055, 0.078, 0.11, 0.9)
@@ -63,7 +64,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.11\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.12\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis   M  Mapa\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
@@ -158,6 +159,35 @@ value = 100.0
 show_percentage = false
 theme_override_styles/background = SubResource("StyleBox_health_bg")
 theme_override_styles/fill = SubResource("StyleBox_health_fill")
+
+[node name="MiniMapPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+offset_left = 24.0
+offset_top = 552.0
+offset_right = 334.0
+offset_bottom = 710.0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="MiniMapContent" type="VBoxContainer" parent="MiniMapPanel"]
+theme_override_constants/separation = 3
+
+[node name="MiniMapHeader" type="Label" parent="MiniMapPanel/MiniMapContent"]
+theme_override_colors/font_color = Color(0.47, 0.93, 0.87, 1)
+theme_override_font_sizes/font_size = 13
+text = "WILDSIDE  •  M  ocultar"
+
+[node name="MiniMap" type="Control" parent="MiniMapPanel/MiniMapContent"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 102)
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_minimap")
+
+[node name="MiniMapLegend" type="Label" parent="MiniMapPanel/MiniMapContent"]
+theme_override_colors/font_color = Color(0.72, 0.78, 0.82, 1)
+theme_override_font_sizes/font_size = 11
+text = "◆ objetivo   ● polícia   ■ locais"
+horizontal_alignment = 1
 
 [node name="InventoryPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
@@ -549,10 +579,10 @@ visible = false
 anchors_preset = 3
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 28.0
-offset_top = -82.0
-offset_right = 520.0
-offset_bottom = -34.0
+offset_left = 350.0
+offset_top = -138.0
+offset_right = 900.0
+offset_bottom = -90.0
 grow_vertical = 0
 theme_override_colors/font_color = Color(0.95, 0.98, 1, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)

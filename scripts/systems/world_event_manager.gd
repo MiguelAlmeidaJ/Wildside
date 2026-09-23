@@ -47,15 +47,18 @@ func _can_tick_events() -> bool:
 		return false
 	if StreetRaceManager.state == StreetRaceManager.State.RACING:
 		return false
-	match MissionManager.stage:
-		MissionManager.Stage.CAPTURE_NIB,
-		MissionManager.Stage.ESCAPE_POLICE,
-		MissionManager.Stage.CAPTURE_VOLT,
-		MissionManager.Stage.CLEAR_RAIDERS,
-		MissionManager.Stage.CLEAR_BLACKOUT,
-		MissionManager.Stage.CAPTURE_MURNO,
-		MissionManager.Stage.ESCAPE_BLACKOUT:
-			return false
+
+	var stage := MissionManager.stage
+	if (
+		stage == MissionManager.Stage.CAPTURE_NIB
+		or stage == MissionManager.Stage.ESCAPE_POLICE
+		or stage == MissionManager.Stage.CAPTURE_VOLT
+		or stage == MissionManager.Stage.CLEAR_RAIDERS
+		or stage == MissionManager.Stage.CLEAR_BLACKOUT
+		or stage == MissionManager.Stage.CAPTURE_MURNO
+		or stage == MissionManager.Stage.ESCAPE_BLACKOUT
+	):
+		return false
 	return true
 
 

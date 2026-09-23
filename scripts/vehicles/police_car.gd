@@ -15,6 +15,7 @@ var officer: CharacterBody2D
 
 
 func _ready() -> void:
+	add_to_group("police_unit")
 	WantedManager.wanted_changed.connect(_on_wanted_changed)
 	_set_active(false)
 

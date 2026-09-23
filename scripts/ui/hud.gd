@@ -42,6 +42,8 @@ extends CanvasLayer
 @onready var event_panel: PanelContainer = %EventPanel
 @onready var event_title: Label = %EventTitle
 @onready var event_description: Label = %EventDescription
+@onready var mini_map_panel: PanelContainer = %MiniMapPanel
+@onready var mini_map: Control = %MiniMap
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -56,6 +58,7 @@ var _event_description_text := ""
 
 
 func _ready() -> void:
+	_ensure_minimap_input()
 	MissionManager.objective_changed.connect(_on_objective_changed)
 	MissionManager.mission_completed.connect(_on_mission_completed)
 	WantedManager.wanted_changed.connect(_on_wanted_changed)
@@ -117,6 +120,21 @@ func _process(_delta: float) -> void:
 		event_description.text = "%s\n[ %d m ]" % [_event_description_text, roundi(event_distance / 4.0)]
 	else:
 		event_description.text = _event_description_text
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("minimap_toggle"):
+		mini_map_panel.visible = not mini_map_panel.visible
+		get_viewport().set_input_as_handled()
+
+
+func _ensure_minimap_input() -> void:
+	if not InputMap.has_action("minimap_toggle"):
+		InputMap.add_action("minimap_toggle")
+	if InputMap.action_get_events("minimap_toggle").is_empty():
+		var key := InputEventKey.new()
+		key.physical_keycode = KEY_M
+		InputMap.action_add_event("minimap_toggle", key)
 
 
 func set_prompt(text: String) -> void:
@@ -182,6 +200,7 @@ func _on_objective_changed(title: String, description: String, target: Vector2, 
 	_objective_text = description
 	_objective_target = target
 	_objective_has_target = has_target
+	mini_map.call("set_main_objective", target, has_target)
 	mission_panel.show()
 
 
@@ -245,6 +264,7 @@ func _on_time_changed(hour: int, minute: int, phase: String) -> void:
 
 func _on_world_event_changed(title: String, description: String, target: Vector2, active: bool) -> void:
 	event_panel.visible = active
+	mini_map.call("set_event_objective", target, active)
 	if not active:
 		_event_has_target = false
 		_event_description_text = ""
@@ -303,11 +323,13 @@ func _on_side_job_objective_changed(title: String, description: String, target: 
 		side_job_panel.hide()
 		_side_objective_text = ""
 		_side_objective_has_target = false
+		mini_map.call("set_side_objective", Vector2.ZERO, false)
 		return
 	side_job_title.text = title
 	_side_objective_text = description
 	_side_objective_target = target
 	_side_objective_has_target = has_target
+	mini_map.call("set_side_objective", target, has_target)
 	side_job_panel.show()
 
 
