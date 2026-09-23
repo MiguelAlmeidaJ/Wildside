@@ -451,6 +451,8 @@ func _run() -> void:
 		_check(police5.officer.response_level == 5, "Agente da resposta máxima precisa receber nível 5")
 		_check(police5.officer.arrest_time < 1.0, "Agente tático precisa prender mais rápido")
 	wanted.clear()
+	player.heal(player.max_health)
+	player._invulnerability_left = 0.0
 
 	mission.reset_run()
 	maya.interact(player)
