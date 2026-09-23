@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlinvuxpl85vd"
-path="res://.godot/imported/icon.svg-6c8e7c7a8dcdd81e58bcb0386e6e4017.ctex"
+uid="uid://c7yfqw26hi7rj"
+path="res://.godot/imported/citizen_b.svg-36b222af6ab0c0ab40e0fed095e36c0f.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/icon.svg"
-dest_files=["res://.godot/imported/icon.svg-6c8e7c7a8dcdd81e58bcb0386e6e4017.ctex"]
+source_file="res://assets/characters/citizen_b.svg"
+dest_files=["res://.godot/imported/citizen_b.svg-36b222af6ab0c0ab40e0fed095e36c0f.ctex"]
 
 [params]
 

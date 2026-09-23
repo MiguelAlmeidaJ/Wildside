@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dlinvuxpl85vd"
-path="res://.godot/imported/icon.svg-6c8e7c7a8dcdd81e58bcb0386e6e4017.ctex"
+uid="uid://8dxu5als67d7"
+path="res://.godot/imported/raider.svg-9f5d56b4394a0c1031f74462ca81f9bc.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/ui/icon.svg"
-dest_files=["res://.godot/imported/icon.svg-6c8e7c7a8dcdd81e58bcb0386e6e4017.ctex"]
+source_file="res://assets/characters/raider.svg"
+dest_files=["res://.godot/imported/raider.svg-9f5d56b4394a0c1031f74462ca81f9bc.ctex"]
 
 [params]
 
