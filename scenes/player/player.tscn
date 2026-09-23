@@ -29,8 +29,8 @@ position_smoothing_enabled = true
 position_smoothing_speed = 7.0
 limit_left = -1800
 limit_top = -1600
-limit_right = 1800
-limit_bottom = 1800
+limit_right = 3000
+limit_bottom = 2200
 
 [node name="InteractionArea" type="Area2D" parent="."]
 collision_layer = 0
