@@ -111,6 +111,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	_update_pursuit_label()
 	if _objective_has_target:
 		var distance := GameManager.get_controlled_position().distance_to(_objective_target)
 		mission_description.text = "%s\n[ %d m ]" % [_objective_text, roundi(distance / 4.0)]
@@ -255,8 +256,19 @@ func _update_pursuit_label() -> void:
 		return
 
 	if not WantedManager.is_visible_to_police:
-		pursuit_label.text = "ESCAPANDO  •  NÍVEL %d" % level
-		pursuit_label.modulate = Color("#7de3cf")
+		var dispatching := false
+		var unit_active := false
+		for unit in get_tree().get_nodes_in_group("police_unit"):
+			if bool(unit.get("responding")):
+				dispatching = true
+			if bool(unit.get("active")):
+				unit_active = true
+		if dispatching and not unit_active:
+			pursuit_label.text = "VIATURAS A CAMINHO  •  NÍVEL %d" % level
+			pursuit_label.modulate = Color("#ffcf5c")
+		else:
+			pursuit_label.text = "ESCAPANDO  •  NÍVEL %d" % level
+			pursuit_label.modulate = Color("#7de3cf")
 		return
 
 	match level:
