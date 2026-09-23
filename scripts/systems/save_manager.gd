@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://wildside_save.json"
-const SAVE_VERSION := 8
+const SAVE_VERSION := 9
 const MIN_SUPPORTED_VERSION := 5
 
 
@@ -38,6 +38,7 @@ func save_game() -> bool:
 		"mission_stage": MissionManager.stage,
 		"raiders_defeated": MissionManager.raiders_defeated,
 		"blackout_raiders_defeated": MissionManager.blackout_raiders_defeated,
+		"port_raiders_defeated": MissionManager.port_raiders_defeated,
 		"side_job_stage": SideJobManager.stage,
 		"deliveries_completed": SideJobManager.deliveries_completed,
 		"race_best_time": StreetRaceManager.best_time,
@@ -120,6 +121,7 @@ func load_game() -> bool:
 	MissionManager.stage = int(data.get("mission_stage", MissionManager.Stage.TALK_TO_MAYA))
 	MissionManager.raiders_defeated = int(data.get("raiders_defeated", 0))
 	MissionManager.blackout_raiders_defeated = int(data.get("blackout_raiders_defeated", 0))
+	MissionManager.port_raiders_defeated = int(data.get("port_raiders_defeated", 0))
 	SideJobManager.stage = int(data.get("side_job_stage", SideJobManager.Stage.IDLE))
 	SideJobManager.deliveries_completed = int(data.get("deliveries_completed", 0))
 
