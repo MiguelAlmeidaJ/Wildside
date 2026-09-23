@@ -1,6 +1,6 @@
 extends Control
 
-const WORLD_MIN := Vector2(-1800.0, -1600.0)
+const WORLD_MIN := Vector2(-2700.0, -1600.0)
 const WORLD_MAX := Vector2(3000.0, 2200.0)
 const PADDING := 8.0
 
@@ -68,7 +68,8 @@ func _draw() -> void:
 
 
 func _draw_regions() -> void:
-	_draw_world_rect(Rect2(-1800, -1600, 3600, 700), Color(0.12, 0.31, 0.19, 0.78))
+	_draw_world_rect(Rect2(-2700, -1600, 4500, 700), Color(0.12, 0.31, 0.19, 0.78))
+	_draw_world_rect(Rect2(-2700, -900, 900, 3100), Color(0.14, 0.25, 0.30, 0.74))
 	_draw_world_rect(Rect2(-1800, -900, 980, 1700), Color(0.12, 0.23, 0.36, 0.7))
 	_draw_world_rect(Rect2(-820, -900, 1640, 1700), Color(0.20, 0.16, 0.27, 0.68))
 	_draw_world_rect(Rect2(820, -900, 980, 1700), Color(0.33, 0.21, 0.12, 0.7))
@@ -82,9 +83,10 @@ func _draw_roads() -> void:
 	var edge := Color(0.48, 0.54, 0.58, 0.6)
 
 	for segment in [
-		[Vector2(-1800, 0), Vector2(2840, 0)],
-		[Vector2(-1800, 1000), Vector2(2840, 1000)],
+		[Vector2(-2700, 0), Vector2(2840, 0)],
+		[Vector2(-2700, 1000), Vector2(2840, 1000)],
 		[Vector2(0, -900), Vector2(0, 2200)],
+		[Vector2(-2250, -900), Vector2(-2250, 2200)],
 		[Vector2(-1010, -900), Vector2(-1010, 2200)],
 		[Vector2(1010, -900), Vector2(1010, 2200)],
 		[Vector2(2320, -900), Vector2(2320, 2200)],
