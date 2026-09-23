@@ -10,6 +10,10 @@ const LEVEL_THREE_HEAT := 100.0
 const LEVEL_FOUR_HEAT := 140.0
 const LEVEL_FIVE_HEAT := 180.0
 const MAX_HEAT := 200.0
+const POLICE_ASSAULT_HEAT := 35.0
+const POLICE_KILL_HEAT := 55.0
+const MILITARY_ASSAULT_HEAT := 45.0
+const MILITARY_KILL_HEAT := 70.0
 
 var heat := 0.0
 var wanted_level := 0
@@ -54,6 +58,22 @@ func add_heat(amount: float, description: String) -> void:
 	_cooldown = 8.0 + maxf(0.0, float(wanted_level - 2)) * 1.5
 	crime_committed.emit(description, amount)
 	wanted_changed.emit(wanted_level, heat)
+
+
+func report_police_assault() -> void:
+	add_heat(POLICE_ASSAULT_HEAT, "Agressão a policial")
+
+
+func report_police_killed() -> void:
+	add_heat(POLICE_KILL_HEAT, "Policial abatido")
+
+
+func report_military_assault() -> void:
+	add_heat(MILITARY_ASSAULT_HEAT, "Ataque a força militar")
+
+
+func report_military_killed() -> void:
+	add_heat(MILITARY_KILL_HEAT, "Militar abatido")
 
 
 func report_gunshot(reported: bool) -> bool:
