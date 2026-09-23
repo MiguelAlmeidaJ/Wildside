@@ -112,7 +112,7 @@ func _physics_process(delta: float) -> void:
 
 func get_interaction_priority(_player: CharacterBody2D) -> int:
 	if state == State.DOWNED and not _is_essential():
-		return 126
+		return 110
 	if mission_giver or not mission_contact.is_empty():
 		return 120
 	return 100
