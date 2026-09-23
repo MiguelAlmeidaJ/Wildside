@@ -366,12 +366,12 @@ response_delay = 4.6
 [node name="Vehicles" type="Node2D" parent="World/Entities"]
 
 [node name="Car" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(-520, 230)
+position = Vector2(-740, 230)
 rotation = 1.5708
 vehicle_name = "Vega Sedan"
 
 [node name="CarResidential" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(-1245, 520)
+position = Vector2(-1245, 400)
 vehicle_name = "Orion Hatch"
 
 [node name="CarIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
@@ -380,12 +380,12 @@ vehicle_name = "Falcon LX"
 
 
 [node name="CarWest" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(-1990, 230)
+position = Vector2(-1900, 230)
 rotation = 1.5708
 vehicle_name = "Lume Compact"
 
 [node name="CarPort" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(2050, 1215)
+position = Vector2(2050, 230)
 rotation = 1.5708
 vehicle_name = "Doca Compact"
 
@@ -400,18 +400,18 @@ rotation = -1.5708
 vehicle_name = "Raptor 250"
 
 [node name="TruckIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
-position = Vector2(1510, 1215)
+position = Vector2(1650, 1215)
 rotation = 1.5708
 
 [node name="TruckPort" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
-position = Vector2(2040, 1700)
+position = Vector2(2050, 2130)
 rotation = 1.5708
 vehicle_name = "Atlas Cargo"
 
 
 [node name="HotCargoTruck" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
 modulate = Color(1, 0.58, 0.48, 1)
-position = Vector2(2700, 1700)
+position = Vector2(2600, 2130)
 rotation = 1.5708
 illegal_to_take = false
 vehicle_name = "Atlas Lacre Vermelho"
