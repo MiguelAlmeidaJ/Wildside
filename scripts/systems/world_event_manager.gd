@@ -9,7 +9,7 @@ enum EventType {
 	RAIDERS,
 }
 
-const EVENT_ANCHORS: Array[Vector2] = [
+const EVENT_ANCHORS = [
 	Vector2(-1240, 1210),
 	Vector2(1240, 1210),
 	Vector2(1240, -240),
@@ -59,27 +59,27 @@ func start_random_event() -> bool:
 	elif WorldTimeManager.get_phase() == "ENTARDECER":
 		raid_chance = 0.52
 
-	var type := EventType.CARGO
+	var event_type := EventType.CARGO
 	if allow_raiders and _rng.randf() < raid_chance:
-		type = EventType.RAIDERS
+		event_type = EventType.RAIDERS
 	var anchor_index := _rng.randi_range(0, EVENT_ANCHORS.size() - 1)
-	return force_event(type, anchor_index)
+	return force_event(event_type, anchor_index)
 
 
-func force_event(type: int, anchor_index: int = 0) -> bool:
+func force_event(event_type: int, anchor_index: int = 0) -> bool:
 	if current_type != EventType.NONE:
 		return false
-	if type != EventType.CARGO and type != EventType.RAIDERS:
+	if event_type != EventType.CARGO and event_type != EventType.RAIDERS:
 		return false
 	if anchor_index < 0 or anchor_index >= EVENT_ANCHORS.size():
 		return false
 
-	current_type = type
+	current_type = event_type
 	current_anchor = anchor_index
 	raiders_defeated = 0
 	var target := EVENT_ANCHORS[anchor_index]
 
-	if type == EventType.CARGO:
+	if event_type == EventType.CARGO:
 		var crate := _event_crate()
 		if not is_instance_valid(crate):
 			_reset_after_failure()
