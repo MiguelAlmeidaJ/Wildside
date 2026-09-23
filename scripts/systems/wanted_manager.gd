@@ -50,8 +50,8 @@ func _process(delta: float) -> void:
 
 func add_heat(amount: float, description: String) -> void:
 	heat = clampf(heat + amount, 0.0, MAX_HEAT)
-	_cooldown = 8.0 + maxf(0.0, float(wanted_level - 2)) * 1.5
 	_recalculate_level()
+	_cooldown = 8.0 + maxf(0.0, float(wanted_level - 2)) * 1.5
 	crime_committed.emit(description, amount)
 	wanted_changed.emit(wanted_level, heat)
 
