@@ -6,11 +6,21 @@ signal durability_changed(current: float, maximum: float)
 @export var reverse_speed := 230.0
 @export var acceleration := 520.0
 @export var braking := 760.0
-@export var steering_speed := 2.3
+@export var coast_drag := 420.0
+@export var steering_low_speed := 2.8
+@export var steering_high_speed := 1.45
+@export var steering_response := 5.2
+@export var road_grip := 11.5
+@export var handbrake_grip := 2.1
 @export var maximum_durability := 100.0
+@export var collision_damage_multiplier := 1.0
+@export var pedestrian_impact_multiplier := 1.0
+@export var camera_look_ahead := 110.0
 @export var illegal_to_take := true
 @export var requires_ownership := false
+@export var theft_heat := 24.0
 @export var vehicle_name := "Sedan"
+@export var vehicle_kind := "car"
 
 @onready var vehicle_camera: Camera2D = $Camera2D
 @onready var engine_player: AudioStreamPlayer2D = $EngineSound
@@ -23,10 +33,12 @@ var was_taken := false
 var _engine_playback: AudioStreamGeneratorPlayback
 var _engine_phase := 0.0
 var _damage_message_cooldown := 0.0
+var _steering_input := 0.0
 
 
 func _ready() -> void:
 	add_to_group("player_vehicle")
+	add_to_group("road_vehicle")
 	durability = maximum_durability
 	_setup_engine_audio()
 
@@ -49,38 +61,60 @@ func _exit_tree() -> void:
 func _physics_process(delta: float) -> void:
 	_damage_message_cooldown = maxf(0.0, _damage_message_cooldown - delta)
 	if not is_instance_valid(driver):
-		current_speed = move_toward(current_speed, 0.0, braking * delta)
-		velocity = velocity.move_toward(Vector2.ZERO, braking * delta)
+		current_speed = move_toward(current_speed, 0.0, coast_drag * delta)
+		velocity = velocity.move_toward(Vector2.ZERO, coast_drag * delta)
+		_steering_input = move_toward(_steering_input, 0.0, steering_response * delta)
 		move_and_slide()
 		_update_engine_audio()
 		return
 
 	var throttle := Input.get_axis("move_down", "move_up")
-	var steering := Input.get_axis("move_left", "move_right")
+	var raw_steering := Input.get_axis("move_left", "move_right")
 	var handbrake := Input.is_action_pressed("brake")
+	_steering_input = move_toward(_steering_input, raw_steering, steering_response * delta)
+
 	var target_speed := 0.0
 	if throttle > 0.0:
 		target_speed = throttle * maximum_speed
 	elif throttle < 0.0:
 		target_speed = throttle * reverse_speed
 
-	var rate := acceleration if throttle != 0.0 else braking
+	var changing_direction := (
+		(current_speed > 25.0 and target_speed < -1.0)
+		or (current_speed < -25.0 and target_speed > 1.0)
+	)
+	var rate := acceleration
+	if is_zero_approx(throttle):
+		rate = coast_drag
+	elif changing_direction:
+		rate = braking
 	if handbrake:
-		target_speed *= 0.72
-		rate = braking * 1.35
+		rate = braking * 0.75
+
 	current_speed = move_toward(current_speed, target_speed, rate * delta)
 
-	if absf(current_speed) > 8.0:
-		var speed_ratio := clampf(absf(current_speed) / maximum_speed, 0.25, 1.0)
-		var drift_turn := 1.35 if handbrake else 1.0
-		rotation += steering * steering_speed * drift_turn * speed_ratio * signf(current_speed) * delta
+	var speed_ratio := clampf(absf(current_speed) / maxf(1.0, maximum_speed), 0.0, 1.0)
+	if absf(current_speed) > 6.0:
+		var steering_strength := lerpf(steering_low_speed, steering_high_speed, speed_ratio)
+		if handbrake:
+			steering_strength *= 1.28
+		rotation += _steering_input * steering_strength * signf(current_speed) * delta
 
-	var desired_velocity := Vector2.UP.rotated(rotation) * current_speed
-	var grip := 3.5 if handbrake else 10.0
-	velocity = velocity.lerp(desired_velocity, 1.0 - exp(-grip * delta))
+	var forward := Vector2.UP.rotated(rotation)
+	var lateral := forward.orthogonal()
+	var lateral_speed := velocity.dot(lateral)
+	var grip := handbrake_grip if handbrake else road_grip
+	var lateral_retention := exp(-grip * delta)
+	velocity = forward * current_speed + lateral * lateral_speed * lateral_retention
+
 	move_and_slide()
 	_handle_collisions()
-	vehicle_camera.position = vehicle_camera.position.lerp(velocity.normalized() * 95.0, 1.0 - exp(-4.0 * delta))
+
+	if velocity.length() > 8.0:
+		var camera_target := velocity.normalized() * camera_look_ahead
+		vehicle_camera.position = vehicle_camera.position.lerp(camera_target, 1.0 - exp(-4.5 * delta))
+	else:
+		vehicle_camera.position = vehicle_camera.position.lerp(Vector2.ZERO, 1.0 - exp(-4.5 * delta))
 	_update_engine_audio()
 
 
@@ -91,7 +125,9 @@ func get_interaction_priority(_player: CharacterBody2D) -> int:
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	if requires_ownership:
 		return "Entrar no seu veículo"
-	return "Roubar veículo" if illegal_to_take and not was_taken else "Entrar no veículo"
+	if illegal_to_take and not was_taken:
+		return "Roubar %s" % _vehicle_noun()
+	return "Entrar no %s" % _vehicle_noun()
 
 
 func interact(player: CharacterBody2D) -> void:
@@ -99,14 +135,18 @@ func interact(player: CharacterBody2D) -> void:
 		return
 	if is_instance_valid(driver) or durability <= 0.0:
 		return
+
 	_set_parked_collision(false)
 	driver = player
 	var theft := illegal_to_take and not was_taken
 	if theft:
 		was_taken = true
+
 	player.call("enter_vehicle", self)
 	if theft:
-		WantedManager.add_heat(20.0, "Roubo de veículo")
+		WantedManager.add_heat(theft_heat, "Roubo de %s" % _vehicle_noun())
+		player.call("show_message", "%s roubado • a polícia foi alertada." % vehicle_name)
+
 	vehicle_camera.enabled = true
 	vehicle_camera.make_current()
 
@@ -122,6 +162,7 @@ func request_exit() -> void:
 	driver = null
 	current_speed = 0.0
 	velocity = Vector2.ZERO
+	_steering_input = 0.0
 	vehicle_camera.enabled = false
 	vehicle_camera.position = Vector2.ZERO
 	_set_parked_collision(true)
@@ -129,8 +170,6 @@ func request_exit() -> void:
 
 
 func _set_parked_collision(parked: bool) -> void:
-	# O carro estacionado usa um StaticBody2D separado. Isso mantém o veículo
-	# sólido para o player sem colocar dois CharacterBody2D se empurrando.
 	collision_layer = 0 if parked else 4
 	parked_blocker_shape.set_deferred("disabled", not parked)
 
@@ -139,7 +178,7 @@ func apply_damage(amount: float) -> void:
 	durability = maxf(0.0, durability - amount)
 	durability_changed.emit(durability, maximum_durability)
 	if is_instance_valid(driver) and _damage_message_cooldown <= 0.0:
-		driver.call("show_message", "Veículo: %d%%" % roundi(durability))
+		driver.call("show_message", "%s: %d%%" % [vehicle_name, roundi(durability)])
 		_damage_message_cooldown = 1.5
 	if durability <= 0.0:
 		current_speed = 0.0
@@ -161,6 +200,10 @@ func get_durability_ratio() -> float:
 	if maximum_durability <= 0.0:
 		return 0.0
 	return durability / maximum_durability
+
+
+func get_speed_kmh() -> int:
+	return roundi(absf(current_speed) * 0.33)
 
 
 func _on_ownership_changed(unlocked: bool) -> void:
@@ -189,21 +232,23 @@ func _handle_collisions() -> void:
 	if get_slide_collision_count() == 0:
 		return
 	var impact_speed := absf(current_speed)
-	if impact_speed > 100.0:
-		apply_damage(impact_speed * 0.035)
+	if impact_speed > 95.0:
+		apply_damage(impact_speed * 0.032 * collision_damage_multiplier)
 	for index in get_slide_collision_count():
 		var collider = get_slide_collision(index).get_collider()
 		if collider != null and collider.has_method("react_to_vehicle"):
-			collider.call("react_to_vehicle", impact_speed, self)
-	current_speed *= 0.42
+			collider.call("react_to_vehicle", impact_speed * pedestrian_impact_multiplier, self)
+	current_speed *= 0.48 if vehicle_kind == "truck" else 0.38
 
 
 func _find_safe_exit_position() -> Vector2:
+	var side_distance := 74.0 if vehicle_kind == "motorcycle" else 88.0
+	var rear_distance := 104.0 if vehicle_kind == "truck" else 94.0
 	var offsets := [
-		Vector2.RIGHT * 88.0,
-		Vector2.LEFT * 88.0,
-		Vector2.DOWN * 94.0,
-		Vector2.UP * 94.0,
+		Vector2.RIGHT * side_distance,
+		Vector2.LEFT * side_distance,
+		Vector2.DOWN * rear_distance,
+		Vector2.UP * rear_distance,
 	]
 	var exit_shape := CapsuleShape2D.new()
 	exit_shape.radius = 17.0
@@ -220,6 +265,14 @@ func _find_safe_exit_position() -> Vector2:
 	return Vector2.INF
 
 
+func _vehicle_noun() -> String:
+	if vehicle_kind == "motorcycle":
+		return "moto"
+	if vehicle_kind == "truck":
+		return "caminhão"
+	return "carro"
+
+
 func _setup_engine_audio() -> void:
 	var generator := AudioStreamGenerator.new()
 	generator.mix_rate = 22050.0
@@ -233,9 +286,19 @@ func _update_engine_audio() -> void:
 	if _engine_playback == null:
 		return
 	var audible := is_instance_valid(driver) and durability > 0.0
-	engine_player.volume_db = -23.0 if audible else -80.0
-	engine_player.pitch_scale = 0.75 + absf(current_speed) / maximum_speed * 0.85
-	var frequency := 58.0 + absf(current_speed) * 0.12
+	engine_player.volume_db = -22.0 if audible else -80.0
+
+	var pitch_base := 0.72
+	var frequency_base := 58.0
+	if vehicle_kind == "motorcycle":
+		pitch_base = 1.05
+		frequency_base = 82.0
+	elif vehicle_kind == "truck":
+		pitch_base = 0.58
+		frequency_base = 44.0
+
+	engine_player.pitch_scale = pitch_base + absf(current_speed) / maxf(1.0, maximum_speed) * 0.82
+	var frequency := frequency_base + absf(current_speed) * 0.12
 	var frames := _engine_playback.get_frames_available()
 	for _frame in frames:
 		_engine_phase = fmod(_engine_phase + frequency / 22050.0, 1.0)
