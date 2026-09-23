@@ -68,7 +68,7 @@ func _draw() -> void:
 	draw_rect(Rect2(-220, -900, 440, 3100), ROAD_COLOR)
 	draw_rect(Rect2(-1200, -900, 380, 3100), ROAD_COLOR)
 	draw_rect(Rect2(820, -900, 380, 3100), ROAD_COLOR)
-	draw_rect(Rect2(2020, -900, 360, 3100), ROAD_COLOR)
+	draw_rect(Rect2(2200, -900, 240, 3100), ROAD_COLOR)
 	draw_rect(Rect2(1800, 1780, 1040, 300), ROAD_COLOR)
 
 	# Bordas do asfalto ajudam a separar rua/calçada.
@@ -85,7 +85,7 @@ func _draw() -> void:
 		draw_line(Vector2(-1800, y), Vector2(2840, y), SIDEWALK_EDGE, 3.0)
 
 	# Calçadas verticais.
-	for x in [-1300, -820, -320, 220, 720, 1200, 1920, 2380]:
+	for x in [-1300, -820, -320, 220, 720, 1200]:
 		draw_rect(Rect2(x, -900, 100, 3100), SIDEWALK_COLOR)
 		draw_line(Vector2(x, -900), Vector2(x, 2200), SIDEWALK_EDGE, 3.0)
 
@@ -98,7 +98,7 @@ func _draw() -> void:
 		draw_rect(Rect2(-5, y, 10, 65), LANE_COLOR)
 		draw_rect(Rect2(-1015, y, 10, 65), LANE_COLOR)
 		draw_rect(Rect2(1005, y, 10, 65), LANE_COLOR)
-		draw_rect(Rect2(2195, y, 10, 65), LANE_COLOR)
+		draw_rect(Rect2(2315, y, 10, 65), LANE_COLOR)
 
 	for x in range(1840, 2781, 120):
 		draw_rect(Rect2(x, 1925, 65, 10), LANE_COLOR)
@@ -115,9 +115,9 @@ func _draw() -> void:
 	_draw_crosswalk(Vector2(0, 1000))
 	_draw_crosswalk(Vector2(-1010, 0))
 	_draw_crosswalk(Vector2(1010, 0))
-	_draw_crosswalk(Vector2(2200, 0))
-	_draw_crosswalk(Vector2(2200, 1000))
-	_draw_crosswalk(Vector2(2200, 1930))
+	_draw_crosswalk(Vector2(2320, 0))
+	_draw_crosswalk(Vector2(2320, 1000))
+	_draw_crosswalk(Vector2(2320, 1930))
 
 	# Faixa de segurança do cais e borda da água.
 	for y in range(-820, 2101, 90):
