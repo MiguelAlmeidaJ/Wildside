@@ -854,11 +854,11 @@ func _run() -> void:
 	player._invulnerability_left = 0.0
 	player.take_damage(999.0, raider2)
 	_check(player.health == player.max_health, "Hospital precisa restaurar a vida")
-	_check(player.global_position == player.HOSPITAL_RESPAWN_POSITION, "Derrota precisa levar o player ao Hospital Central")
+	_check(player.global_position == Vector2(-1510, 790), "Derrota precisa levar o player ao Hospital Central")
 	_check(wanted.wanted_level == 0 and is_zero_approx(wanted.heat), "Morrer precisa zerar estrelas e heat")
 	_check(not game_manager.pistol_unlocked and game_manager.pistol_magazine == 0 and game_manager.pistol_reserve == 0, "Hospital precisa confiscar armas e munição")
 	_check(not player.pistol_equipped, "Arma confiscada não pode continuar equipada")
-	_check(game_manager.money == money_before_defeat - mini(player.HOSPITAL_FEE, money_before_defeat), "Hospital precisa cobrar até $50")
+	_check(game_manager.money == money_before_defeat - mini(50, money_before_defeat), "Hospital precisa cobrar até $50")
 
 	# Polícia a pé e prisão.
 	wanted.add_heat(20.0, "Teste de prisão")
