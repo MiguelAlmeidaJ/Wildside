@@ -162,10 +162,10 @@ func deliver_hot_cargo(player: CharacterBody2D) -> String:
 	if truck.global_position.distance_to(CHOP_SHOP_POSITION) > 190.0:
 		return "DESMANCHE: Traga o Atlas marcado até o pátio."
 
-	var durability := float(truck.get("durability"))
-	var maximum := maxf(1.0, float(truck.get("maximum_durability")))
-	var condition := clampf(durability / maximum, 0.0, 1.0)
-	var reward := HOT_CARGO_BASE_REWARD + roundi(float(HOT_CARGO_CONDITION_BONUS) * condition)
+	var durability: float = float(truck.get("durability"))
+	var maximum: float = maxf(1.0, float(truck.get("maximum_durability")))
+	var condition: float = clampf(durability / maximum, 0.0, 1.0)
+	var reward: int = HOT_CARGO_BASE_REWARD + roundi(float(HOT_CARGO_CONDITION_BONUS) * condition)
 
 	GameManager.add_money(reward)
 	deliveries_completed += 1
