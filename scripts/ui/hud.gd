@@ -15,6 +15,7 @@ extends CanvasLayer
 @onready var health_label: Label = %HealthLabel
 @onready var nib_ability_label: Label = %NibAbilityLabel
 @onready var volt_ability_label: Label = %VoltAbilityLabel
+@onready var murno_ability_label: Label = %MurnoAbilityLabel
 @onready var weapon_label: Label = %WeaponLabel
 @onready var weapon_hint_label: Label = %WeaponHintLabel
 @onready var pursuit_label: Label = %PursuitLabel
@@ -44,6 +45,11 @@ extends CanvasLayer
 @onready var event_description: Label = %EventDescription
 @onready var mini_map_panel: PanelContainer = %MiniMapPanel
 @onready var mini_map: Control = %MiniMap
+@onready var wild_team_label: Label = %WildTeamLabel
+@onready var wild_terminal_panel: PanelContainer = %WildTerminalPanel
+@onready var nib_roster_label: Label = %NibRosterLabel
+@onready var volt_roster_label: Label = %VoltRosterLabel
+@onready var murno_roster_label: Label = %MurnoRosterLabel
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -55,6 +61,8 @@ var _side_objective_has_target := false
 var _event_target := Vector2.ZERO
 var _event_has_target := false
 var _event_description_text := ""
+var _minimap_before_modal := true
+var _modal_focus_open := false
 
 
 func _ready() -> void:
@@ -71,6 +79,8 @@ func _ready() -> void:
 	GameManager.inventory_changed.connect(_on_inventory_changed)
 	GameManager.store_state_changed.connect(_on_store_state_changed)
 	GameManager.cache_progress_changed.connect(_on_cache_progress_changed)
+	GameManager.wild_roster_changed.connect(_on_wild_roster_changed)
+	GameManager.wild_terminal_changed.connect(_on_wild_terminal_changed)
 	SideJobManager.objective_changed.connect(_on_side_job_objective_changed)
 	StreetRaceManager.race_state_changed.connect(_on_race_state_changed)
 	StreetRaceManager.race_progress_changed.connect(_on_race_progress)
@@ -89,12 +99,14 @@ func _ready() -> void:
 	_on_inventory_changed(GameManager.medkits, GameManager.snacks, GameManager.energy_drinks)
 	_on_store_state_changed(false, "")
 	_on_cache_progress_changed(GameManager.collected_caches.size(), GameManager.CACHE_TOTAL)
+	_on_wild_roster_changed(GameManager.captured_wilds, GameManager.active_wilds)
 	_on_event_history_changed(WorldEventManager.events_completed)
 	_on_race_state_changed(StreetRaceManager.state)
 	_on_time_changed(WorldTimeManager.get_hour(), WorldTimeManager.get_minute(), WorldTimeManager.get_phase())
 	event_panel.hide()
 	side_job_panel.hide()
 	inventory_panel.hide()
+	wild_terminal_panel.hide()
 	vehicle_panel.hide()
 
 
@@ -123,7 +135,7 @@ func _process(_delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("minimap_toggle"):
+	if event.is_action_pressed("minimap_toggle") and not _modal_focus_open:
 		mini_map_panel.visible = not mini_map_panel.visible
 		get_viewport().set_input_as_handled()
 
@@ -149,7 +161,11 @@ func set_health(current: float, maximum: float) -> void:
 
 
 func toggle_inventory() -> void:
-	inventory_panel.visible = not inventory_panel.visible
+	var opening := not inventory_panel.visible
+	if opening and GameManager.wild_terminal_open:
+		GameManager.close_wild_terminal()
+	inventory_panel.visible = opening
+	_set_modal_focus(opening)
 
 
 func set_energy_boost(remaining: float) -> void:
@@ -175,14 +191,27 @@ func set_arrest_progress(value: float) -> void:
 	arrest_panel.visible = value > 0.0
 
 
-func set_wild_ability(slot: String, unlocked: bool, remaining: float, _total: float) -> void:
-	var label := nib_ability_label if slot == "nib" else volt_ability_label
-	var key := "1" if slot == "nib" else "2"
-	var wild_name := "NIB" if slot == "nib" else "VOLT"
-	var ability_name := "IMPACTO" if slot == "nib" else "SOBRECARGA"
+func set_wild_ability(slot: String, captured: bool, active: bool, remaining: float, _total: float) -> void:
+	var label: Label = nib_ability_label
+	var key := "1"
+	var wild_name := "NIB"
+	var ability_name := "IMPACTO"
 
-	if not unlocked:
+	if slot == "volt":
+		label = volt_ability_label
+		key = "2"
+		wild_name = "VOLT"
+		ability_name = "SOBRECARGA"
+	elif slot == "murno":
+		label = murno_ability_label
+		key = "3"
+		wild_name = "MURNO"
+		ability_name = "ECLIPSE"
+
+	if not captured:
 		label.text = "%s  %s • %s  [BLOQUEADO]" % [key, wild_name, ability_name]
+	elif not active:
+		label.text = "%s  %s • %s  [RESERVA]" % [key, wild_name, ability_name]
 	elif remaining <= 0.05:
 		label.text = "%s  %s • %s  [PRONTO]" % [key, wild_name, ability_name]
 	else:
@@ -309,6 +338,53 @@ func _on_race_progress(checkpoint: int, total: int, elapsed: float) -> void:
 
 func _on_race_completed(reward: int, elapsed: float, best_time: float) -> void:
 	show_message("CORRIDA CONCLUÍDA  •  %.1fs  •  +$%d  •  recorde %.1fs" % [elapsed, reward, best_time])
+
+
+func _on_wild_roster_changed(captured: Array[String], active: Array[String]) -> void:
+	var active_names: Array[String] = []
+	for wild_id in active:
+		active_names.append(wild_id.capitalize())
+	wild_team_label.text = "EQUIPE WILD  %s" % (" + ".join(active_names) if not active_names.is_empty() else "—")
+
+	nib_roster_label.text = _wild_roster_text("1", "NIB", "nib", captured, active)
+	volt_roster_label.text = _wild_roster_text("2", "VOLT", "volt", captured, active)
+	murno_roster_label.text = _wild_roster_text("3", "MURNO", "murno", captured, active)
+
+
+func _wild_roster_text(key: String, name: String, wild_id: String, captured: Array[String], active: Array[String]) -> String:
+	if not captured.has(wild_id):
+		return "%s  %-8s  NÃO CAPTURADO" % [key, name]
+	if active.has(wild_id):
+		return "%s  %-8s  ATIVO" % [key, name]
+	return "%s  %-8s  RESERVA" % [key, name]
+
+
+func _on_wild_terminal_changed(opened: bool) -> void:
+	wild_terminal_panel.visible = opened
+	if opened:
+		inventory_panel.hide()
+		_set_modal_focus(true)
+	else:
+		_set_modal_focus(false)
+
+
+func _set_modal_focus(opened: bool) -> void:
+	if opened and not _modal_focus_open:
+		_minimap_before_modal = mini_map_panel.visible
+	_modal_focus_open = opened
+	if opened:
+		mini_map_panel.hide()
+		mission_panel.hide()
+		side_job_panel.hide()
+		race_panel.hide()
+		event_panel.hide()
+		return
+
+	mini_map_panel.visible = _minimap_before_modal
+	mission_panel.show()
+	side_job_panel.visible = not _side_objective_text.is_empty()
+	race_panel.visible = StreetRaceManager.state != StreetRaceManager.State.IDLE
+	event_panel.visible = _event_has_target
 
 
 func _on_store_state_changed(opened: bool, title: String) -> void:
