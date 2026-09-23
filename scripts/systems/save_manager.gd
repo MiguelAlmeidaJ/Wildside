@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://wildside_save.json"
-const SAVE_VERSION := 7
+const SAVE_VERSION := 8
 const MIN_SUPPORTED_VERSION := 5
 
 
@@ -45,6 +45,8 @@ func save_game() -> bool:
 		"world_time_minutes": WorldTimeManager.game_minutes,
 		"world_day_count": WorldTimeManager.day_count,
 		"world_events_completed": WorldEventManager.events_completed,
+		"captured_wilds": GameManager.captured_wilds,
+		"active_wilds": GameManager.active_wilds,
 		"player_position": [player_position.x, player_position.y],
 		"respawn_position": [respawn_position.x, respawn_position.y],
 		"nib_captured": bool(nib.get("captured")) if is_instance_valid(nib) else false,
@@ -84,6 +86,36 @@ func load_game() -> bool:
 			GameManager.collected_caches.append(cache_id)
 	GameManager.store_open = false
 	GameManager.active_store = ""
+	GameManager.wild_terminal_open = false
+
+	var saved_captured_wilds: Array[String] = []
+	var captured_data: Array = data.get("captured_wilds", [])
+	if not captured_data.is_empty():
+		for wild_value in captured_data:
+			var wild_id := str(wild_value)
+			if not wild_id.is_empty() and not saved_captured_wilds.has(wild_id):
+				saved_captured_wilds.append(wild_id)
+	else:
+		if bool(data.get("nib_captured", false)):
+			saved_captured_wilds.append("nib")
+		if bool(data.get("volt_captured", false)):
+			saved_captured_wilds.append("volt")
+		if bool(data.get("murno_captured", false)):
+			saved_captured_wilds.append("murno")
+
+	var saved_active_wilds: Array[String] = []
+	var active_data: Array = data.get("active_wilds", [])
+	if not active_data.is_empty():
+		for wild_value in active_data:
+			var wild_id := str(wild_value)
+			if saved_captured_wilds.has(wild_id) and not saved_active_wilds.has(wild_id) and saved_active_wilds.size() < GameManager.MAX_ACTIVE_WILDS:
+				saved_active_wilds.append(wild_id)
+	else:
+		for wild_id in ["nib", "volt"]:
+			if saved_captured_wilds.has(wild_id) and saved_active_wilds.size() < GameManager.MAX_ACTIVE_WILDS:
+				saved_active_wilds.append(wild_id)
+
+	GameManager.set_wild_roster(saved_captured_wilds, saved_active_wilds)
 
 	MissionManager.stage = int(data.get("mission_stage", MissionManager.Stage.TALK_TO_MAYA))
 	MissionManager.raiders_defeated = int(data.get("raiders_defeated", 0))
@@ -136,6 +168,8 @@ func load_game() -> bool:
 	GameManager.store_state_changed.emit(false, "")
 	GameManager.vehicle_ownership_changed.emit(GameManager.personal_vehicle_unlocked)
 	GameManager.cache_progress_changed.emit(GameManager.collected_caches.size(), GameManager.CACHE_TOTAL)
+	GameManager.wild_roster_changed.emit(GameManager.captured_wilds, GameManager.active_wilds)
+	GameManager.wild_terminal_changed.emit(false)
 
 	StreetRaceManager.race_state_changed.emit(StreetRaceManager.state)
 	StreetRaceManager.race_progress_changed.emit(0, StreetRaceManager.CHECKPOINT_COUNT, 0.0)
