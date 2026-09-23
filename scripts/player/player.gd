@@ -468,7 +468,7 @@ func perform_attack() -> bool:
 
 	var hit := false
 	for enemy in _attackable_targets():
-		if not enemy.has_method("take_damage"):
+		if not enemy.visible or not enemy.has_method("take_damage"):
 			continue
 		var offset: Vector2 = enemy.global_position - global_position
 		var distance := offset.length()
@@ -486,7 +486,7 @@ func perform_attack() -> bool:
 func _attackable_targets() -> Array[Node2D]:
 	var targets: Array[Node2D] = []
 	var seen: Dictionary = {}
-	for group_name in ["hostile", "civilian_damageable"]:
+	for group_name in ["hostile", "civilian_damageable", "law_enforcement"]:
 		for candidate in get_tree().get_nodes_in_group(group_name):
 			if not (candidate is Node2D):
 				continue
