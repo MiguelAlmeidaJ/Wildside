@@ -421,7 +421,7 @@ func arrest_by_police(source: Node2D) -> void:
 	if is_instance_valid(_arrest_source) and _arrest_source != source:
 		return
 
-	var penalty := mini(75, GameManager.money)
+	var penalty := mini(WantedManager.get_arrest_bail(), GameManager.money)
 	if penalty > 0:
 		GameManager.add_money(-penalty)
 
@@ -435,7 +435,7 @@ func arrest_by_police(source: Node2D) -> void:
 	_invulnerability_left = 1.5
 	health_changed.emit(health, max_health)
 	WantedManager.clear()
-	show_message("PRESO • Você pagou $%d de fiança e voltou ao centro." % penalty)
+	show_message("PRESO • Fiança de $%d • você voltou ao seu último ponto seguro." % penalty)
 
 
 func perform_attack() -> bool:
