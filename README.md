@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.14 · Godot 4.7.x**
+**Prototype 0.15 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -169,6 +169,26 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 9 persiste o progresso de combate da ANOMALIA #004 e continua aceitando saves anteriores.
 
 
+### Rua Hostil — Prototype 0.15
+
+- a dirigibilidade foi refeita com direção progressiva, aderência lateral, inércia, freio motor e derrapagem mais previsível;
+- o volante responde mais em baixa velocidade e fica menos sensível em alta, deixando carros mais controláveis;
+- o HUD do veículo agora mostra integridade e velocidade em km/h;
+- carros estacionados comuns podem ser roubados com `E` e geram procura na primeira tomada;
+- entra a `Raptor 250`, uma moto rápida, leve, ágil e mais frágil;
+- entra o `Atlas Cargo`, um caminhão mais lento, pesado, resistente e com impacto maior;
+- duas motos e dois caminhões roubáveis foram espalhados pela cidade e pelo Porto Ferrugem;
+- crimes de veículo têm heat próprio: caminhões chamam mais atenção que motos;
+- civis agora possuem vida e podem receber socos, tiros e impactos de veículos;
+- após uma agressão, alguns civis fogem e outros revidam, perseguindo e atacando o jogador;
+- personagens com maior coragem, como alguns operários do porto, têm chance maior de reagir;
+- civis derrubados ficam temporariamente no chão e podem ter o dinheiro roubado com `E`;
+- cada carteira só paga uma vez por sessão e roubar uma pessoa aumenta a procura;
+- personagens essenciais de missão podem reagir/fugir, mas não ficam permanentemente indisponíveis;
+- testemunhas próximas reagem a agressões e roubos de veículos;
+- save version 9 continua válido porque os novos estados de rua são deliberadamente temporários.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
@@ -181,13 +201,13 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Oito carros civis circulam continuamente em rotas pelas avenidas principais e pelo Porto Ferrugem.
 - Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte e Porto Ferrugem.
 - Transição de bairro exibida no HUD ao cruzar de uma região para outra.
-- Mais cidadãos e veículos estacionados espalhados pelo mapa, incluindo uma população portuária própria.
+- Mais cidadãos e veículos estacionados espalhados pelo mapa, incluindo carros roubáveis, motos, caminhões e uma população portuária própria.
 - População ampliada com Jade, Otto, Vera, Rico, Lia, Celso, Cora, Malik, Dante, Noemi, Ravi, Helena, Rui, Bia e outros moradores/trabalhadores.
 - Quatro variações visuais de cidadãos evitam que toda a população pareça o mesmo personagem recolorido.
 - NPCs recebem variações visuais e falas ambientais espontâneas enquanto caminham ou esperam na rua.
 - Interação local usando `Area2D`, sem varrer todos os objetos da cena a cada frame.
-- Veículo com aceleração, ré, freio, derrapagem leve, dano, colisão, som de motor procedural e saída segura.
-- NPCs com estados `IDLE`, `WANDER`, `TALK` e `FLEE`.
+- Veículos com dirigibilidade arcade progressiva: aceleração, ré, freio, inércia, grip lateral, drift de freio de mão, dano, colisão, câmera dinâmica, velocímetro e som procedural.
+- NPCs com estados `IDLE`, `WANDER`, `TALK`, `FLEE`, `FIGHT` e `DOWNED`; civis podem fugir, revidar, ser derrubados e ter a carteira roubada.
 - Nib com estados `IDLE`, `WANDER`, `FLEE` e `FOLLOW`, chance de captura e acompanhamento do jogador.
 - Volt como segundo Wild, liberado pela `ANOMALIA #002` e capturado com um Dispositivo Wild.
 - Murno como primeiro Wild-boss: 180 HP, comportamento agressivo, estado enfraquecido abaixo de 35%, captura obrigatória na `ANOMALIA #003` e uso posterior como companheiro de reserva.
@@ -197,7 +217,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Sistema de vida do jogador com 100 HP, breve invulnerabilidade após dano e respawn com penalidade de até `$50`.
 - Raiders hostis no Distrito Industrial, liberados após a `ANOMALIA #002`, com perseguição, ataque, vida e recompensa em dinheiro.
 - A limpeza dos galpões agora é uma missão rastreada em `0/2`, `1/2` e `2/2`; o segundo Raider conclui automaticamente a missão e paga bônus de `$150`.
-- Carros em movimento podem atropelar e causar dano aos Raiders.
+- Carros, motos e caminhões podem atropelar e causar dano; cidadãos também recebem impacto e podem ser derrubados.
 - Nib e Volt ajudam automaticamente no combate quando há inimigos próximos.
 - Habilidades ativas de Wild: Nib usa `Impacto`, Volt usa `Sobrecarga` e Murno usa `Eclipse`, um pulso em área com dano e stun.
 - Cooldowns das habilidades aparecem no HUD e mudam para `PRONTO` quando podem ser usados novamente.
@@ -230,10 +250,11 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - HUD de integridade do veículo, progresso de exploração e atividade de corrida.
 - Ciclo contínuo de dia/noite com relógio, fases visuais e postes que respondem ao horário.
 - Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha e agora distribuídos também pelo porto.
-- Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas e agentes mais agressivos nos níveis altos.
+- Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas; roubo de veículo, agressão, atropelamento, disparos e roubo de pedestres alimentam o heat.
 - Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
 - Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
 - Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004 e Frete do Cais repetível.
+- Raptor 250 e Atlas Cargo como primeiras classes de veículo além do carro comum, cada uma com física própria.
 
 ## Arquitetura da cena principal
 
@@ -259,7 +280,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, reação e roubo de civis, trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
