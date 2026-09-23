@@ -6,6 +6,8 @@ extends Node2D
 @onready var volt = $World/Entities/Creatures/Volt
 @onready var murno = $World/Entities/Creatures/Murno
 
+var _ui_refresh_left := 0.0
+
 
 func _ready() -> void:
 	player.prompt_changed.connect(hud.set_prompt)
@@ -30,7 +32,12 @@ func _ready() -> void:
 		hud.show_message("Wildside está viva • explore, trabalhe, corra ou siga as Anomalias.")
 
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
+	_ui_refresh_left -= delta
+	if _ui_refresh_left > 0.0:
+		return
+	_ui_refresh_left = 0.10
+
 	hud.set_wild_ability("nib", nib.captured, GameManager.is_wild_active("nib"), nib.ability_cooldown_left, nib.ability_cooldown)
 	hud.set_wild_ability("volt", volt.captured, GameManager.is_wild_active("volt"), volt.ability_cooldown_left, volt.ability_cooldown)
 	hud.set_wild_ability("murno", murno.captured, GameManager.is_wild_active("murno"), murno.ability_cooldown_left, murno.ability_cooldown)
