@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3]
+[gd_scene load_steps=31 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -29,6 +29,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/port_signal.tscn" id="27_port_signal"]
 [ext_resource type="PackedScene" path="res://scenes/vehicles/motorcycle.tscn" id="28_motorcycle"]
 [ext_resource type="PackedScene" path="res://scenes/vehicles/truck.tscn" id="29_truck"]
+[ext_resource type="PackedScene" path="res://scenes/world/chop_shop.tscn" id="30_chop"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -277,6 +278,18 @@ dialogue = "Trabalho na conferência. Se um contêiner não tem etiqueta, ele n�
 appearance_tint = Color(0.82, 0.94, 0.9, 1)
 ambient_lines = PackedStringArray("Lote 47... lote 48...", "Quem liberou essa carga?")
 
+
+[node name="Nika" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(1580, 760)
+citizen_name = "Nika"
+appearance_variant = 1
+dialogue = "Se você sabe dirigir e sabe desaparecer, talvez eu tenha trabalho."
+mission_contact = "hot_cargo"
+can_wander = false
+fight_chance = 0.8
+appearance_tint = Color(1, 0.78, 0.66, 1)
+ambient_lines = PackedStringArray("Carro inteiro vale mais.", "Sirene na porta estraga negócio.")
+
 [node name="Police1" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
 position = Vector2(950, 0)
 
@@ -357,6 +370,16 @@ rotation = 1.5708
 position = Vector2(2040, 1880)
 rotation = 1.5708
 vehicle_name = "Atlas Cargo"
+
+
+[node name="HotCargoTruck" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
+modulate = Color(1, 0.58, 0.48, 1)
+position = Vector2(2700, 1880)
+rotation = 1.5708
+illegal_to_take = false
+vehicle_name = "Atlas Lacre Vermelho"
+job_vehicle_id = "hot_cargo"
+available_on_start = false
 
 [node name="PersonalCar" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 modulate = Color(0.58, 0.96, 0.88, 1)
@@ -539,6 +562,9 @@ position = Vector2(-2200, -2200)
 
 [node name="GarageCobalto" parent="World/Props" instance=ExtResource("23_garage")]
 position = Vector2(1240, 760)
+
+[node name="ChopShop" parent="World/Props" instance=ExtResource("30_chop")]
+position = Vector2(1450, 1125)
 
 [node name="RaceStart" parent="World/Props" instance=ExtResource("22_race")]
 position = Vector2(-880, 1500)
