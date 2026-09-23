@@ -8,7 +8,7 @@ func _initialize() -> void:
 
 
 func _run() -> void:
-	var save_path := ProjectSettings.globalize_path("user://wildside_save.json")
+	var save_path = ProjectSettings.globalize_path("user://wildside_save.json")
 	if FileAccess.file_exists("user://wildside_save.json"):
 		DirAccess.remove_absolute(save_path)
 
@@ -26,7 +26,7 @@ func _run() -> void:
 		_finish()
 		return
 
-	var game := packed_main.instantiate()
+	var game = packed_main.instantiate()
 	root.add_child(game)
 	current_scene = game
 	await process_frame
@@ -106,7 +106,7 @@ func _run() -> void:
 	game_manager.add_money(200)
 	market.interact(player)
 	_check(game_manager.store_open, "Mercado 24H precisa abrir a loja")
-	var money_before_market := game_manager.money
+	var money_before_market = game_manager.money
 	game_manager.purchase_store_slot(1)
 	game_manager.purchase_store_slot(2)
 	game_manager.purchase_store_slot(3)
@@ -129,7 +129,7 @@ func _run() -> void:
 	_check(mini_map.side_target_active and mini_map.side_target == side_job.MARKET_POSITION, "Minimapa precisa rastrear a Corrida Noturna")
 	market.interact(player)
 	_check(side_job.stage == side_job.Stage.DELIVER_PACKAGE, "Mercado precisa entregar a encomenda do Rico")
-	var money_before_delivery := game_manager.money
+	var money_before_delivery = game_manager.money
 	vera.interact(player)
 	_check(side_job.stage == side_job.Stage.IDLE, "Vera precisa concluir a entrega")
 	_check(side_job.deliveries_completed == 1, "Entrega concluída precisa entrar no contador")
@@ -137,7 +137,7 @@ func _run() -> void:
 
 	# Atividades livres 0.10: exploração, garagem, veículo próprio e corrida de rua.
 	game_manager.add_money(900)
-	var money_before_car := game_manager.money
+	var money_before_car = game_manager.money
 	garage.interact(player)
 	_check(game_manager.personal_vehicle_unlocked, "Garagem precisa vender o veículo próprio")
 	_check(game_manager.money == money_before_car - 350, "Veículo próprio precisa custar $350")
@@ -147,12 +147,12 @@ func _run() -> void:
 	_check(personal_car.is_in_group("interactable"), "Veículo próprio comprado precisa ficar interativo")
 
 	personal_car.apply_damage(50.0)
-	var money_before_repair := game_manager.money
+	var money_before_repair = game_manager.money
 	garage.interact(player)
 	_check(personal_car.durability == personal_car.maximum_durability, "Garagem precisa reparar o veículo próximo")
 	_check(game_manager.money == money_before_repair - 40, "Reparo de 50% precisa custar $40")
 
-	var money_before_caches := game_manager.money
+	var money_before_caches = game_manager.money
 	cache_center.interact(player)
 	cache_residential.interact(player)
 	cache_industrial.interact(player)
@@ -160,7 +160,7 @@ func _run() -> void:
 	cache_north.interact(player)
 	_check(game_manager.collected_caches.size() == game_manager.CACHE_TOTAL, "Cinco esconderijos precisam ser coletáveis")
 	_check(game_manager.money > money_before_caches, "Esconderijos precisam recompensar exploração")
-	var money_after_caches := game_manager.money
+	var money_after_caches = game_manager.money
 	cache_center.interact(player)
 	_check(game_manager.money == money_after_caches, "Esconderijo já coletado não pode pagar duas vezes")
 
@@ -175,7 +175,7 @@ func _run() -> void:
 	for checkpoint_index in range(race_manager.CHECKPOINT_COUNT - 1):
 		_check(race_manager.checkpoint_reached(checkpoint_index, personal_car), "Checkpoint %d precisa ser aceito em ordem" % (checkpoint_index + 1))
 	race_manager.elapsed = 60.0
-	var money_before_race := game_manager.money
+	var money_before_race = game_manager.money
 	_check(race_manager.checkpoint_reached(race_manager.CHECKPOINT_COUNT - 1, personal_car), "Checkpoint final precisa concluir a corrida")
 	_check(race_manager.wins == 1, "Corrida concluída precisa entrar no histórico")
 	_check(is_equal_approx(race_manager.best_time, 60.0), "Primeira corrida precisa registrar melhor tempo")
@@ -184,7 +184,7 @@ func _run() -> void:
 	personal_car.request_exit()
 	await physics_frame
 	_check(player.current_vehicle == null, "Player precisa conseguir sair do veículo próprio após a corrida")
-	var money_before_recovery := game_manager.money
+	var money_before_recovery = game_manager.money
 	garage.interact(player)
 	_check(personal_car.global_position == garage.global_position + Vector2(-230, 0), "Garagem precisa recuperar o carro próprio distante")
 	_check(game_manager.money == money_before_recovery - 50, "Recuperação do Cobalto R precisa custar $50")
@@ -199,8 +199,8 @@ func _run() -> void:
 	time_manager.set_time(18, 30)
 
 	event_manager.reset_run()
-	var cargo_money_before := game_manager.money
-	var energy_before_event := game_manager.energy_drinks
+	var cargo_money_before = game_manager.money
+	var energy_before_event = game_manager.energy_drinks
 	_check(event_manager.force_event(event_manager.EventType.CARGO, 1), "Evento de carga precisa poder ser iniciado")
 	_check(event_cargo.active and event_cargo.visible, "Carga perdida precisa aparecer no mundo")
 	_check(mini_map.event_target_active and mini_map.event_target == event_manager.EVENT_ANCHORS[1], "Minimapa precisa rastrear evento urbano")
@@ -210,7 +210,7 @@ func _run() -> void:
 	_check(game_manager.energy_drinks == energy_before_event + 1, "Carga do segundo ponto precisa dar energético")
 	_check(event_manager.events_completed == 1, "Evento de carga precisa contar como concluído")
 
-	var raid_money_before := game_manager.money
+	var raid_money_before = game_manager.money
 	_check(event_manager.force_event(event_manager.EventType.RAIDERS, 2), "Confronto urbano precisa poder ser iniciado")
 	_check(event_raider1.active and event_raider2.active, "Dois Raiders precisam aparecer no confronto urbano")
 	event_raider1.take_damage(999.0, player)
@@ -264,7 +264,7 @@ func _run() -> void:
 	_check(not parked_blocker.disabled, "Bloqueio estático deve voltar após a saída")
 
 	var heat_before_swap: float = wanted.heat
-	var swapped := wanted.notify_vehicle_change(car_residential)
+	var swapped = wanted.notify_vehicle_change(car_residential)
 	_check(swapped, "Trocar para outro veículo durante a perseguição precisa ajudar na fuga")
 	_check(wanted.heat == maxf(0.0, heat_before_swap - 15.0), "Troca de veículo precisa reduzir 15 de heat")
 
@@ -300,13 +300,13 @@ func _run() -> void:
 	await physics_frame
 	_check(player._find_nearest_interactable() == phone, "Player precisa detectar o telefone como alvo de interação")
 
-	var interact_event := InputEventAction.new()
+	var interact_event = InputEventAction.new()
 	interact_event.action = "interact"
 	interact_event.pressed = true
 	Input.parse_input_event(interact_event)
 	await process_frame
 	await physics_frame
-	var release_event := InputEventAction.new()
+	var release_event = InputEventAction.new()
 	release_event.action = "interact"
 	release_event.pressed = false
 	Input.parse_input_event(release_event)
@@ -390,8 +390,8 @@ func _run() -> void:
 	wanted.clear()
 
 	var pistol_health_before: float = raider1.health
-	var magazine_before := game_manager.pistol_magazine
-	var shot := player.fire_pistol_at(raider1.global_position)
+	var magazine_before = game_manager.pistol_magazine
+	var shot = player.fire_pistol_at(raider1.global_position)
 	_check(shot, "Pistola precisa disparar")
 	_check(game_manager.pistol_magazine == magazine_before - 1, "Disparo precisa consumir uma munição")
 	_check(raider1.health < pistol_health_before, "Pistola precisa causar dano no Raider alinhado")
@@ -414,8 +414,8 @@ func _run() -> void:
 	player._complete_reload()
 	_check(game_manager.pistol_magazine == 8 and game_manager.pistol_reserve == 4, "Recarga precisa transferir munição da reserva")
 
-	var ammo_money_before := game_manager.money
-	var ammo_reserve_before := game_manager.pistol_reserve
+	var ammo_money_before = game_manager.money
+	var ammo_reserve_before = game_manager.pistol_reserve
 	workshop.interact(player)
 	_check(game_manager.money == ammo_money_before - 40, "Pacote de munição precisa custar $40")
 	_check(game_manager.pistol_reserve == ammo_reserve_before + 16, "Pacote precisa adicionar 16 munições")
@@ -427,7 +427,7 @@ func _run() -> void:
 	nib.global_position = raider1.global_position + Vector2(0, 120)
 	nib.ability_cooldown_left = 0.0
 	var nib_health_before: float = raider1.health
-	var nib_used := nib.use_active_ability(player)
+	var nib_used = nib.use_active_ability(player)
 	_check(nib_used, "Nib precisa conseguir usar Impacto")
 	_check(raider1.health < nib_health_before, "Impacto do Nib precisa causar dano")
 	_check(raider1._knockback.length() > 0.0, "Impacto do Nib precisa aplicar knockback")
@@ -446,7 +446,7 @@ func _run() -> void:
 	volt.ability_cooldown_left = 0.0
 	var volt_r1_before: float = raider1.health
 	var volt_r2_before: float = raider2.health
-	var volt_used := volt.use_active_ability(player)
+	var volt_used = volt.use_active_ability(player)
 	_check(volt_used, "Volt precisa conseguir usar Sobrecarga")
 	_check(raider1.health < volt_r1_before, "Sobrecarga precisa atingir o primeiro Raider")
 	_check(raider2.health < volt_r2_before, "Sobrecarga precisa encadear para o segundo Raider")
@@ -469,7 +469,7 @@ func _run() -> void:
 	player.facing_direction = Vector2.UP
 	player._attack_cooldown_left = 0.0
 	var raider_health_before: float = raider1.health
-	var hit := player.perform_attack()
+	var hit = player.perform_attack()
 	_check(hit, "Ataque do player precisa acertar Raider à frente")
 	_check(raider1.health < raider_health_before, "Raider precisa receber dano do ataque")
 
@@ -483,14 +483,14 @@ func _run() -> void:
 	_check(player.health == health_after_hit, "Invulnerabilidade curta precisa impedir dano duplicado")
 
 	# Derrotar os dois Raiders precisa atualizar e concluir a missão.
-	var money_before_raider := game_manager.money
+	var money_before_raider = game_manager.money
 	raider1.take_damage(999.0, player)
 	_check(raider1.dead, "Raider precisa ser derrotável")
 	_check(mission.raiders_defeated == 1, "Primeiro Raider precisa atualizar o objetivo para 1/2")
 	_check(mission.stage == mission.Stage.CLEAR_RAIDERS, "Missão deve continuar após o primeiro Raider")
 	_check(game_manager.money == money_before_raider + raider1.reward, "Primeiro Raider precisa pagar recompensa própria")
 
-	var money_before_second_raider := game_manager.money
+	var money_before_second_raider = game_manager.money
 	raider2.take_damage(999.0, player)
 	_check(raider2.dead, "Segundo Raider precisa ser derrotável")
 	_check(mission.raiders_defeated == 2, "Segundo Raider precisa atualizar o objetivo para 2/2")
@@ -517,7 +517,7 @@ func _run() -> void:
 	_check(mission.blackout_raiders_defeated == 1, "Primeiro invasor precisa atualizar a emboscada para 1/3")
 	blackout_raider2.take_damage(999.0, player)
 	_check(mission.blackout_raiders_defeated == 2, "Segundo invasor precisa atualizar a emboscada para 2/3")
-	var devices_before_murno := game_manager.capture_devices
+	var devices_before_murno = game_manager.capture_devices
 	blackout_raider3.take_damage(999.0, player)
 	_check(mission.stage == mission.Stage.CAPTURE_MURNO, "Terceiro invasor precisa liberar o confronto com Murno")
 	_check(game_manager.capture_devices == devices_before_murno + 1, "Missão precisa fornecer um dispositivo para capturar Murno")
@@ -536,7 +536,7 @@ func _run() -> void:
 
 	wanted.clear()
 	_check(mission.stage == mission.Stage.RETURN_TO_JADE, "Perder a polícia precisa liberar o retorno para Jade")
-	var money_before_jade := game_manager.money
+	var money_before_jade = game_manager.money
 	jade.interact(player)
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
@@ -563,7 +563,7 @@ func _run() -> void:
 	time_manager.day_count = 3
 	event_manager.events_completed = 4
 	personal_car.set_durability(63.0)
-	var saved_money := game_manager.money
+	var saved_money = game_manager.money
 	var saved_position: Vector2 = player.global_position
 	safehouse.interact(player)
 
@@ -592,7 +592,7 @@ func _run() -> void:
 	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.
-	var money_before_defeat := game_manager.money
+	var money_before_defeat = game_manager.money
 	player._invulnerability_left = 0.0
 	player.take_damage(999.0, raider2)
 	_check(player.health == player.max_health, "Derrota precisa restaurar a vida")
@@ -610,7 +610,7 @@ func _run() -> void:
 	if is_instance_valid(police.officer):
 		var officer = police.officer
 		officer.global_position = player.global_position + Vector2(0, 28)
-		var money_before_arrest := game_manager.money
+		var money_before_arrest = game_manager.money
 		for _frame in 110:
 			await physics_frame
 			if wanted.wanted_level == 0:
