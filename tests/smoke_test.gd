@@ -79,6 +79,9 @@ func _run() -> void:
 	var police3 = game.get_node("World/Entities/NPCs/Police3")
 	var police4 = game.get_node("World/Entities/NPCs/Police4")
 	var police5 = game.get_node("World/Entities/NPCs/Police5")
+	var military1 = game.get_node("World/Entities/NPCs/Military1")
+	var military2 = game.get_node("World/Entities/NPCs/Military2")
+	var military3 = game.get_node("World/Entities/NPCs/Military3")
 	var district_tracker = game.get_node("DistrictTracker")
 	var raider1 = game.get_node("World/Entities/Enemies/Raider1")
 	var raider2 = game.get_node("World/Entities/Enemies/Raider2")
@@ -124,6 +127,9 @@ func _run() -> void:
 	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
 	_check(police3 != null and police4 != null and police5 != null, "Procura 3–5 estrelas precisa ter unidades dedicadas")
 	_check(police.is_in_group("police_unit") and police5.is_in_group("police_unit"), "Viaturas precisam estar disponíveis para o minimapa")
+	_check(military1 != null and military2 != null and military3 != null, "4–5 estrelas precisam carregar resposta militar")
+	_check(get_nodes_in_group("military_unit").size() == 3, "Três militares dedicados precisam estar registrados")
+	_check(not military1.visible and not military2.visible and not military3.visible, "Militares precisam iniciar fora do mundo ativo")
 	_check(event_cargo != null and event_raider1 != null and event_raider2 != null, "Eventos urbanos precisam ter atores carregados")
 	_check(time_manager.get_phase() == "ENTARDECER", "Cidade precisa começar no entardecer")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
@@ -147,6 +153,11 @@ func _run() -> void:
 	_check(vertical_sidewalk_segments.size() == 3, "Calçada vertical do Centro precisa ser recortada nas duas avenidas horizontais")
 	_check(horizontal_sidewalk_segments[2].y <= -220.0 and horizontal_sidewalk_segments[3].x >= 220.0, "Calçada não pode cruzar a avenida central")
 	_check(vertical_sidewalk_segments[0].y <= -180.0 and vertical_sidewalk_segments[1].x >= 180.0, "Calçada vertical não pode atravessar a avenida principal")
+	var crosswalk_rects: Array[Rect2] = city._crosswalk_approach_rects(Vector2.ZERO)
+	var intersection_core := Rect2(-220.0, -180.0, 440.0, 360.0)
+	_check(not crosswalk_rects.is_empty(), "Cruzamento central precisa ter faixas de pedestres")
+	for stripe in crosswalk_rects:
+		_check(not stripe.intersects(intersection_core), "Faixa de pedestres precisa ficar fora do miolo do cruzamento")
 
 	# Vida urbana: Mercado 24H, mochila, consumíveis e corrida de entrega.
 	game_manager.add_money(200)
@@ -370,15 +381,65 @@ func _run() -> void:
 	wanted.clear()
 	_check(not wanted.is_visible_to_police, "Limpar procura precisa remover estado VISTO")
 
-	# Escalada completa de procura: 3, 4 e 5 estrelas adicionam respostas mais pesadas.
+	# Prototype 0.18: policiais podem ser enfrentados e 4 estrelas chamam militares.
+	wanted.clear()
+	wanted.add_heat(20.0, "Teste policial vulnerável")
+	police.response_left = 0.0
+	await physics_frame
+	police.global_position = player.global_position + Vector2(0, 105)
+	police._deploy_officer()
+	await process_frame
+	await physics_frame
+	_check(is_instance_valid(police.officer), "Viatura precisa desembarcar policial para o teste de combate")
+	if is_instance_valid(police.officer):
+		var combat_officer = police.officer
+		combat_officer.global_position = player.global_position + Vector2(0, -72)
+		player.facing_direction = Vector2.UP
+		player._attack_cooldown_left = 0.0
+		var officer_health_before: float = combat_officer.health
+		var heat_before_police_hit: float = wanted.heat
+		_check(player.perform_attack(), "Player precisa conseguir acertar policial com F")
+		_check(combat_officer.health < officer_health_before, "Policial precisa perder vida ao ser atingido")
+		_check(wanted.heat > heat_before_police_hit, "Agressão a policial precisa aumentar procura")
+		var heat_before_police_kill: float = wanted.heat
+		combat_officer.take_damage(999.0, player)
+		_check(combat_officer.dead, "Policial precisa poder ser abatido")
+		_check(wanted.heat > heat_before_police_kill, "Abater policial precisa aumentar ainda mais a procura")
+	wanted.clear()
+
+	# Escalada completa de procura: 4 estrelas iniciam intervenção militar.
 	wanted.add_heat(100.0, "Teste 3 estrelas")
 	_check(wanted.wanted_level == 3, "100 heat precisa gerar 3 estrelas")
 	_check(police3.responding and not police4.responding and not police5.responding, "3 estrelas precisam despachar a terceira unidade")
+	_check(not military1.responding and not military2.responding, "Militares não podem responder antes de 4 estrelas")
+
 	wanted.add_heat(40.0, "Teste 4 estrelas")
-	_check(wanted.wanted_level == 4 and police4.responding, "140 heat precisa despachar a quarta unidade")
-	wanted.add_heat(40.0, "Teste 5 estrelas")
-	_check(wanted.wanted_level == 5 and police5.responding, "180 heat precisa despachar resposta máxima")
+	_check(wanted.wanted_level == 4 and police4.responding, "140 heat precisa despachar a quarta viatura")
+	_check(military1.responding and military2.responding, "4 estrelas precisam despachar dois militares")
+	_check(not military3.responding, "Terceiro militar precisa ficar reservado para 5 estrelas")
+
+	military1.response_left = 0.0
+	await physics_frame
+	_check(military1.active and military1.visible, "Militar precisa chegar após o tempo de resposta")
+	military1.global_position = player.global_position + Vector2(0, -260)
+	player._invulnerability_left = 0.0
+	var health_before_military_shot: float = player.health
+	military1._fire_at_player(player, player.global_position)
+	_check(player.health < health_before_military_shot, "Militar de 4 estrelas precisa atirar e causar dano")
+
+	var heat_before_military_hit: float = wanted.heat
+	military1.take_damage(20.0, player)
+	_check(wanted.heat > heat_before_military_hit, "Atacar militar precisa aumentar a procura")
+	_check(wanted.wanted_level == 5, "Atacar força militar em 4 estrelas precisa poder escalar para 5")
+	_check(military3.responding, "5 estrelas precisam chamar reforço militar adicional")
+	_check(police5.responding, "5 estrelas precisam despachar a quinta viatura")
 	_check(wanted.get_arrest_bail() == 200, "Cinco estrelas precisam ter fiança máxima de $200")
+
+	var heat_before_military_kill: float = wanted.heat
+	military1.take_damage(999.0, player)
+	_check(military1.dead, "Militar precisa poder ser abatido")
+	_check(wanted.heat >= heat_before_military_kill, "Abater militar não pode reduzir procura")
+
 	police5.response_left = 0.0
 	await physics_frame
 	_check(police5.active, "Resposta máxima precisa chegar após o despacho")
