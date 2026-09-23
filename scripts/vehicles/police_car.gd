@@ -143,7 +143,7 @@ func _find_spawn_position(target: Vector2) -> Vector2:
 	for step in range(8):
 		var angle := base_angle + float(step) * (TAU / 8.0)
 		var candidate := target + Vector2.from_angle(angle) * distance
-		candidate.x = clampf(candidate.x, -1680.0, 2880.0)
+		candidate.x = clampf(candidate.x, -2580.0, 2880.0)
 		candidate.y = clampf(candidate.y, -1480.0, 2100.0)
 		var candidate_distance := candidate.distance_to(target)
 		if candidate_distance > best_distance:
@@ -152,12 +152,12 @@ func _find_spawn_position(target: Vector2) -> Vector2:
 
 	if best_distance < spawn_min_distance * 0.72:
 		# Nos cantos do mapa, prioriza o lado oposto em vez de nascer perto.
-		var center := Vector2(600.0, 300.0)
+		var center := Vector2(150.0, 300.0)
 		var away := center.direction_to(target)
 		if away == Vector2.ZERO:
 			away = Vector2.RIGHT
 		best_position = target - away * spawn_min_distance
-		best_position.x = clampf(best_position.x, -1680.0, 2880.0)
+		best_position.x = clampf(best_position.x, -2580.0, 2880.0)
 		best_position.y = clampf(best_position.y, -1480.0, 2100.0)
 
 	return best_position
