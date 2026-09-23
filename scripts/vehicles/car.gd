@@ -145,6 +145,7 @@ func interact(player: CharacterBody2D) -> void:
 	player.call("enter_vehicle", self)
 	if theft:
 		WantedManager.add_heat(theft_heat, "Roubo de %s" % _vehicle_noun())
+		GameManager.emit_noise(global_position, 320.0, "vehicle_theft", self)
 		player.call("show_message", "%s roubado • a polícia foi alertada." % vehicle_name)
 
 	vehicle_camera.enabled = true
