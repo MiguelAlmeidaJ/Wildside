@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.12 · Godot 4.7.x**
+**Prototype 0.13 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -22,6 +22,7 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | Recarregar pistola | `R` |
 | Habilidade do Nib — Impacto | `1` |
 | Habilidade do Volt — Sobrecarga | `2` |
+| Habilidade do Murno — Eclipse | `3` |
 | Capturar Wild | `Q` |
 | Mochila | `Tab` |
 | Mostrar / ocultar minimapa | `M` |
@@ -61,7 +62,7 @@ Depois da limpeza dos galpões, começa a `ANOMALIA #003 — APAGÃO`:
 7. sobreviver ao pulso anômalo e perder duas estrelas de procura;
 8. voltar para Jade e receber `$400`.
 
-Murno é enviado para a reserva depois da captura, mantendo apenas Nib e Volt como companheiros ativos para não poluir a movimentação e as interações.
+Murno entra na coleção depois da captura. A equipe ativa comporta no máximo 2 Wilds; o Terminal Wild no apartamento permite alternar Nib, Volt e Murno entre equipe e reserva.
 
 ## Vida urbana
 
@@ -128,6 +129,21 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 
 
 
+### Equipe Wild — Prototype 0.13
+
+- adiciona uma coleção persistente de Wilds capturados;
+- limita a equipe ativa a 2 companheiros para evitar poluição visual e bloqueios de interação;
+- adiciona um Terminal Wild ao lado do apartamento;
+- no terminal, `1`, `2` e `3` alternam Nib, Volt e Murno entre equipe ativa e reserva;
+- Wilds na reserva ficam ocultos e deixam de disputar foco de interação;
+- Nib e Volt passam a ocupar posições de formação conforme o slot atual da equipe;
+- Murno agora pode sair da reserva e acompanhar o jogador;
+- Murno ganha a habilidade ativa `Eclipse` no `3`, causando dano em área e stun;
+- mochila mostra a formação ativa;
+- abrir mochila ou Terminal Wild limpa temporariamente os painéis de missão, evento e minimapa para reduzir a sobreposição do HUD;
+- save version 8 persiste coleção e formação ativa, mantendo compatibilidade com saves anteriores.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
@@ -149,7 +165,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - NPCs com estados `IDLE`, `WANDER`, `TALK` e `FLEE`.
 - Nib com estados `IDLE`, `WANDER`, `FLEE` e `FOLLOW`, chance de captura e acompanhamento do jogador.
 - Volt como segundo Wild, liberado pela `ANOMALIA #002` e capturado com um Dispositivo Wild.
-- Murno como primeiro Wild-boss: 180 HP, comportamento agressivo, estado enfraquecido abaixo de 35% e captura obrigatória na `ANOMALIA #003`.
+- Murno como primeiro Wild-boss: 180 HP, comportamento agressivo, estado enfraquecido abaixo de 35%, captura obrigatória na `ANOMALIA #003` e uso posterior como companheiro de reserva.
 - Durante o apagão, a cidade recebe uma modulação visual escura/arroxeada e pulsante que desaparece quando a crise termina.
 - Oficina Cobalto com compra funcional de dispositivos por `$100`.
 - Combate corpo a corpo com `F`, alcance direcional, cooldown e feedback visual.
@@ -158,9 +174,9 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - A limpeza dos galpões agora é uma missão rastreada em `0/2`, `1/2` e `2/2`; o segundo Raider conclui automaticamente a missão e paga bônus de `$150`.
 - Carros em movimento podem atropelar e causar dano aos Raiders.
 - Nib e Volt ajudam automaticamente no combate quando há inimigos próximos.
-- Habilidades ativas de Wild: Nib usa `Impacto`, um golpe de alvo único com alto dano e knockback; Volt usa `Sobrecarga`, que encadeia eletricidade entre até três inimigos e aplica stun.
+- Habilidades ativas de Wild: Nib usa `Impacto`, Volt usa `Sobrecarga` e Murno usa `Eclipse`, um pulso em área com dano e stun.
 - Cooldowns das habilidades aparecem no HUD e mudam para `PRONTO` quando podem ser usados novamente.
-- Companheiros capturados entram em formação atrás/lateral do player e abrem espaço automaticamente perto de NPCs e outros pontos de interação.
+- Até dois companheiros capturados entram em formação atrás/lateral do player e abrem espaço automaticamente perto de NPCs e outros pontos de interação; os demais permanecem na reserva.
 - Sistema de prioridade de interação: NPCs, objetivos, telefone e oficina vencem os Wilds no `E`, mesmo quando Nib ou Volt estão mais próximos.
 - Oficina Cobalto passa a vender uma pistola por `$150` após a ANOMALIA #002; ela vem com 8 munições no pente e 24 na reserva.
 - Pistola com tiro hitscan pelo mouse, dano, cooldown, traçante visual, pente, reserva e recarga no `R`.
@@ -191,6 +207,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha.
 - Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas e agentes mais agressivos nos níveis altos.
 - Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio e polícia.
+- Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
 
 ## Arquitetura da cena principal
 
@@ -216,7 +233,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, safehouse/save, persistência de relógio/eventos/recordes/exploração, regiões, as três anomalias, boss Murno, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as três anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
