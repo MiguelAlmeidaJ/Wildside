@@ -11,6 +11,8 @@ extends CharacterBody2D
 @export var response_delay := 5.8
 @export var spawn_min_distance := 1050.0
 @export var spawn_max_distance := 1320.0
+@export var far_ai_distance := 760.0
+@export var far_ai_interval := 0.14
 
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -26,6 +28,8 @@ var _stun_left := 0.0
 var _knockback := Vector2.ZERO
 var _player_provoked := false
 var _crime_cooldown := 0.0
+var _far_ai_left := 0.0
+var _far_direction := Vector2.ZERO
 
 
 func _ready() -> void:
@@ -63,6 +67,18 @@ func _physics_process(delta: float) -> void:
 
 	var target_position := GameManager.get_controlled_position()
 	var distance := global_position.distance_to(target_position)
+	_far_ai_left = maxf(0.0, _far_ai_left - delta)
+	var direction_to_target: Vector2
+	if distance > far_ai_distance:
+		if _far_ai_left <= 0.0 or _far_direction == Vector2.ZERO:
+			_far_direction = global_position.direction_to(target_position)
+			_far_ai_left = far_ai_interval
+		direction_to_target = _far_direction
+	else:
+		_far_ai_left = 0.0
+		_far_direction = global_position.direction_to(target_position)
+		direction_to_target = _far_direction
+
 	if distance <= attack_range + 150.0:
 		WantedManager.report_police_contact(1.0)
 
@@ -73,7 +89,7 @@ func _physics_process(delta: float) -> void:
 
 	var has_los := _has_line_of_sight(target_position)
 	if distance <= attack_range and has_los:
-		var direction := global_position.direction_to(target_position)
+		var direction := direction_to_target
 		if distance < preferred_range * 0.72:
 			velocity = velocity.move_toward(-direction * move_speed * 0.45 + _knockback, 620.0 * delta)
 		else:
@@ -83,7 +99,7 @@ func _physics_process(delta: float) -> void:
 			_shot_cooldown_left = shot_cooldown
 			_fire_at_player(player, target_position)
 	else:
-		var direction := global_position.direction_to(target_position)
+		var direction := direction_to_target
 		velocity = velocity.move_toward(direction * move_speed + _knockback, 620.0 * delta)
 		if velocity.length() > 2.0:
 			sprite.rotation = velocity.angle() + PI / 2.0
@@ -220,6 +236,8 @@ func _begin_response() -> void:
 	_shot_cooldown_left = 0.0
 	_stun_left = 0.0
 	_knockback = Vector2.ZERO
+	_far_ai_left = 0.0
+	_far_direction = Vector2.ZERO
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	_update_health_label()
@@ -247,6 +265,8 @@ func _set_dormant() -> void:
 	health = max_health
 	velocity = Vector2.ZERO
 	_player_provoked = false
+	_far_ai_left = 0.0
+	_far_direction = Vector2.ZERO
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	health_label.hide()
