@@ -205,8 +205,8 @@ func _create_building(rect: Rect2, color: Color, index: int) -> void:
 	body.add_child(inset)
 
 	# Claraboias se adaptam ao tamanho do prédio para não escapar do telhado.
-	var skylight_columns := clampi(floori(rect.size.x / 130.0), 1, 3)
-	var skylight_rows := clampi(floori(rect.size.y / 180.0), 1, 2)
+	var skylight_columns := clampi(int(rect.size.x / 130.0), 1, 3)
+	var skylight_rows := clampi(int(rect.size.y / 180.0), 1, 2)
 	for row in range(skylight_rows):
 		for col in range(skylight_columns):
 			var x_ratio := 0.5 if skylight_columns == 1 else float(col) / float(skylight_columns - 1)
