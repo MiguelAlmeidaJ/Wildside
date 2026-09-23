@@ -165,7 +165,10 @@ func attempt_capture(player: CharacterBody2D) -> void:
 		remove_from_group("capturable")
 	collision_shape.set_deferred("disabled", true)
 	status_label.text = "MURNO  ◆  RESERVA"
-	player.call("show_message", "Murno capturado! A equipe está cheia, então ele foi enviado para a reserva.")
+	if GameManager.is_wild_active("murno"):
+		player.call("show_message", "Murno capturado! Ele entrou na equipe ativa.")
+	else:
+		player.call("show_message", "Murno capturado! A equipe está cheia, então ele foi enviado para a reserva.")
 	MissionManager.capture_murno()
 
 	var tween := create_tween()
