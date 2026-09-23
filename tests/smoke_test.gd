@@ -33,6 +33,9 @@ func _run() -> void:
 	await physics_frame
 
 	var player = game.get_node("Player")
+	var hud = game.get_node("UI/HUD")
+	var mini_map = game.get_node("UI/HUD/MiniMapPanel/MiniMapContent/MiniMap")
+	var mini_map_panel = game.get_node("UI/HUD/MiniMapPanel")
 	var car = game.get_node("World/Entities/Vehicles/Car")
 	var car_residential = game.get_node("World/Entities/Vehicles/CarResidential")
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
@@ -72,6 +75,12 @@ func _run() -> void:
 	var event_raider2 = game.get_node("World/Entities/Enemies/EventRaider2")
 	var event_cargo = game.get_node("World/Props/EventCargo")
 	_check(player != null, "Player precisa existir")
+	_check(hud != null and mini_map != null, "HUD precisa carregar o minimapa")
+	_check(mini_map_panel.visible, "Minimapa precisa iniciar visível")
+	_check(InputMap.has_action("minimap_toggle"), "Atalho M do minimapa precisa existir")
+	_check(mini_map.main_target_active, "Minimapa precisa receber o objetivo principal inicial")
+	_check(mini_map.main_target == mission.MAYA_POSITION, "Objetivo inicial do minimapa precisa apontar para Maya")
+	_check(race_manager.CHECKPOINT_POSITIONS.size() == race_manager.CHECKPOINT_COUNT, "Minimapa precisa conhecer todos os checkpoints da corrida")
 	_check(car != null, "Car precisa existir")
 	await physics_frame
 	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
@@ -84,6 +93,7 @@ func _run() -> void:
 	_check(garage != null and personal_car != null, "Garagem Cobalto e veículo próprio precisam existir")
 	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
 	_check(police3 != null and police4 != null and police5 != null, "Procura 3–5 estrelas precisa ter unidades dedicadas")
+	_check(police.is_in_group("police_unit") and police5.is_in_group("police_unit"), "Viaturas precisam estar disponíveis para o minimapa")
 	_check(event_cargo != null and event_raider1 != null and event_raider2 != null, "Eventos urbanos precisam ter atores carregados")
 	_check(time_manager.get_phase() == "ENTARDECER", "Cidade precisa começar no entardecer")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
@@ -116,6 +126,7 @@ func _run() -> void:
 	side_job.reset_run()
 	rico.interact(player)
 	_check(side_job.stage == side_job.Stage.PICKUP_PACKAGE, "Rico precisa iniciar a Corrida Noturna")
+	_check(mini_map.side_target_active and mini_map.side_target == side_job.MARKET_POSITION, "Minimapa precisa rastrear a Corrida Noturna")
 	market.interact(player)
 	_check(side_job.stage == side_job.Stage.DELIVER_PACKAGE, "Mercado precisa entregar a encomenda do Rico")
 	var money_before_delivery := game_manager.money
@@ -192,6 +203,7 @@ func _run() -> void:
 	var energy_before_event := game_manager.energy_drinks
 	_check(event_manager.force_event(event_manager.EventType.CARGO, 1), "Evento de carga precisa poder ser iniciado")
 	_check(event_cargo.active and event_cargo.visible, "Carga perdida precisa aparecer no mundo")
+	_check(mini_map.event_target_active and mini_map.event_target == event_manager.EVENT_ANCHORS[1], "Minimapa precisa rastrear evento urbano")
 	event_cargo.interact(player)
 	_check(event_manager.current_type == event_manager.EventType.NONE, "Coletar carga precisa encerrar o evento")
 	_check(game_manager.money == cargo_money_before + 100, "Carga do segundo ponto precisa pagar $100")
