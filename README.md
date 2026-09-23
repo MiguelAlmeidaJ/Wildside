@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.18 · Godot 4.7.x**
+**Prototype 0.18.1 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -273,6 +273,20 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 10 continua válido porque polícia e resposta militar são estados temporários da perseguição.
 
 
+#### Hospital e derrota — 0.18.1
+
+- o Hospital Central passa a existir fisicamente no Bairro Residencial e aparece no minimapa;
+- quando a vida chega a zero, o jogador não retorna mais ao checkpoint/apartamento;
+- morte sempre leva o personagem para a saída do Hospital Central;
+- toda a procura é encerrada imediatamente: heat e estrelas voltam para zero;
+- a pistola e toda a munição são confiscadas na internação;
+- a arma deixa de ficar equipada no player e pode ser comprada novamente na Oficina Cobalto;
+- a alta médica cobra `$50`, limitada ao dinheiro disponível para não gerar saldo negativo;
+- vida volta para 100% e o jogador recebe 2 segundos de invulnerabilidade ao sair do hospital;
+- prisão continua sendo um sistema separado, usando o checkpoint e a fiança policial;
+- save version 10 continua válido.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
@@ -298,7 +312,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Durante o apagão, a cidade recebe uma modulação visual escura/arroxeada e pulsante que desaparece quando a crise termina.
 - Oficina Cobalto com compra funcional de dispositivos por `$100`.
 - Combate corpo a corpo com `F`, alcance direcional, cooldown e feedback visual.
-- Sistema de vida do jogador com 100 HP, breve invulnerabilidade após dano e respawn com penalidade de até `$50`.
+- Sistema de vida do jogador com 100 HP, breve invulnerabilidade após dano e derrota no Hospital Central: procura zerada, armas confiscadas e taxa de até `$50`.
 - Raiders hostis no Distrito Industrial, liberados após a `ANOMALIA #002`, com perseguição, ataque, vida e recompensa em dinheiro.
 - A limpeza dos galpões agora é uma missão rastreada em `0/2`, `1/2` e `2/2`; o segundo Raider conclui automaticamente a missão e paga bônus de `$150`.
 - Carros, motos e caminhões podem atropelar e causar dano; cidadãos também recebem impacto e podem ser derrubados.
@@ -336,7 +350,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Ciclo contínuo de dia/noite com relógio, fases visuais e postes que respondem ao horário.
 - Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha e agora distribuídos também pelo porto.
 - Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas; roubo de veículo, agressão, atropelamento, disparos, ataques a policiais e roubo de pedestres alimentam o heat.
-- Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
+- Minimapa funcional com posição do jogador, hospital, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
 - Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
 - Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004, Frete do Cais e Carga Quente.
 - Vila Oeste como novo distrito urbano com praça, cinco prédios, quatro moradores, trânsito próprio e eventos urbanos.
@@ -367,7 +381,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, posicionamento seguro de pedestres/veículos, faixas fora dos cruzamentos, combate contra policiais, intervenção militar em 4–5 estrelas, tiro militar, Vila Oeste, dez carros de trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, posicionamento seguro de pedestres/veículos, faixas fora dos cruzamentos, combate contra policiais, intervenção militar em 4–5 estrelas, tiro militar, morte no Hospital Central com confisco de armas e procura zerada, Vila Oeste, dez carros de trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
