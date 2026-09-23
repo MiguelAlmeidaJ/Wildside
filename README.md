@@ -16,7 +16,7 @@ Vertical slice 2D top-down que combina exploração urbana, crime, perseguição
 | --- | --- |
 | Mover / dirigir | `WASD` ou setas |
 | Correr | `Shift` |
-| Interagir / entrar / sair | `E` |
+| Interagir / entrar / sair / roubar veículo / pegar dinheiro | `E` |
 | Atacar corpo a corpo | `F` |
 | Atirar com pistola | `Mouse 1` |
 | Recarregar pistola | `R` |
