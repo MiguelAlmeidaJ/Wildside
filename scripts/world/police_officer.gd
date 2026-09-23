@@ -206,6 +206,8 @@ func _is_player_aggression(source: Node2D) -> bool:
 
 
 func _update_health_label() -> void:
+	if not is_instance_valid(health_label):
+		return
 	health_label.text = "POLÍCIA  %d/%d" % [roundi(health), roundi(max_health)]
 
 
