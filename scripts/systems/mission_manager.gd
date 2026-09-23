@@ -33,7 +33,7 @@ enum Stage {
 	ANOMALY_4_COMPLETE,
 }
 
-const MAYA_POSITION := Vector2(-282, 92)
+const MAYA_POSITION := Vector2(-300, 235)
 const PHONE_POSITION := Vector2(280, 220)
 const WILDERNESS_POSITION := Vector2(0, -1260)
 const BRUNO_POSITION := Vector2(1240, 420)
@@ -42,7 +42,7 @@ const VOLT_POSITION := Vector2(1010, -600)
 const JADE_POSITION := Vector2(470, 230)
 const BLACKOUT_POSITION := Vector2(-520, 1235)
 const MURNO_POSITION := Vector2(0, 1450)
-const CORA_POSITION := Vector2(2300, 760)
+const CORA_POSITION := Vector2(2070, 760)
 const PORT_SIGNAL_POSITION := Vector2(2740, 1215)
 
 const MISSION_1_REWARD := 250
