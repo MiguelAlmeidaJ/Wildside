@@ -1,4 +1,4 @@
-[gd_scene load_steps=26 format=3]
+[gd_scene load_steps=27 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -25,6 +25,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/garage.tscn" id="23_garage"]
 [ext_resource type="PackedScene" path="res://scenes/world/street_cache.tscn" id="24_cache"]
 [ext_resource type="PackedScene" path="res://scenes/world/event_cargo.tscn" id="25_event_cargo"]
+[ext_resource type="PackedScene" path="res://scenes/world/wild_terminal.tscn" id="26_terminal"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -366,6 +367,9 @@ position = Vector2(-520, 755)
 
 [node name="Safehouse" parent="World/Props" instance=ExtResource("21_safehouse")]
 position = Vector2(270, 510)
+
+[node name="WildTerminal" parent="World/Props" instance=ExtResource("26_terminal")]
+position = Vector2(365, 510)
 
 [node name="EventCargo" parent="World/Props" instance=ExtResource("25_event_cargo")]
 position = Vector2(-2200, -2200)
