@@ -106,6 +106,11 @@ func _sync_team_state() -> void:
 	visible = team_active
 	status_label.visible = team_active
 	collision_shape.set_deferred("disabled", true)
+	if team_active:
+		if not is_in_group("interactable"):
+			add_to_group("interactable")
+	elif is_in_group("interactable"):
+		remove_from_group("interactable")
 
 
 func _update_wild_state(_delta: float) -> void:
