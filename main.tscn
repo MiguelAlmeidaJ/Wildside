@@ -51,14 +51,14 @@ script = ExtResource("19_blackout_fx")
 [node name="NPCs" type="Node2D" parent="World/Entities"]
 
 [node name="Maya" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(-282, 92)
+position = Vector2(-300, 235)
 citizen_name = "Maya"
 dialogue = "O telefone da praça não para de tocar. Acho que é para você."
 mission_giver = true
 can_wander = false
 
 [node name="Davi" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(285, -95)
+position = Vector2(300, -235)
 citizen_name = "Davi"
 appearance_variant = 1
 dialogue = "Tem viaturas demais rondando o centro. Eu evitaria confusão."
@@ -201,7 +201,7 @@ ambient_lines = PackedStringArray("Endereço 42-B...", "Tomara que essa rua este
 
 
 [node name="Cora" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2300, 760)
+position = Vector2(2070, 760)
 citizen_name = "Cora"
 appearance_variant = 2
 dialogue = "Eu cuido das comunicações do cais. Quando um relé fala sozinho, eu escuto."
@@ -211,7 +211,7 @@ appearance_tint = Color(0.88, 0.94, 1, 1)
 ambient_chatter = false
 
 [node name="Malik" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2300, 1215)
+position = Vector2(2070, 1215)
 citizen_name = "Malik"
 appearance_variant = 3
 dialogue = "Porto não para por causa de papelada. Mas papelada para o porto."
@@ -239,7 +239,7 @@ appearance_tint = Color(1, 0.86, 0.82, 1)
 ambient_lines = PackedStringArray("Scanner falhou de novo.", "Esses contêineres não estavam aqui ontem.")
 
 [node name="Ravi" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2520, 1110)
+position = Vector2(2520, 1215)
 citizen_name = "Ravi"
 fight_chance = 1.0
 max_health = 90.0
@@ -260,7 +260,7 @@ appearance_tint = Color(0.94, 0.84, 1, 1)
 ambient_lines = PackedStringArray("Cheiro de óleo hoje está forte.", "Turno noturno paga melhor.")
 
 [node name="Rui" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2720, 1880)
+position = Vector2(2720, 1700)
 citizen_name = "Rui"
 appearance_variant = 0
 dialogue = "Pesco aqui há vinte anos. Nunca vi a água vibrar como naquela noite."
@@ -269,7 +269,7 @@ appearance_tint = Color(0.9, 0.92, 0.76, 1)
 ambient_lines = PackedStringArray("A maré está estranha.", "Peixe sumiu do canto leste.")
 
 [node name="Bia" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2460, -120)
+position = Vector2(2460, -235)
 citizen_name = "Bia"
 fight_chance = 0.72
 attack_damage = 10.0
@@ -278,6 +278,39 @@ dialogue = "Trabalho na conferência. Se um contêiner não tem etiqueta, ele n�
 appearance_tint = Color(0.82, 0.94, 0.9, 1)
 ambient_lines = PackedStringArray("Lote 47... lote 48...", "Quem liberou essa carga?")
 
+
+
+[node name="Sara" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-2520, 235)
+citizen_name = "Sara"
+appearance_variant = 2
+dialogue = "A Vila Oeste é mais tranquila. Pelo menos era antes das sirenes."
+appearance_tint = Color(0.9, 0.96, 1, 1)
+ambient_lines = PackedStringArray("A praça ficou bonita.", "Aqui venta mais no fim da tarde.")
+
+[node name="Joel" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-2050, 760)
+citizen_name = "Joel"
+appearance_variant = 3
+dialogue = "Trabalho do outro lado da cidade. Essa avenida nova salvou meu turno."
+appearance_tint = Color(0.96, 0.9, 0.78, 1)
+ambient_lines = PackedStringArray("Ônibus atrasado de novo.", "Essa rua ficou bem melhor.")
+
+[node name="Mina" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-2520, 1215)
+citizen_name = "Mina"
+appearance_variant = 1
+dialogue = "Todo mundo passa pela praça quando quer fugir do barulho do Centro."
+appearance_tint = Color(1, 0.86, 0.92, 1)
+ambient_lines = PackedStringArray("Vou cortar caminho pela praça.", "As árvores cresceram rápido.")
+
+[node name="Teo" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
+position = Vector2(-2050, 1660)
+citizen_name = "Teo"
+appearance_variant = 0
+dialogue = "Esse canto ainda parece outra cidade."
+appearance_tint = Color(0.84, 1, 0.88, 1)
+ambient_lines = PackedStringArray("Aqui ainda dá pra respirar.", "O movimento aumentou essa semana.")
 
 [node name="Nika" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(1580, 760)
@@ -333,19 +366,23 @@ response_delay = 4.6
 [node name="Vehicles" type="Node2D" parent="World/Entities"]
 
 [node name="Car" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(-90, 65)
-rotation = 0.18
+position = Vector2(-520, 230)
+rotation = 1.5708
 vehicle_name = "Vega Sedan"
 
 [node name="CarResidential" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(-1010, 610)
-rotation = 1.5708
+position = Vector2(-1245, 520)
 vehicle_name = "Orion Hatch"
 
 [node name="CarIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(1010, 560)
-rotation = -1.5708
+position = Vector2(1245, 520)
 vehicle_name = "Falcon LX"
+
+
+[node name="CarWest" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
+position = Vector2(-1990, 230)
+rotation = 1.5708
+vehicle_name = "Lume Compact"
 
 [node name="CarPort" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(2050, 1215)
@@ -354,27 +391,27 @@ vehicle_name = "Doca Compact"
 
 
 [node name="MotorcycleCenter" parent="World/Entities/Vehicles" instance=ExtResource("28_motorcycle")]
-position = Vector2(610, 1125)
+position = Vector2(610, 1215)
 rotation = 1.5708
 
 [node name="MotorcyclePort" parent="World/Entities/Vehicles" instance=ExtResource("28_motorcycle")]
-position = Vector2(2680, 875)
+position = Vector2(2700, 720)
 rotation = -1.5708
 vehicle_name = "Raptor 250"
 
 [node name="TruckIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
-position = Vector2(1510, 1125)
+position = Vector2(1510, 1215)
 rotation = 1.5708
 
 [node name="TruckPort" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
-position = Vector2(2040, 1880)
+position = Vector2(2040, 1700)
 rotation = 1.5708
 vehicle_name = "Atlas Cargo"
 
 
 [node name="HotCargoTruck" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
 modulate = Color(1, 0.58, 0.48, 1)
-position = Vector2(2700, 1880)
+position = Vector2(2700, 1700)
 rotation = 1.5708
 illegal_to_take = false
 vehicle_name = "Atlas Lacre Vermelho"
@@ -383,7 +420,7 @@ available_on_start = false
 
 [node name="PersonalCar" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 modulate = Color(0.58, 0.96, 0.88, 1)
-position = Vector2(1010, 760)
+position = Vector2(1360, 760)
 rotation = -1.5708
 illegal_to_take = false
 requires_ownership = true
@@ -436,6 +473,19 @@ route_id = 4
 start_offset = 7
 cruise_speed = 148.0
 vehicle_tint = Color(0.55, 0.78, 0.86, 1)
+
+
+[node name="TrafficI" parent="World/Entities/Vehicles" instance=ExtResource("16_traffic")]
+route_id = 5
+start_offset = 0
+cruise_speed = 128.0
+vehicle_tint = Color(0.72, 0.86, 0.95, 1)
+
+[node name="TrafficJ" parent="World/Entities/Vehicles" instance=ExtResource("16_traffic")]
+route_id = 5
+start_offset = 6
+cruise_speed = 142.0
+vehicle_tint = Color(0.9, 0.76, 0.64, 1)
 
 [node name="Enemies" type="Node2D" parent="World/Entities"]
 
