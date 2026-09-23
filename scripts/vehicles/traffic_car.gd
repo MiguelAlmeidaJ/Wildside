@@ -70,8 +70,8 @@ func _route_points(id: int) -> Array[Vector2]:
 		4:
 			points = [
 				Vector2(1850, -80), Vector2(2700, -80), Vector2(2700, 120),
-				Vector2(2250, 120), Vector2(2250, 875), Vector2(2700, 875),
-				Vector2(2700, 1125), Vector2(2250, 1125), Vector2(2250, 1850),
+				Vector2(2300, 120), Vector2(2300, 875), Vector2(2700, 875),
+				Vector2(2700, 1125), Vector2(2300, 1125), Vector2(2300, 1850),
 				Vector2(2050, 1850), Vector2(2050, 1125), Vector2(1850, 1125),
 				Vector2(1850, 875), Vector2(2050, 875), Vector2(2050, 120),
 				Vector2(1850, 120)
