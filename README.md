@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.13 · Godot 4.7.x**
+**Prototype 0.14 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -63,6 +63,16 @@ Depois da limpeza dos galpões, começa a `ANOMALIA #003 — APAGÃO`:
 8. voltar para Jade e receber `$400`.
 
 Murno entra na coleção depois da captura. A equipe ativa comporta no máximo 2 Wilds; o Terminal Wild no apartamento permite alternar Nib, Volt e Murno entre equipe e reserva.
+
+Depois da estabilização da Zona Sul, Jade libera a **ANOMALIA #004 — Sinal do Cais**:
+
+1. falar novamente com Jade e receber a pista do Porto Ferrugem;
+2. encontrar Cora entre os armazéns;
+3. investigar o relé anômalo no extremo leste do cais;
+4. enfrentar três Raiders que fecham o píer;
+5. acessar novamente o relé e retirar o núcleo de transmissão;
+6. retornar para Cora;
+7. receber `$500` e um Dispositivo Wild extra.
 
 ## Vida urbana
 
@@ -144,20 +154,35 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 8 persiste coleção e formação ativa, mantendo compatibilidade com saves anteriores.
 
 
+### Expansão do Porto — Prototype 0.14
+
+- o limite leste da cidade cresce de `x=1800` para `x=3000` e o limite sul passa a `y=2200`;
+- nasce o distrito `PORTO FERRUGEM`, com armazéns, vias próprias, píer, faixa d'água, guindastes, contêineres, postes e equipamentos portuários;
+- o minimapa e a câmera passam a cobrir toda a nova área;
+- duas novas rotas de tráfego ocupam a expansão e um veículo estacionado aparece no porto;
+- a população cresce com Cora, Malik, Dante, Noemi, Ravi, Helena, Rui e Bia;
+- `ANOMALIA #004 — Sinal do Cais` continua diretamente a trama das anomalias depois de Murno;
+- três Raiders exclusivos defendem o relé do cais;
+- a missão recompensa `$500` e um Dispositivo Wild extra;
+- Malik oferece a atividade repetível `Frete do Cais`: buscar um manifesto com Dante e retornar por `$160`;
+- eventos urbanos agora também podem surgir no Porto Ferrugem;
+- save version 9 persiste o progresso de combate da ANOMALIA #004 e continua aceitando saves anteriores.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
 
 - Movimento com aceleração, desaceleração, corrida, direção visual e estados idle/walk/run.
 - Câmera suave com look-ahead e limites compatíveis com a área ampliada.
-- Cidade ampliada para 12 quarteirões, três eixos verticais e duas avenidas horizontais.
+- Cidade ampliada para 18 quarteirões, quatro eixos verticais, duas avenidas principais e uma via de cais.
 - `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas receberam marcações, estacionamento e bordas mais legíveis.
 - Props urbanos distribuídos pelos distritos: postes, bancos, vasos, caçambas, cones, containers, placas de região e letreiros de estabelecimentos.
-- Seis carros civis circulam continuamente em rotas pelas avenidas principais.
-- Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul e Mata Norte.
+- Oito carros civis circulam continuamente em rotas pelas avenidas principais e pelo Porto Ferrugem.
+- Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte e Porto Ferrugem.
 - Transição de bairro exibida no HUD ao cruzar de uma região para outra.
-- Mais cidadãos e veículos estacionados espalhados pelo mapa.
-- População ampliada com Jade, Otto, Vera, Rico, Lia, Celso e novos moradores/trabalhadores espalhados pela cidade.
+- Mais cidadãos e veículos estacionados espalhados pelo mapa, incluindo uma população portuária própria.
+- População ampliada com Jade, Otto, Vera, Rico, Lia, Celso, Cora, Malik, Dante, Noemi, Ravi, Helena, Rui, Bia e outros moradores/trabalhadores.
 - Quatro variações visuais de cidadãos evitam que toda a população pareça o mesmo personagem recolorido.
 - NPCs recebem variações visuais e falas ambientais espontâneas enquanto caminham ou esperam na rua.
 - Interação local usando `Area2D`, sem varrer todos os objetos da cena a cada frame.
@@ -204,10 +229,11 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Cinco esconderijos persistentes recompensam exploração livre com dinheiro e consumíveis.
 - HUD de integridade do veículo, progresso de exploração e atividade de corrida.
 - Ciclo contínuo de dia/noite com relógio, fases visuais e postes que respondem ao horário.
-- Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha.
+- Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha e agora distribuídos também pelo porto.
 - Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas e agentes mais agressivos nos níveis altos.
-- Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio e polícia.
+- Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
 - Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
+- Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004 e Frete do Cais repetível.
 
 ## Arquitetura da cena principal
 
@@ -233,7 +259,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as três anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
