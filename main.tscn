@@ -195,7 +195,7 @@ ambient_lines = PackedStringArray("Endereço 42-B...", "Tomara que essa rua este
 
 
 [node name="Cora" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2500, 760)
+position = Vector2(2300, 760)
 citizen_name = "Cora"
 appearance_variant = 2
 dialogue = "Eu cuido das comunicações do cais. Quando um relé fala sozinho, eu escuto."
@@ -205,7 +205,7 @@ appearance_tint = Color(0.88, 0.94, 1, 1)
 ambient_chatter = false
 
 [node name="Malik" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2500, 1215)
+position = Vector2(2300, 1215)
 citizen_name = "Malik"
 appearance_variant = 3
 dialogue = "Porto não para por causa de papelada. Mas papelada para o porto."
@@ -434,7 +434,7 @@ reward = 45
 
 [node name="PortRaider3" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 modulate = Color(1, 0.66, 0.55, 1)
-position = Vector2(2600, 1250)
+position = Vector2(2300, 1350)
 active_after_anomaly_2 = false
 activation_stage = 23
 mission_key = "port"
