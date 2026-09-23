@@ -21,6 +21,8 @@ signal durability_changed(current: float, maximum: float)
 @export var theft_heat := 24.0
 @export var vehicle_name := "Sedan"
 @export var vehicle_kind := "car"
+@export var job_vehicle_id := ""
+@export var available_on_start := true
 
 @onready var vehicle_camera: Camera2D = $Camera2D
 @onready var engine_player: AudioStreamPlayer2D = $EngineSound
@@ -45,6 +47,8 @@ func _ready() -> void:
 	if requires_ownership:
 		GameManager.vehicle_ownership_changed.connect(_on_ownership_changed)
 		_set_owned_available(GameManager.personal_vehicle_unlocked)
+	elif not available_on_start:
+		set_job_available(false)
 	else:
 		add_to_group("interactable")
 		_set_parked_collision(true)
@@ -135,6 +139,8 @@ func get_interaction_priority(_player: CharacterBody2D) -> int:
 func get_interaction_text(_player: CharacterBody2D) -> String:
 	if requires_ownership:
 		return "Entrar no seu veículo"
+	if job_vehicle_id == "hot_cargo":
+		return "Roubar caminhão marcado"
 	if illegal_to_take and not was_taken:
 		return "Roubar %s" % _vehicle_noun()
 	return "Entrar no %s" % _vehicle_noun()
@@ -153,6 +159,8 @@ func interact(player: CharacterBody2D) -> void:
 		was_taken = true
 
 	player.call("enter_vehicle", self)
+	if not job_vehicle_id.is_empty():
+		SideJobManager.notify_job_vehicle_entered(self, job_vehicle_id)
 	if theft:
 		WantedManager.add_heat(theft_heat, "Roubo de %s" % _vehicle_noun())
 		GameManager.emit_noise(global_position, 320.0, "vehicle_theft", self)
@@ -193,6 +201,8 @@ func apply_damage(amount: float) -> void:
 		_damage_message_cooldown = 1.5
 	if durability <= 0.0:
 		current_speed = 0.0
+		if not job_vehicle_id.is_empty():
+			SideJobManager.notify_job_vehicle_destroyed(self, job_vehicle_id)
 
 
 func repair_full() -> void:
@@ -215,6 +225,41 @@ func get_durability_ratio() -> float:
 
 func get_speed_kmh() -> int:
 	return roundi(absf(current_speed) * 0.33)
+
+
+func set_job_available(value: bool) -> void:
+	visible = value
+	set_physics_process(value)
+	if value:
+		durability = maximum_durability
+		was_taken = false
+		current_speed = 0.0
+		velocity = Vector2.ZERO
+		if not is_in_group("interactable"):
+			add_to_group("interactable")
+		_set_parked_collision(true)
+		durability_changed.emit(durability, maximum_durability)
+	else:
+		if is_instance_valid(driver):
+			var current_driver = driver
+			driver = null
+			current_driver.call("leave_vehicle", self, global_position + Vector2(90, 0).rotated(rotation))
+		if is_in_group("interactable"):
+			remove_from_group("interactable")
+		visible = false
+		collision_layer = 0
+		parked_blocker_shape.set_deferred("disabled", true)
+		velocity = Vector2.ZERO
+		current_speed = 0.0
+		vehicle_camera.enabled = false
+		vehicle_camera.position = Vector2.ZERO
+		engine_player.volume_db = -80.0
+
+
+func reset_job_vehicle(spawn_position: Vector2, spawn_rotation: float = 0.0) -> void:
+	global_position = spawn_position
+	rotation = spawn_rotation
+	set_job_available(true)
 
 
 func _on_ownership_changed(unlocked: bool) -> void:
