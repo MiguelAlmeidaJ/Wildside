@@ -154,8 +154,8 @@ func _draw_player() -> void:
 	if is_instance_valid(current_vehicle):
 		angle = current_vehicle.rotation
 	else:
-		var facing = GameManager.player.get("facing_direction")
-		if facing is Vector2 and facing.length_squared() > 0.01:
+		var facing: Vector2 = GameManager.player.get("facing_direction")
+		if facing.length_squared() > 0.01:
 			angle = facing.angle() + PI / 2.0
 
 	var center := _to_map(position)
