@@ -167,6 +167,8 @@ func _die() -> void:
 	match mission_key:
 		"blackout":
 			MissionManager.blackout_raider_defeated()
+		"port":
+			MissionManager.port_raider_defeated()
 		"world_event":
 			WorldEventManager.enemy_defeated()
 		_:
