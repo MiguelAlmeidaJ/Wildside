@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.10 · Godot 4.7.x**
+**Prototype 0.11 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -92,8 +92,29 @@ A cidade agora também oferece progressão sem depender da campanha:
 - saves da Prototype 0.9 (version 5) continuam compatíveis e recebem os novos campos com valores padrão.
 
 
+### Cidade reativa — Prototype 0.11
 
-Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e faz o NPC fugir. A versão atual implementa os níveis 0–2; os níveis 3–5 ficam para slices posteriores.
+Wildside agora muda e reage mesmo quando o jogador não está executando uma missão:
+
+- relógio global contínuo com dia, entardecer, noite e amanhecer;
+- um dia completo dura aproximadamente 12 minutos reais na configuração atual;
+- iluminação geral acompanha o horário e os postes urbanos acendem progressivamente ao anoitecer;
+- o apagão da ANOMALIA #003 agora se mistura ao horário real do mundo em vez de substituir a iluminação;
+- eventos urbanos surgem espontaneamente enquanto o jogador explora sem procura ativa;
+- `Carga Perdida` cria uma caixa temporária com dinheiro e um consumível;
+- `Confronto nas Ruas` cria dois Raiders independentes das missões e paga recompensas individuais mais um bônus de `$150`;
+- eventos concluídos entram em um contador persistente;
+- a procura foi expandida de 2 para 5 estrelas;
+- 3 estrelas ativam uma terceira unidade e o estado `CERCO ATIVO`;
+- 4 estrelas liberam resposta tática mais rápida e fiança de até `$160`;
+- 5 estrelas ativam cinco viaturas, agentes mais rápidos, prisão acelerada e fiança de até `$200`;
+- a perda de heat fica progressivamente mais lenta nos níveis altos;
+- trocar de veículo ainda ajuda na fuga, mas reduz menos heat em 4–5 estrelas;
+- save version 7 persiste horário, dia e histórico de eventos, mantendo compatibilidade com saves 5 e 6.
+
+
+
+Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
 
@@ -152,6 +173,9 @@ Roubar o veículo gera procura. Atropelar um cidadão também aumenta o heat e f
 - Cobalto R como primeiro veículo permanente que não gera procura ao entrar.
 - Cinco esconderijos persistentes recompensam exploração livre com dinheiro e consumíveis.
 - HUD de integridade do veículo, progresso de exploração e atividade de corrida.
+- Ciclo contínuo de dia/noite com relógio, fases visuais e postes que respondem ao horário.
+- Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha.
+- Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas e agentes mais agressivos nos níveis altos.
 
 ## Arquitetura da cena principal
 
@@ -177,7 +201,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, safehouse/save, persistência dos recordes e exploração, procura, polícia, regiões, as três anomalias, boss Murno, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, direção, trânsito civil, população, Mercado 24H, mochila, consumíveis, Corrida Noturna, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, safehouse/save, persistência de relógio/eventos/recordes/exploração, regiões, as três anomalias, boss Murno, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
