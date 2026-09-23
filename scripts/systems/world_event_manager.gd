@@ -35,11 +35,28 @@ func _process(delta: float) -> void:
 		return
 	if not is_instance_valid(GameManager.player):
 		return
-	if WantedManager.wanted_level > 0 or GameManager.store_open:
+	if not _can_tick_events():
 		return
 	time_until_next -= delta
 	if time_until_next <= 0.0:
 		start_random_event()
+
+
+func _can_tick_events() -> bool:
+	if WantedManager.wanted_level > 0 or GameManager.store_open:
+		return false
+	if StreetRaceManager.state == StreetRaceManager.State.RACING:
+		return false
+	match MissionManager.stage:
+		MissionManager.Stage.CAPTURE_NIB,
+		MissionManager.Stage.ESCAPE_POLICE,
+		MissionManager.Stage.CAPTURE_VOLT,
+		MissionManager.Stage.CLEAR_RAIDERS,
+		MissionManager.Stage.CLEAR_BLACKOUT,
+		MissionManager.Stage.CAPTURE_MURNO,
+		MissionManager.Stage.ESCAPE_BLACKOUT:
+			return false
+	return true
 
 
 func reset_run() -> void:
