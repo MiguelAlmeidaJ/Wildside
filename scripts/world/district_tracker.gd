@@ -18,6 +18,8 @@ func _process(delta: float) -> void:
 func _district_for(position: Vector2) -> String:
 	if position.y < -900.0:
 		return "MATA NORTE"
+	if position.x >= 1800.0:
+		return "PORTO FERRUGEM"
 	if position.y >= 800.0:
 		return "ZONA SUL"
 	if position.x <= -800.0:
