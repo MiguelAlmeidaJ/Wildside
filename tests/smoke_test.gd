@@ -784,7 +784,7 @@ func _run() -> void:
 	_check(not volt.visible and murno.visible, "Wild na reserva precisa sumir e Murno ativo precisa aparecer")
 	game_manager.close_wild_terminal()
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.17.1.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.18.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -792,7 +792,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 10, "Prototype 0.17.1 deve manter save version 10")
+	_check(save_manager.SAVE_VERSION == 10, "Prototype 0.18 deve manter save version 10")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
@@ -826,7 +826,7 @@ func _run() -> void:
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
-	_check(save_manager.load_game(), "Save 0.17.1 precisa ser carregável")
+	_check(save_manager.load_game(), "Save 0.18 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
