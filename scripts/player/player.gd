@@ -378,7 +378,7 @@ func enter_vehicle(vehicle: CharacterBody2D) -> void:
 	player_camera.enabled = false
 	var evaded := WantedManager.notify_vehicle_change(vehicle)
 	if evaded:
-		show_message("Veículo trocado • procura reduzida em 15.")
+		show_message("Veículo trocado • procura reduzida.")
 	else:
 		show_message("Motor ligado • Espaço freia/derrapa • E sai do veículo")
 
