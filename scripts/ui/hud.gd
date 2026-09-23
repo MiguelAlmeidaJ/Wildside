@@ -73,7 +73,7 @@ func _ready() -> void:
 	GameManager.cache_progress_changed.connect(_on_cache_progress_changed)
 	SideJobManager.objective_changed.connect(_on_side_job_objective_changed)
 	StreetRaceManager.race_state_changed.connect(_on_race_state_changed)
-	StreetRaceManager.race_progress_changed.connect(_on_race_progress_changed)
+	StreetRaceManager.race_progress_changed.connect(_on_race_progress)
 	StreetRaceManager.race_completed.connect(_on_race_completed)
 	SideJobManager.job_completed.connect(_on_side_job_completed)
 	WorldTimeManager.time_changed.connect(_on_time_changed)
@@ -375,4 +375,3 @@ func _on_district_changed(name: String) -> void:
 
 func _on_message_timer_timeout() -> void:
 	message_panel.hide()
-
