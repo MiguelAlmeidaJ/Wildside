@@ -66,7 +66,7 @@ func load_game() -> bool:
 	if file == null:
 		return false
 	var data = JSON.parse_string(file.get_as_text())
-	if not data is Dictionary:
+	if not (data is Dictionary):
 		return false
 	if int(data.get("version", 0)) < MIN_SUPPORTED_VERSION:
 		return false
@@ -123,7 +123,7 @@ func load_game() -> bool:
 	MissionManager.raiders_defeated = int(data.get("raiders_defeated", 0))
 	MissionManager.blackout_raiders_defeated = int(data.get("blackout_raiders_defeated", 0))
 	MissionManager.port_raiders_defeated = int(data.get("port_raiders_defeated", 0))
-	var saved_side_stage := int(data.get("side_job_stage", SideJobManager.Stage.IDLE))
+	var saved_side_stage: int = int(data.get("side_job_stage", SideJobManager.Stage.IDLE))
 	if saved_side_stage >= SideJobManager.Stage.HOT_CARGO_STEAL:
 		saved_side_stage = SideJobManager.Stage.IDLE
 	SideJobManager.stage = saved_side_stage
