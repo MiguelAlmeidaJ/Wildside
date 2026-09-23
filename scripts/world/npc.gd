@@ -162,6 +162,8 @@ func interact(player: CharacterBody2D) -> void:
 			text = SideJobManager.talk_to_malik()
 		"port_pickup":
 			text = SideJobManager.talk_to_dante()
+		"hot_cargo":
+			text = SideJobManager.talk_to_nika()
 		"rico":
 			text = SideJobManager.talk_to_rico()
 		"vera":
