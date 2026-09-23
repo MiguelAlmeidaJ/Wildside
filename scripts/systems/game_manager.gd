@@ -9,6 +9,8 @@ signal inventory_changed(medkits: int, snacks: int, energy_drinks: int)
 signal store_state_changed(opened: bool, title: String)
 signal vehicle_ownership_changed(unlocked: bool)
 signal cache_progress_changed(found: int, total: int)
+signal wild_roster_changed(captured: Array[String], active: Array[String])
+signal wild_terminal_changed(opened: bool)
 
 var player: CharacterBody2D
 var money := 0
@@ -25,6 +27,10 @@ var active_store := ""
 var personal_vehicle_unlocked := false
 var collected_caches: Array[String] = []
 const CACHE_TOTAL := 5
+const MAX_ACTIVE_WILDS := 2
+var captured_wilds: Array[String] = []
+var active_wilds: Array[String] = []
+var wild_terminal_open := false
 
 
 func register_player(value: CharacterBody2D) -> void:
@@ -192,11 +198,76 @@ func collect_cache(cache_id: String) -> bool:
 		return false
 	collected_caches.append(cache_id)
 	cache_progress_changed.emit(collected_caches.size(), CACHE_TOTAL)
+	wild_roster_changed.emit(captured_wilds, active_wilds)
+	wild_terminal_changed.emit(false)
 	return true
 
 
 func is_cache_collected(cache_id: String) -> bool:
 	return collected_caches.has(cache_id)
+
+
+func register_captured_wild(wild_id: String) -> void:
+	if wild_id.is_empty():
+		return
+	if not captured_wilds.has(wild_id):
+		captured_wilds.append(wild_id)
+	if active_wilds.size() < MAX_ACTIVE_WILDS and not active_wilds.has(wild_id):
+		active_wilds.append(wild_id)
+	wild_roster_changed.emit(captured_wilds, active_wilds)
+
+
+func is_wild_captured(wild_id: String) -> bool:
+	return captured_wilds.has(wild_id)
+
+
+func is_wild_active(wild_id: String) -> bool:
+	return active_wilds.has(wild_id)
+
+
+func get_wild_slot(wild_id: String) -> int:
+	return active_wilds.find(wild_id)
+
+
+func toggle_wild_active(wild_id: String) -> String:
+	if not captured_wilds.has(wild_id):
+		return "%s ainda não foi capturado." % wild_id.capitalize()
+
+	if active_wilds.has(wild_id):
+		active_wilds.erase(wild_id)
+		wild_roster_changed.emit(captured_wilds, active_wilds)
+		return "%s foi enviado para a reserva." % wild_id.capitalize()
+
+	if active_wilds.size() >= MAX_ACTIVE_WILDS:
+		return "Equipe cheia • envie um Wild para a reserva primeiro."
+
+	active_wilds.append(wild_id)
+	wild_roster_changed.emit(captured_wilds, active_wilds)
+	return "%s entrou na equipe ativa." % wild_id.capitalize()
+
+
+func set_wild_roster(captured: Array[String], active: Array[String]) -> void:
+	captured_wilds.clear()
+	active_wilds.clear()
+	for wild_id in captured:
+		if not wild_id.is_empty() and not captured_wilds.has(wild_id):
+			captured_wilds.append(wild_id)
+	for wild_id in active:
+		if captured_wilds.has(wild_id) and not active_wilds.has(wild_id) and active_wilds.size() < MAX_ACTIVE_WILDS:
+			active_wilds.append(wild_id)
+	wild_roster_changed.emit(captured_wilds, active_wilds)
+
+
+func open_wild_terminal() -> void:
+	wild_terminal_open = true
+	wild_terminal_changed.emit(true)
+
+
+func close_wild_terminal() -> void:
+	if not wild_terminal_open:
+		return
+	wild_terminal_open = false
+	wild_terminal_changed.emit(false)
 
 
 func set_district(name: String) -> void:
@@ -220,6 +291,9 @@ func reset_run() -> void:
 	active_store = ""
 	personal_vehicle_unlocked = false
 	collected_caches.clear()
+	captured_wilds.clear()
+	active_wilds.clear()
+	wild_terminal_open = false
 	money_changed.emit(money)
 	capture_devices_changed.emit(capture_devices)
 	weapon_changed.emit(pistol_unlocked, pistol_magazine, pistol_reserve)
