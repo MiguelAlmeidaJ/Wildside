@@ -173,7 +173,7 @@ appearance_tint = Color(0.92, 0.86, 0.72, 1)
 ambient_lines = PackedStringArray("Ainda faltam duas horas.", "Café. Eu preciso de café.")
 
 [node name="CitizenD" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(1460, 760)
+position = Vector2(1750, 760)
 citizen_name = "Operário"
 fight_chance = 0.85
 max_health = 82.0
@@ -395,7 +395,7 @@ position = Vector2(610, 1215)
 rotation = 1.5708
 
 [node name="MotorcyclePort" parent="World/Entities/Vehicles" instance=ExtResource("28_motorcycle")]
-position = Vector2(2700, 720)
+position = Vector2(2780, 760)
 rotation = -1.5708
 vehicle_name = "Raptor 250"
 
