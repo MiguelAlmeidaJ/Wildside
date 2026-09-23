@@ -77,7 +77,7 @@ func _physics_process(delta: float) -> void:
 		_update_prompt()
 		return
 
-	if GameManager.store_open:
+	if GameManager.store_open or GameManager.wild_terminal_open:
 		velocity = velocity.move_toward(Vector2.ZERO, deceleration * delta)
 		motion_state = MotionState.IDLE
 		_update_visual_animation(delta)
@@ -107,6 +107,25 @@ func _physics_process(delta: float) -> void:
 
 
 func _unhandled_input(event: InputEvent) -> void:
+	if GameManager.wild_terminal_open:
+		if event.is_action_pressed("interact") or event.is_action_pressed("ui_cancel"):
+			GameManager.close_wild_terminal()
+			get_viewport().set_input_as_handled()
+			return
+		if event is InputEventKey and event.pressed and not event.echo:
+			var wild_id := ""
+			if event.physical_keycode == KEY_1:
+				wild_id = "nib"
+			elif event.physical_keycode == KEY_2:
+				wild_id = "volt"
+			elif event.physical_keycode == KEY_3:
+				wild_id = "murno"
+			if not wild_id.is_empty():
+				show_message(GameManager.toggle_wild_active(wild_id))
+				get_viewport().set_input_as_handled()
+				return
+		return
+
 	if GameManager.store_open:
 		if event.is_action_pressed("interact") or event.is_action_pressed("ui_cancel"):
 			GameManager.close_store()
@@ -163,6 +182,9 @@ func _unhandled_input(event: InputEvent) -> void:
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("wild_volt") and not is_instance_valid(current_vehicle):
 		_use_wild_ability("wild_volt", "Volt")
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("wild_murno") and not is_instance_valid(current_vehicle):
+		_use_wild_ability("wild_murno", "Murno")
 		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("shoot") and not is_instance_valid(current_vehicle):
 		fire_pistol_at(get_global_mouse_position())
@@ -301,6 +323,7 @@ func _ensure_utility_inputs() -> void:
 	_ensure_key_action("item_medkit", KEY_H)
 	_ensure_key_action("item_energy", KEY_J)
 	_ensure_key_action("item_snack", KEY_K)
+	_ensure_key_action("wild_murno", KEY_3)
 
 
 func _ensure_key_action(action_name: String, keycode: int) -> void:
@@ -555,6 +578,10 @@ func _nearby_interactables() -> Array[Node2D]:
 
 
 func _update_prompt() -> void:
+	if GameManager.wild_terminal_open:
+		_focused_interactable = null
+		_set_prompt("1/2/3  Alternar Wild   E/Esc  Fechar")
+		return
 	if GameManager.store_open:
 		_focused_interactable = null
 		_set_prompt("1/2/3  Comprar   E/Esc  Fechar")
