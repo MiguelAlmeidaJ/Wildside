@@ -1,6 +1,6 @@
 extends CharacterBody2D
 
-@export_range(0, 4) var route_id := 0
+@export_range(0, 5) var route_id := 0
 @export var cruise_speed := 150.0
 @export var vehicle_tint := Color.WHITE
 @export var start_offset := 0
@@ -75,5 +75,12 @@ func _route_points(id: int) -> Array[Vector2]:
 				Vector2(2050, 1850), Vector2(2050, 1125), Vector2(1850, 1125),
 				Vector2(1850, 875), Vector2(2050, 875), Vector2(2050, 120),
 				Vector2(1850, 120)
+			]
+		5:
+			points = [
+				Vector2(-2600, -80), Vector2(-2250, -80), Vector2(-1850, -80),
+				Vector2(-1850, 120), Vector2(-2250, 120), Vector2(-2250, 875),
+				Vector2(-1850, 875), Vector2(-1850, 1125), Vector2(-2250, 1125),
+				Vector2(-2600, 1125), Vector2(-2600, 875), Vector2(-2250, 875)
 			]
 	return points
