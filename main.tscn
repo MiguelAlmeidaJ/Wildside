@@ -342,7 +342,7 @@ rotation = 1.5708
 [node name="MotorcyclePort" parent="World/Entities/Vehicles" instance=ExtResource("28_motorcycle")]
 position = Vector2(2680, 875)
 rotation = -1.5708
-vehicle_name = "Raptor 250 • Porto"
+vehicle_name = "Raptor 250"
 
 [node name="TruckIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
 position = Vector2(1510, 1125)
@@ -351,7 +351,7 @@ rotation = 1.5708
 [node name="TruckPort" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
 position = Vector2(2040, 1880)
 rotation = 1.5708
-vehicle_name = "Atlas Cargo • Porto"
+vehicle_name = "Atlas Cargo"
 
 [node name="PersonalCar" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 modulate = Color(0.58, 0.96, 0.88, 1)
