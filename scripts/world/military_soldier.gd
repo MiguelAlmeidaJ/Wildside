@@ -87,8 +87,8 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
-	var has_los := _has_line_of_sight(target_position)
-	if distance <= attack_range and has_los:
+	var has_los := distance <= attack_range and _has_line_of_sight(target_position)
+	if has_los:
 		var direction := direction_to_target
 		if distance < preferred_range * 0.72:
 			velocity = velocity.move_toward(-direction * move_speed * 0.45 + _knockback, 620.0 * delta)
