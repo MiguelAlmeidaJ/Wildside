@@ -86,7 +86,7 @@ func _draw_roads() -> void:
 		[Vector2(0, -900), Vector2(0, 2200)],
 		[Vector2(-1010, -900), Vector2(-1010, 2200)],
 		[Vector2(1010, -900), Vector2(1010, 2200)],
-		[Vector2(2200, -900), Vector2(2200, 2200)],
+		[Vector2(2320, -900), Vector2(2320, 2200)],
 		[Vector2(1800, 1930), Vector2(2840, 1930)],
 	]:
 		var a := _to_map(segment[0])
