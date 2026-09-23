@@ -235,8 +235,8 @@ func fire_pistol_at(target_position: Vector2) -> bool:
 
 	var hit_target: Node2D
 	var hit_projection := INF
-	for enemy in get_tree().get_nodes_in_group("hostile"):
-		if not enemy is Node2D or not enemy.visible or not enemy.has_method("take_damage"):
+	for enemy in _attackable_targets():
+		if not enemy.visible or not enemy.has_method("take_damage"):
 			continue
 		var offset: Vector2 = enemy.global_position - global_position
 		var projection := offset.dot(direction)
@@ -467,8 +467,8 @@ func perform_attack() -> bool:
 	_attack_cooldown_left = attack_cooldown
 
 	var hit := false
-	for enemy in get_tree().get_nodes_in_group("hostile"):
-		if not enemy is Node2D or not enemy.has_method("take_damage"):
+	for enemy in _attackable_targets():
+		if not enemy.has_method("take_damage"):
 			continue
 		var offset: Vector2 = enemy.global_position - global_position
 		var distance := offset.length()
@@ -481,6 +481,22 @@ func perform_attack() -> bool:
 
 	_play_attack_animation(hit)
 	return hit
+
+
+func _attackable_targets() -> Array[Node2D]:
+	var targets: Array[Node2D] = []
+	var seen: Dictionary = {}
+	for group_name in ["hostile", "civilian_damageable"]:
+		for candidate in get_tree().get_nodes_in_group(group_name):
+			if not (candidate is Node2D):
+				continue
+			var node := candidate as Node2D
+			var id := node.get_instance_id()
+			if seen.has(id):
+				continue
+			seen[id] = true
+			targets.append(node)
+	return targets
 
 
 func take_damage(amount: float, source: Node2D = null) -> void:
