@@ -42,6 +42,9 @@ func _run() -> void:
 	var maya = game.get_node("World/Entities/NPCs/Maya")
 	var bruno = game.get_node("World/Entities/NPCs/Bruno")
 	var jade = game.get_node("World/Entities/NPCs/Jade")
+	var cora = game.get_node("World/Entities/NPCs/Cora")
+	var malik = game.get_node("World/Entities/NPCs/Malik")
+	var dante = game.get_node("World/Entities/NPCs/Dante")
 	var rico = game.get_node("World/Entities/NPCs/Rico")
 	var vera = game.get_node("World/Entities/NPCs/Vera")
 	var nando = game.get_node("World/Entities/NPCs/Nando")
@@ -55,6 +58,7 @@ func _run() -> void:
 	var market = game.get_node("World/Props/Market24")
 	var safehouse = game.get_node("World/Props/Safehouse")
 	var wild_terminal = game.get_node("World/Props/WildTerminal")
+	var port_signal = game.get_node("World/Props/PortSignal")
 	var garage = game.get_node("World/Props/GarageCobalto")
 	var personal_car = game.get_node("World/Entities/Vehicles/PersonalCar")
 	var cache_center = game.get_node("World/Props/CacheCenter")
@@ -72,6 +76,9 @@ func _run() -> void:
 	var blackout_raider1 = game.get_node("World/Entities/Enemies/BlackoutRaider1")
 	var blackout_raider2 = game.get_node("World/Entities/Enemies/BlackoutRaider2")
 	var blackout_raider3 = game.get_node("World/Entities/Enemies/BlackoutRaider3")
+	var port_raider1 = game.get_node("World/Entities/Enemies/PortRaider1")
+	var port_raider2 = game.get_node("World/Entities/Enemies/PortRaider2")
+	var port_raider3 = game.get_node("World/Entities/Enemies/PortRaider3")
 	var event_raider1 = game.get_node("World/Entities/Enemies/EventRaider1")
 	var event_raider2 = game.get_node("World/Entities/Enemies/EventRaider2")
 	var event_cargo = game.get_node("World/Props/EventCargo")
@@ -86,12 +93,14 @@ func _run() -> void:
 	await physics_frame
 	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
 	_check(not parked_blocker.disabled, "Carro estacionado precisa manter o bloqueio estático ativo")
-	_check(get_nodes_in_group("interactable").size() >= 20, "Cidade Viva precisa ter mais cidadãos e interações")
-	_check(get_nodes_in_group("citizens").size() >= 16, "Cidade Viva precisa ter população ampliada")
-	_check(get_nodes_in_group("ambient_traffic").size() >= 6, "Cidade Viva precisa ter trânsito civil")
+	_check(get_nodes_in_group("interactable").size() >= 28, "Cidade ampliada precisa ter mais cidadãos e interações")
+	_check(get_nodes_in_group("citizens").size() >= 24, "Porto Ferrugem precisa ampliar a população da cidade")
+	_check(get_nodes_in_group("ambient_traffic").size() >= 8, "Porto Ferrugem precisa ampliar o trânsito civil")
 	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
 	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
 	_check(wild_terminal != null, "Terminal Wild precisa existir no apartamento")
+	_check(cora != null and malik != null and dante != null and port_signal != null, "Porto Ferrugem precisa carregar contatos e relé")
+	_check(port_raider1 != null and port_raider2 != null and port_raider3 != null, "ANOMALIA #004 precisa carregar três Raiders dedicados")
 	_check(garage != null and personal_car != null, "Garagem Cobalto e veículo próprio precisam existir")
 	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
 	_check(police3 != null and police4 != null and police5 != null, "Procura 3–5 estrelas precisa ter unidades dedicadas")
@@ -103,6 +112,8 @@ func _run() -> void:
 	_check(district_tracker._district_for(Vector2(1400, 400)) == "DISTRITO INDUSTRIAL", "Industrial precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(0, 1400)) == "ZONA SUL", "Zona Sul precisa ser identificada")
 	_check(district_tracker._district_for(Vector2(0, -1300)) == "MATA NORTE", "Mata Norte precisa ser identificada")
+	_check(district_tracker._district_for(Vector2(2300, 600)) == "PORTO FERRUGEM", "Porto Ferrugem precisa ser identificado")
+	_check(player.get_node("Camera2D").limit_right == 3000 and player.get_node("Camera2D").limit_bottom == 2200, "Câmera precisa cobrir a expansão do porto")
 
 	# Vida urbana: Mercado 24H, mochila, consumíveis e corrida de entrega.
 	game_manager.add_money(200)
@@ -548,6 +559,45 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
+
+	# ANOMALIA #004: Jade -> Cora -> relé -> Raiders -> núcleo -> Cora.
+	jade.interact(player)
+	_check(mission.stage == mission.Stage.TALK_TO_CORA, "Jade precisa liberar a pista do Porto Ferrugem")
+	cora.interact(player)
+	_check(mission.stage == mission.Stage.INVESTIGATE_PORT_SIGNAL, "Cora precisa enviar o player ao relé do cais")
+	port_signal.interact(player)
+	_check(mission.stage == mission.Stage.CLEAR_PORT_RAIDERS, "Analisar o relé precisa iniciar o cerco do porto")
+	await process_frame
+	await physics_frame
+	_check(port_raider1.active and port_raider2.active and port_raider3.active, "Três Raiders precisam ativar no Porto Ferrugem")
+	_check(mission.port_raiders_defeated == 0, "Cerco do porto precisa começar em 0/3")
+
+	port_raider1.take_damage(999.0, player)
+	_check(mission.port_raiders_defeated == 1, "Primeiro Raider do porto precisa atualizar 1/3")
+	port_raider2.take_damage(999.0, player)
+	_check(mission.port_raiders_defeated == 2, "Segundo Raider do porto precisa atualizar 2/3")
+	port_raider3.take_damage(999.0, player)
+	_check(mission.stage == mission.Stage.RECOVER_PORT_CORE, "Terceiro Raider precisa liberar a recuperação do núcleo")
+
+	port_signal.interact(player)
+	_check(mission.stage == mission.Stage.RETURN_TO_CORA, "Retirar o núcleo precisa liberar o retorno para Cora")
+	var money_before_cora = game_manager.money
+	var devices_before_cora = game_manager.capture_devices
+	cora.interact(player)
+	_check(mission.stage == mission.Stage.ANOMALY_4_COMPLETE, "Cora precisa concluir a ANOMALIA #004")
+	_check(game_manager.money == money_before_cora + mission.ANOMALY_4_REWARD, "ANOMALIA #004 precisa pagar $500")
+	_check(game_manager.capture_devices == devices_before_cora + 1, "ANOMALIA #004 precisa entregar um Dispositivo Wild extra")
+
+	# Trabalho livre do novo distrito: Frete do Cais.
+	var money_before_port_job = game_manager.money
+	malik.interact(player)
+	_check(side_job.stage == side_job.Stage.PORT_PICKUP, "Malik precisa iniciar o Frete do Cais")
+	dante.interact(player)
+	_check(side_job.stage == side_job.Stage.PORT_RETURN, "Dante precisa entregar o manifesto")
+	malik.interact(player)
+	_check(side_job.stage == side_job.Stage.IDLE, "Voltar a Malik precisa concluir o Frete do Cais")
+	_check(game_manager.money == money_before_port_job + side_job.PORT_DELIVERY_REWARD, "Frete do Cais precisa pagar $160")
+
 	# Prototype 0.13: Terminal Wild permite formar equipe de até dois companheiros.
 	wild_terminal.interact(player)
 	_check(game_manager.wild_terminal_open, "Terminal Wild precisa abrir no apartamento")
@@ -559,7 +609,7 @@ func _run() -> void:
 	_check(not volt.visible and murno.visible, "Wild na reserva precisa sumir e Murno ativo precisa aparecer")
 	game_manager.close_wild_terminal()
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.13.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.14.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -567,7 +617,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 8, "Prototype 0.13 precisa usar save version 8")
+	_check(save_manager.SAVE_VERSION == 9, "Prototype 0.14 precisa usar save version 9")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
@@ -601,7 +651,7 @@ func _run() -> void:
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
-	_check(save_manager.load_game(), "Save 0.13 precisa ser carregável")
+	_check(save_manager.load_game(), "Save 0.14 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
@@ -610,6 +660,7 @@ func _run() -> void:
 	_check(is_equal_approx(race_manager.best_time, 58.5) and race_manager.wins == 2, "Load precisa restaurar recorde e vitórias de corrida")
 	_check(time_manager.get_hour() == 23 and time_manager.get_minute() == 15 and time_manager.day_count == 3, "Load precisa restaurar relógio e dia")
 	_check(event_manager.events_completed == 4, "Load precisa restaurar histórico de eventos urbanos")
+	_check(mission.stage == mission.Stage.ANOMALY_4_COMPLETE, "Load precisa restaurar o progresso da ANOMALIA #004")
 	_check(game_manager.is_wild_active("nib") and game_manager.is_wild_active("murno"), "Load precisa restaurar a formação Wild ativa")
 	_check(game_manager.is_wild_captured("volt"), "Load precisa manter Wilds da reserva na coleção")
 	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
