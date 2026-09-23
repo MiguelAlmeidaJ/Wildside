@@ -52,6 +52,7 @@ func _run() -> void:
 	var nando = game.get_node("World/Entities/NPCs/Nando")
 	var davi = game.get_node("World/Entities/NPCs/Davi")
 	var ravi = game.get_node("World/Entities/NPCs/Ravi")
+	var nika = game.get_node("World/Entities/NPCs/Nika")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
 	var volt = game.get_node("World/Entities/Creatures/Volt")
@@ -63,7 +64,9 @@ func _run() -> void:
 	var wild_terminal = game.get_node("World/Props/WildTerminal")
 	var port_signal = game.get_node("World/Props/PortSignal")
 	var garage = game.get_node("World/Props/GarageCobalto")
+	var chop_shop = game.get_node("World/Props/ChopShop")
 	var personal_car = game.get_node("World/Entities/Vehicles/PersonalCar")
+	var hot_cargo_truck = game.get_node("World/Entities/Vehicles/HotCargoTruck")
 	var cache_center = game.get_node("World/Props/CacheCenter")
 	var cache_residential = game.get_node("World/Props/CacheResidential")
 	var cache_industrial = game.get_node("World/Props/CacheIndustrial")
@@ -113,6 +116,8 @@ func _run() -> void:
 	_check(cora != null and malik != null and dante != null and port_signal != null, "Porto Ferrugem precisa carregar contatos e relé")
 	_check(port_raider1 != null and port_raider2 != null and port_raider3 != null, "ANOMALIA #004 precisa carregar três Raiders dedicados")
 	_check(garage != null and personal_car != null, "Garagem Cobalto e veículo próprio precisam existir")
+	_check(nika != null and chop_shop != null and hot_cargo_truck != null, "Carga Quente precisa carregar Nika, desmanche e caminhão alvo")
+	_check(not hot_cargo_truck.visible, "Caminhão da Carga Quente precisa iniciar oculto")
 	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
 	_check(police3 != null and police4 != null and police5 != null, "Procura 3–5 estrelas precisa ter unidades dedicadas")
 	_check(police.is_in_group("police_unit") and police5.is_in_group("police_unit"), "Viaturas precisam estar disponíveis para o minimapa")
@@ -665,6 +670,31 @@ func _run() -> void:
 	_check(side_job.stage == side_job.Stage.IDLE, "Voltar a Malik precisa concluir o Frete do Cais")
 	_check(game_manager.money == money_before_port_job + side_job.PORT_DELIVERY_REWARD, "Frete do Cais precisa pagar $160")
 
+	# Prototype 0.16: Carga Quente usa roubo, fuga e pagamento por integridade.
+	var money_before_hot_cargo = game_manager.money
+	nika.interact(player)
+	_check(side_job.stage == side_job.Stage.HOT_CARGO_STEAL, "Nika precisa iniciar Carga Quente após a ANOMALIA #004")
+	_check(hot_cargo_truck.visible, "Caminhão marcado precisa aparecer quando o serviço começa")
+	hot_cargo_truck.interact(player)
+	await physics_frame
+	_check(player.current_vehicle == hot_cargo_truck, "Player precisa conseguir roubar o caminhão marcado")
+	_check(side_job.stage == side_job.Stage.HOT_CARGO_ESCAPE, "Roubar o caminhão precisa iniciar a fuga")
+	_check(wanted.wanted_level == 2, "Carga Quente precisa gerar duas estrelas")
+
+	hot_cargo_truck.set_durability(hot_cargo_truck.maximum_durability * 0.5)
+	wanted.clear()
+	_check(side_job.stage == side_job.Stage.HOT_CARGO_DELIVER, "Perder a polícia precisa liberar a entrega")
+	hot_cargo_truck.global_position = side_job.CHOP_SHOP_POSITION + Vector2(-80, 0)
+	hot_cargo_truck.request_exit()
+	await physics_frame
+	_check(player.current_vehicle == null, "Player precisa sair do caminhão antes da entrega")
+	chop_shop.interact(player)
+	_check(side_job.stage == side_job.Stage.IDLE, "Desmanche precisa concluir Carga Quente")
+	_check(side_job.hot_cargo_completed == 1, "Carga Quente concluída precisa ser contabilizada")
+	var expected_hot_reward = side_job.HOT_CARGO_BASE_REWARD + roundi(side_job.HOT_CARGO_CONDITION_BONUS * 0.5)
+	_check(game_manager.money == money_before_hot_cargo + expected_hot_reward, "Pagamento da Carga Quente precisa considerar integridade")
+	_check(not hot_cargo_truck.visible, "Caminhão entregue precisa desaparecer do mundo")
+
 	# Prototype 0.13: Terminal Wild permite formar equipe de até dois companheiros.
 	wild_terminal.interact(player)
 	_check(game_manager.wild_terminal_open, "Terminal Wild precisa abrir no apartamento")
@@ -676,7 +706,7 @@ func _run() -> void:
 	_check(not volt.visible and murno.visible, "Wild na reserva precisa sumir e Murno ativo precisa aparecer")
 	game_manager.close_wild_terminal()
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.14.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.16.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -684,7 +714,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 9, "Prototype 0.14 precisa usar save version 9")
+	_check(save_manager.SAVE_VERSION == 10, "Prototype 0.16 precisa usar save version 10")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
@@ -727,6 +757,7 @@ func _run() -> void:
 	_check(is_equal_approx(race_manager.best_time, 58.5) and race_manager.wins == 2, "Load precisa restaurar recorde e vitórias de corrida")
 	_check(time_manager.get_hour() == 23 and time_manager.get_minute() == 15 and time_manager.day_count == 3, "Load precisa restaurar relógio e dia")
 	_check(event_manager.events_completed == 4, "Load precisa restaurar histórico de eventos urbanos")
+	_check(side_job.hot_cargo_completed == 1, "Load precisa restaurar total de Cargas Quentes concluídas")
 	_check(mission.stage == mission.Stage.ANOMALY_4_COMPLETE, "Load precisa restaurar o progresso da ANOMALIA #004")
 	_check(game_manager.is_wild_active("nib") and game_manager.is_wild_active("murno"), "Load precisa restaurar a formação Wild ativa")
 	_check(game_manager.is_wild_captured("volt"), "Load precisa manter Wilds da reserva na coleção")
