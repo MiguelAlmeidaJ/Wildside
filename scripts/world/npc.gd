@@ -186,6 +186,7 @@ func take_damage(amount: float, source: Node2D = null) -> void:
 			WantedManager.add_heat(30.0, "Atropelamento")
 		else:
 			WantedManager.add_heat(22.0, "Agressão a pedestre")
+			GameManager.emit_noise(global_position, 260.0, "assault", self)
 
 	health = maxf(0.0, health - amount)
 	sprite.modulate = Color(1.5, 0.7, 0.7)
@@ -240,13 +241,16 @@ func react_to_danger(source_position: Vector2) -> void:
 	_set_state(State.FLEE, 4.0)
 
 
-func _on_noise_emitted(position: Vector2, radius: float, kind: String, _source: Node2D) -> void:
-	if kind != "gunshot" or state == State.DOWNED:
+func _on_noise_emitted(position: Vector2, radius: float, kind: String, source: Node2D) -> void:
+	if state == State.DOWNED or source == self:
 		return
 	if global_position.distance_to(position) > radius:
 		return
-	react_to_danger(position)
-	WantedManager.report_gunshot(true)
+	if kind == "gunshot":
+		react_to_danger(position)
+		WantedManager.report_gunshot(true)
+	elif kind == "vehicle_theft" or kind == "assault":
+		react_to_danger(position)
 
 
 func _update_fight_state(delta: float) -> void:
