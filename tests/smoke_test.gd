@@ -33,6 +33,7 @@ func _run() -> void:
 	await physics_frame
 
 	var player = game.get_node("Player")
+	var city = game.get_node("World/City")
 	var hud = game.get_node("UI/HUD")
 	var mini_map = game.get_node("UI/HUD/MiniMapPanel/MiniMapContent/MiniMap")
 	var mini_map_panel = game.get_node("UI/HUD/MiniMapPanel")
@@ -90,7 +91,7 @@ func _run() -> void:
 	var event_raider1 = game.get_node("World/Entities/Enemies/EventRaider1")
 	var event_raider2 = game.get_node("World/Entities/Enemies/EventRaider2")
 	var event_cargo = game.get_node("World/Props/EventCargo")
-	_check(player != null, "Player precisa existir")
+	_check(player != null and city != null, "Player e cidade precisam existir")
 	_check(hud != null and mini_map != null, "HUD precisa carregar o minimapa")
 	_check(mini_map_panel.visible, "Minimapa precisa iniciar visível")
 	_check(InputMap.has_action("minimap_toggle"), "Atalho M do minimapa precisa existir")
@@ -138,6 +139,14 @@ func _run() -> void:
 	_check(ravi._is_pedestrian_space(ravi.global_position), "Ravi precisa iniciar fora da faixa de rodagem do porto")
 	_check(sara != null and sara._is_pedestrian_space(sara.global_position), "Vila Oeste precisa ter pedestres posicionados em área segura")
 	_check(absf(car.global_position.y) >= 180.0 and absf(car_residential.global_position.x + 1010.0) >= 200.0, "Carros estacionados precisam sair das faixas de circulação")
+
+	# 0.17.1: calçadas e meio-fios não podem atravessar cruzamentos.
+	var horizontal_sidewalk_segments: Array = city._horizontal_segments(180.0, city.SIDEWALK_WIDTH, -2700.0, 3000.0)
+	var vertical_sidewalk_segments: Array = city._vertical_segments(-320.0, city.SIDEWALK_WIDTH, -900.0, 2200.0)
+	_check(horizontal_sidewalk_segments.size() == 6, "Calçada horizontal precisa ser recortada nos cinco eixos verticais")
+	_check(vertical_sidewalk_segments.size() == 3, "Calçada vertical do Centro precisa ser recortada nas duas avenidas horizontais")
+	_check(horizontal_sidewalk_segments[2].y <= -220.0 and horizontal_sidewalk_segments[3].x >= 220.0, "Calçada não pode cruzar a avenida central")
+	_check(vertical_sidewalk_segments[0].y <= -180.0 and vertical_sidewalk_segments[1].x >= 180.0, "Calçada vertical não pode atravessar a avenida principal")
 
 	# Vida urbana: Mercado 24H, mochila, consumíveis e corrida de entrega.
 	game_manager.add_money(200)
