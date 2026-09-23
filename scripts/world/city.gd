@@ -319,73 +319,61 @@ func _horizontal_road_height_at(y: float) -> float:
 
 func _draw_crosswalk(center: Vector2) -> void:
 	var crosswalk_color := Color(0.88, 0.91, 0.92, 0.92)
-	var stop_line_color := Color(0.94, 0.95, 0.95, 0.62)
+	var stop_line_color := Color(0.94, 0.95, 0.95, 0.68)
 	var vertical_width := _vertical_road_width_at(center.x)
 	var horizontal_height := _horizontal_road_height_at(center.y)
 	var vertical_half := vertical_width * 0.5
 	var horizontal_half := horizontal_height * 0.5
 
-	var stripe_width := 18.0
-	var stripe_gap := 34.0
-	var stripe_depth := 44.0
+	var stripe_width := 16.0
+	var stripe_gap := 31.0
+	var stripe_depth := 48.0
+	var intersection_margin := 18.0
+	var stop_offset := 10.0
 
-	# Travessias norte/sul cruzam o eixo vertical e ficam dentro do
-	# limite da avenida horizontal, sem invadir as calçadas.
+	# As zebras ficam NOS ACESSOS do cruzamento, nunca dentro da caixa
+	# central onde os veículos fazem a conversão.
+	var north_y := center.y - horizontal_half - intersection_margin - stripe_depth
+	var south_y := center.y + horizontal_half + intersection_margin
+	var west_x := center.x - vertical_half - intersection_margin - stripe_depth
+	var east_x := center.x + vertical_half + intersection_margin
+
+	# Norte e sul: faixas atravessam o eixo vertical antes da interseção.
 	var stripe_x := center.x - vertical_half + 18.0
 	while stripe_x <= center.x + vertical_half - 18.0 - stripe_width:
-		draw_rect(
-			Rect2(
-				stripe_x,
-				center.y - horizontal_half + 14.0,
-				stripe_width,
-				stripe_depth
-			),
-			crosswalk_color
-		)
-		draw_rect(
-			Rect2(
-				stripe_x,
-				center.y + horizontal_half - 14.0 - stripe_depth,
-				stripe_width,
-				stripe_depth
-			),
-			crosswalk_color
-		)
+		draw_rect(Rect2(stripe_x, north_y, stripe_width, stripe_depth), crosswalk_color)
+		draw_rect(Rect2(stripe_x, south_y, stripe_width, stripe_depth), crosswalk_color)
 		stripe_x += stripe_gap
 
-	# Travessias leste/oeste cruzam a avenida horizontal.
+	# Oeste e leste: faixas atravessam o eixo horizontal antes da interseção.
 	var stripe_y := center.y - horizontal_half + 18.0
 	while stripe_y <= center.y + horizontal_half - 18.0 - stripe_width:
-		draw_rect(
-			Rect2(
-				center.x - vertical_half + 14.0,
-				stripe_y,
-				stripe_depth,
-				stripe_width
-			),
-			crosswalk_color
-		)
-		draw_rect(
-			Rect2(
-				center.x + vertical_half - 14.0 - stripe_depth,
-				stripe_y,
-				stripe_depth,
-				stripe_width
-			),
-			crosswalk_color
-		)
+		draw_rect(Rect2(west_x, stripe_y, stripe_depth, stripe_width), crosswalk_color)
+		draw_rect(Rect2(east_x, stripe_y, stripe_depth, stripe_width), crosswalk_color)
 		stripe_y += stripe_gap
 
-	# Linhas de retenção deixam o cruzamento visualmente mais legível.
+	# Linhas de retenção ficam antes das zebras para manter o miolo limpo.
 	draw_line(
-		Vector2(center.x - vertical_half + 8.0, center.y - horizontal_half + 66.0),
-		Vector2(center.x + vertical_half - 8.0, center.y - horizontal_half + 66.0),
+		Vector2(center.x - vertical_half + 8.0, north_y - stop_offset),
+		Vector2(center.x + vertical_half - 8.0, north_y - stop_offset),
 		stop_line_color,
 		4.0
 	)
 	draw_line(
-		Vector2(center.x - vertical_half + 8.0, center.y + horizontal_half - 66.0),
-		Vector2(center.x + vertical_half - 8.0, center.y + horizontal_half - 66.0),
+		Vector2(center.x - vertical_half + 8.0, south_y + stripe_depth + stop_offset),
+		Vector2(center.x + vertical_half - 8.0, south_y + stripe_depth + stop_offset),
+		stop_line_color,
+		4.0
+	)
+	draw_line(
+		Vector2(west_x - stop_offset, center.y - horizontal_half + 8.0),
+		Vector2(west_x - stop_offset, center.y + horizontal_half - 8.0),
+		stop_line_color,
+		4.0
+	)
+	draw_line(
+		Vector2(east_x + stripe_depth + stop_offset, center.y - horizontal_half + 8.0),
+		Vector2(east_x + stripe_depth + stop_offset, center.y + horizontal_half - 8.0),
 		stop_line_color,
 		4.0
 	)
