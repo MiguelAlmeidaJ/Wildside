@@ -39,8 +39,12 @@ func _physics_process(delta: float) -> void:
 	_assist_cooldown_left = maxf(0.0, _assist_cooldown_left - delta)
 	ability_cooldown_left = maxf(0.0, ability_cooldown_left - delta)
 	if captured:
-		_follow_player(delta)
-		_assist_player()
+		_sync_team_state()
+		if GameManager.is_wild_active("nib"):
+			_follow_player(delta)
+			_assist_player()
+		else:
+			velocity = Vector2.ZERO
 	else:
 		_update_wild_state(delta)
 	move_and_slide()
@@ -74,6 +78,7 @@ func attempt_capture(player: CharacterBody2D) -> void:
 	if _rng.randf() <= chance:
 		captured = true
 		state = State.FOLLOW
+		GameManager.register_captured_wild("nib")
 		remove_from_group("capturable")
 		collision_shape.set_deferred("disabled", true)
 		status_label.text = "NIB  ♥  SEU WILD"
@@ -88,10 +93,19 @@ func attempt_capture(player: CharacterBody2D) -> void:
 func restore_captured() -> void:
 	captured = true
 	state = State.FOLLOW
+	if not GameManager.is_wild_captured("nib"):
+		GameManager.register_captured_wild("nib")
 	if is_in_group("capturable"):
 		remove_from_group("capturable")
 	collision_shape.set_deferred("disabled", true)
 	status_label.text = "NIB  ♥  SEU WILD"
+
+
+func _sync_team_state() -> void:
+	var team_active := GameManager.is_wild_active("nib")
+	visible = team_active
+	status_label.visible = team_active
+	collision_shape.set_deferred("disabled", true)
 
 
 func _update_wild_state(_delta: float) -> void:
@@ -120,9 +134,10 @@ func _update_wild_state(_delta: float) -> void:
 
 
 func _follow_player(delta: float) -> void:
+	var slot: int = maxi(0, GameManager.get_wild_slot("nib"))
 	var target := GameManager.get_controlled_position() + Vector2(55, 45)
 	if is_instance_valid(GameManager.player) and GameManager.player.has_method("get_companion_anchor"):
-		target = GameManager.player.call("get_companion_anchor", 0) as Vector2
+		target = GameManager.player.call("get_companion_anchor", slot) as Vector2
 	var distance := global_position.distance_to(target)
 	if distance > 650.0:
 		global_position = target
@@ -157,6 +172,9 @@ func _assist_player() -> void:
 func use_active_ability(player: CharacterBody2D) -> bool:
 	if not captured:
 		player.call("show_message", "Nib ainda não faz parte do seu grupo.")
+		return false
+	if not GameManager.is_wild_active("nib"):
+		player.call("show_message", "Nib está na reserva. Troque sua equipe no apartamento.")
 		return false
 	if ability_cooldown_left > 0.0:
 		player.call("show_message", "Impacto do Nib recarrega em %.1fs." % ability_cooldown_left)
