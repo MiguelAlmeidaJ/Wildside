@@ -1,0 +1,58 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/vehicles/car.gd" id="1_vehicle"]
+[ext_resource type="Texture2D" path="res://assets/vehicles/truck.svg" id="2_texture"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_vehicle"]
+size = Vector2(82, 154)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape_parked"]
+size = Vector2(86, 160)
+
+[node name="Truck" type="CharacterBody2D"]
+z_index = 8
+collision_layer = 4
+collision_mask = 11
+script = ExtResource("1_vehicle")
+maximum_speed = 390.0
+reverse_speed = 155.0
+acceleration = 310.0
+braking = 570.0
+coast_drag = 240.0
+steering_low_speed = 1.75
+steering_high_speed = 0.92
+steering_response = 3.2
+road_grip = 9.0
+handbrake_grip = 1.55
+maximum_durability = 185.0
+collision_damage_multiplier = 0.55
+pedestrian_impact_multiplier = 1.45
+camera_look_ahead = 95.0
+theft_heat = 35.0
+vehicle_name = "Atlas Cargo"
+vehicle_kind = "truck"
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape_vehicle")
+
+[node name="ParkedBlocker" type="StaticBody2D" parent="."]
+collision_layer = 4
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ParkedBlocker"]
+shape = SubResource("RectangleShape_parked")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+enabled = false
+position_smoothing_enabled = true
+position_smoothing_speed = 5.0
+limit_left = -1800
+limit_top = -1600
+limit_right = 3000
+limit_bottom = 2200
+
+[node name="EngineSound" type="AudioStreamPlayer2D" parent="."]
+max_distance = 1100.0
