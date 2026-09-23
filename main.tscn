@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3]
+[gd_scene load_steps=32 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -30,6 +30,7 @@
 [ext_resource type="PackedScene" path="res://scenes/vehicles/motorcycle.tscn" id="28_motorcycle"]
 [ext_resource type="PackedScene" path="res://scenes/vehicles/truck.tscn" id="29_truck"]
 [ext_resource type="PackedScene" path="res://scenes/world/chop_shop.tscn" id="30_chop"]
+[ext_resource type="PackedScene" path="res://scenes/world/military_soldier.tscn" id="31_military"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -362,6 +363,28 @@ contact_range = 820.0
 deploy_distance = 300.0
 ram_damage = 7.0
 response_delay = 4.6
+
+
+[node name="Military1" parent="World/Entities/NPCs" instance=ExtResource("31_military")]
+position = Vector2(1750, -650)
+required_level = 4
+response_slot = 0
+response_delay = 5.8
+
+[node name="Military2" parent="World/Entities/NPCs" instance=ExtResource("31_military")]
+position = Vector2(-1750, 1450)
+required_level = 4
+response_slot = 1
+response_delay = 6.4
+
+[node name="Military3" parent="World/Entities/NPCs" instance=ExtResource("31_military")]
+position = Vector2(2600, 1450)
+required_level = 5
+response_slot = 2
+max_health = 145.0
+shot_damage = 14.0
+shot_cooldown = 0.72
+response_delay = 6.8
 
 [node name="Vehicles" type="Node2D" parent="World/Entities"]
 
