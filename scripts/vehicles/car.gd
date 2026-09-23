@@ -2,20 +2,20 @@ extends CharacterBody2D
 
 signal durability_changed(current: float, maximum: float)
 
-@export var maximum_speed := 520.0
-@export var reverse_speed := 230.0
-@export var acceleration := 520.0
-@export var braking := 760.0
-@export var coast_drag := 420.0
-@export var steering_low_speed := 2.8
-@export var steering_high_speed := 1.45
-@export var steering_response := 5.2
-@export var road_grip := 11.5
-@export var handbrake_grip := 2.1
+@export var maximum_speed := 430.0
+@export var reverse_speed := 185.0
+@export var acceleration := 430.0
+@export var braking := 690.0
+@export var coast_drag := 360.0
+@export var steering_low_speed := 2.55
+@export var steering_high_speed := 1.05
+@export var steering_response := 4.6
+@export var road_grip := 14.5
+@export var handbrake_grip := 2.7
 @export var maximum_durability := 100.0
 @export var collision_damage_multiplier := 1.0
 @export var pedestrian_impact_multiplier := 1.0
-@export var camera_look_ahead := 110.0
+@export var camera_look_ahead := 82.0
 @export var illegal_to_take := true
 @export var requires_ownership := false
 @export var theft_heat := 24.0
@@ -95,9 +95,12 @@ func _physics_process(delta: float) -> void:
 
 	var speed_ratio := clampf(absf(current_speed) / maxf(1.0, maximum_speed), 0.0, 1.0)
 	if absf(current_speed) > 6.0:
-		var steering_strength := lerpf(steering_low_speed, steering_high_speed, speed_ratio)
+		# A curva fica progressivamente mais suave em alta velocidade para
+		# impedir mudanças bruscas de direção que faziam o carro "soltar".
+		var steering_curve := speed_ratio * speed_ratio
+		var steering_strength := lerpf(steering_low_speed, steering_high_speed, steering_curve)
 		if handbrake:
-			steering_strength *= 1.28
+			steering_strength *= 1.18
 		rotation += _steering_input * steering_strength * signf(current_speed) * delta
 
 	var forward := Vector2.UP.rotated(rotation)
@@ -106,6 +109,11 @@ func _physics_process(delta: float) -> void:
 	var grip := handbrake_grip if handbrake else road_grip
 	var lateral_retention := exp(-grip * delta)
 	velocity = forward * current_speed + lateral * lateral_speed * lateral_retention
+	# Pequena assistência de estabilidade em velocidades altas. Mantém o
+	# veículo arcade sem transformar a direção em trilho.
+	if not handbrake and speed_ratio > 0.65:
+		var stability := (speed_ratio - 0.65) / 0.35
+		velocity = velocity.lerp(forward * current_speed, clampf(stability * 0.18, 0.0, 0.18))
 
 	move_and_slide()
 	_handle_collisions()
