@@ -63,7 +63,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.10\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.11\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
@@ -332,6 +332,23 @@ autowrap_mode = 2
 wait_time = 4.5
 one_shot = true
 
+[node name="ClockLabel" type="Label" parent="."]
+unique_name_in_owner = true
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 500.0
+offset_top = 96.0
+offset_right = -500.0
+offset_bottom = 126.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.86, 0.9, 0.94, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 15
+text = "DIA 1  •  18:30  •  ENTARDECER"
+horizontal_alignment = 1
+
 [node name="WantedLabel" type="Label" parent="."]
 unique_name_in_owner = true
 anchors_preset = 1
@@ -489,6 +506,35 @@ unique_name_in_owner = true
 theme_override_colors/font_color = Color(0.95, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 14
 text = "Vá até a largada."
+autowrap_mode = 2
+
+[node name="EventPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -390.0
+offset_top = 547.0
+offset_right = -24.0
+offset_bottom = 675.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="EventContent" type="VBoxContainer" parent="EventPanel"]
+theme_override_constants/separation = 4
+
+[node name="EventTitle" type="Label" parent="EventPanel/EventContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(1, 0.72, 0.3, 1)
+theme_override_font_sizes/font_size = 16
+text = "EVENTO URBANO"
+
+[node name="EventDescription" type="Label" parent="EventPanel/EventContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.94, 0.96, 0.98, 1)
+theme_override_font_sizes/font_size = 14
+text = "Algo está acontecendo na cidade."
 autowrap_mode = 2
 
 [node name="DistrictLabel" type="Label" parent="."]
