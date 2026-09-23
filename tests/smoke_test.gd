@@ -595,7 +595,9 @@ func _run() -> void:
 	time_manager.set_time(8, 0)
 	time_manager.day_count = 1
 	event_manager.events_completed = 0
-	game_manager.set_wild_roster([], [])
+	var empty_captured: Array[String] = []
+	var empty_active: Array[String] = []
+	game_manager.set_wild_roster(empty_captured, empty_active)
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
