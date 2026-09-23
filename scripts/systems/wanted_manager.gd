@@ -6,6 +6,10 @@ signal pursuit_state_changed(seen: bool)
 
 const LEVEL_ONE_HEAT := 20.0
 const LEVEL_TWO_HEAT := 60.0
+const LEVEL_THREE_HEAT := 100.0
+const LEVEL_FOUR_HEAT := 140.0
+const LEVEL_FIVE_HEAT := 180.0
+const MAX_HEAT := 200.0
 
 var heat := 0.0
 var wanted_level := 0
@@ -36,7 +40,7 @@ func _process(delta: float) -> void:
 		return
 
 	var old_level := wanted_level
-	heat = move_toward(heat, 0.0, 10.0 * delta)
+	heat = move_toward(heat, 0.0, _decay_rate() * delta)
 	_recalculate_level()
 	if wanted_level <= 0:
 		_clear_police_contact()
@@ -45,8 +49,8 @@ func _process(delta: float) -> void:
 
 
 func add_heat(amount: float, description: String) -> void:
-	heat = clampf(heat + amount, 0.0, 99.0)
-	_cooldown = 8.0
+	heat = clampf(heat + amount, 0.0, MAX_HEAT)
+	_cooldown = 8.0 + maxf(0.0, float(wanted_level - 2)) * 1.5
 	_recalculate_level()
 	crime_committed.emit(description, amount)
 	wanted_changed.emit(wanted_level, heat)
@@ -82,7 +86,7 @@ func notify_vehicle_change(vehicle: Node2D) -> bool:
 	if wanted_level <= 0 or _vehicle_swap_cooldown > 0.0:
 		return false
 	_vehicle_swap_cooldown = 5.0
-	reduce_heat(15.0)
+	reduce_heat(15.0 if wanted_level <= 3 else 8.0)
 	return true
 
 
@@ -92,6 +96,21 @@ func reduce_heat(amount: float) -> void:
 	if wanted_level <= 0:
 		_clear_police_contact()
 	wanted_changed.emit(wanted_level, heat)
+
+
+func get_arrest_bail() -> int:
+	match wanted_level:
+		5:
+			return 200
+		4:
+			return 160
+		3:
+			return 120
+		2:
+			return 90
+		1:
+			return 75
+	return 0
 
 
 func clear() -> void:
@@ -116,11 +135,28 @@ func reset_run() -> void:
 	clear()
 
 
+func _decay_rate() -> float:
+	match wanted_level:
+		5:
+			return 3.0
+		4:
+			return 4.5
+		3:
+			return 6.5
+		_:
+			return 10.0
+
+
 func _recalculate_level() -> void:
-	if heat >= LEVEL_TWO_HEAT:
+	if heat >= LEVEL_FIVE_HEAT:
+		wanted_level = 5
+	elif heat >= LEVEL_FOUR_HEAT:
+		wanted_level = 4
+	elif heat >= LEVEL_THREE_HEAT:
+		wanted_level = 3
+	elif heat >= LEVEL_TWO_HEAT:
 		wanted_level = 2
 	elif heat >= LEVEL_ONE_HEAT:
 		wanted_level = 1
 	else:
 		wanted_level = 0
-
