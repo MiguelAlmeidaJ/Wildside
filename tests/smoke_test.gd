@@ -529,7 +529,7 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.10.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.11.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -568,7 +568,7 @@ func _run() -> void:
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
-	_check(save_manager.load_game(), "Save 0.10 precisa ser carregável")
+	_check(save_manager.load_game(), "Save 0.11 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
