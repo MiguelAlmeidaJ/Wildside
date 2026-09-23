@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3]
+[gd_scene load_steps=26 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -24,6 +24,7 @@
 [ext_resource type="PackedScene" path="res://scenes/world/race_checkpoint.tscn" id="22_race"]
 [ext_resource type="PackedScene" path="res://scenes/world/garage.tscn" id="23_garage"]
 [ext_resource type="PackedScene" path="res://scenes/world/street_cache.tscn" id="24_cache"]
+[ext_resource type="PackedScene" path="res://scenes/world/event_cargo.tscn" id="25_event_cargo"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -198,6 +199,33 @@ position = Vector2(-950, 0)
 required_level = 2
 chase_speed = 345.0
 
+[node name="Police3" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
+modulate = Color(0.82, 0.9, 1, 1)
+position = Vector2(0, 950)
+required_level = 3
+chase_speed = 370.0
+contact_range = 790.0
+deploy_distance = 285.0
+ram_damage = 5.0
+
+[node name="Police4" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
+modulate = Color(1, 0.78, 0.78, 1)
+position = Vector2(950, 950)
+required_level = 4
+chase_speed = 405.0
+contact_range = 850.0
+deploy_distance = 315.0
+ram_damage = 6.5
+
+[node name="Police5" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
+modulate = Color(0.72, 0.72, 0.82, 1)
+position = Vector2(-950, 950)
+required_level = 5
+chase_speed = 445.0
+contact_range = 930.0
+deploy_distance = 345.0
+ram_damage = 8.0
+
 [node name="Vehicles" type="Node2D" parent="World/Entities"]
 
 [node name="Car" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
@@ -294,6 +322,23 @@ move_speed = 135.0
 attack_damage = 16.0
 reward = 35
 
+[node name="EventRaider1" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
+modulate = Color(0.95, 0.84, 0.65, 1)
+position = Vector2(-2200, -2200)
+active_after_anomaly_2 = false
+mission_key = "world_event"
+reward = 30
+
+[node name="EventRaider2" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
+modulate = Color(0.78, 0.88, 1, 1)
+position = Vector2(-2200, -2200)
+active_after_anomaly_2 = false
+mission_key = "world_event"
+max_health = 80.0
+move_speed = 138.0
+attack_damage = 14.0
+reward = 40
+
 [node name="Creatures" type="Node2D" parent="World/Entities"]
 
 [node name="Nib" parent="World/Entities/Creatures" instance=ExtResource("8_nib")]
@@ -321,6 +366,9 @@ position = Vector2(-520, 755)
 
 [node name="Safehouse" parent="World/Props" instance=ExtResource("21_safehouse")]
 position = Vector2(270, 510)
+
+[node name="EventCargo" parent="World/Props" instance=ExtResource("25_event_cargo")]
+position = Vector2(-2200, -2200)
 
 [node name="GarageCobalto" parent="World/Props" instance=ExtResource("23_garage")]
 position = Vector2(1240, 760)
