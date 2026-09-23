@@ -64,7 +64,7 @@ theme_override_styles/panel = SubResource("StyleBox_info")
 [node name="Label" type="Label" parent="Instructions"]
 theme_override_colors/font_color = Color(0.92, 0.96, 0.98, 1)
 theme_override_font_sizes/font_size = 16
-text = "WILDSIDE  •  PROTOTYPE 0.12\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis   M  Mapa\nESPAÇO  Freio de mão"
+text = "WILDSIDE  •  PROTOTYPE 0.13\nWASD  Mover   SHIFT  Correr   E  Interagir\nF  Atacar   Q  Capturar\n1  Nib   2  Volt   3  Murno\nMouse1  Pistola   R  Recarregar\nTAB  Mochila   H/J/K  Consumíveis   M  Mapa\nESPAÇO  Freio de mão"
 
 [node name="HealthPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
@@ -94,7 +94,7 @@ theme_override_styles/fill = SubResource("StyleBox_health_fill")
 offset_left = 24.0
 offset_top = 292.0
 offset_right = 329.0
-offset_bottom = 373.0
+offset_bottom = 398.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="WildContent" type="VBoxContainer" parent="WildAbilitiesPanel"]
@@ -112,11 +112,17 @@ theme_override_colors/font_color = Color(0.52, 0.9, 1, 1)
 theme_override_font_sizes/font_size = 14
 text = "2  VOLT • SOBRECARGA  [BLOQUEADO]"
 
+[node name="MurnoAbilityLabel" type="Label" parent="WildAbilitiesPanel/WildContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.82, 0.68, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "3  MURNO • ECLIPSE  [BLOQUEADO]"
+
 [node name="WeaponPanel" type="PanelContainer" parent="."]
 offset_left = 24.0
-offset_top = 385.0
+offset_top = 410.0
 offset_right = 329.0
-offset_bottom = 461.0
+offset_bottom = 486.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="WeaponContent" type="VBoxContainer" parent="WeaponPanel"]
@@ -138,9 +144,9 @@ text = "Disponível na Oficina Cobalto"
 unique_name_in_owner = true
 visible = false
 offset_left = 24.0
-offset_top = 473.0
+offset_top = 498.0
 offset_right = 329.0
-offset_bottom = 548.0
+offset_bottom = 573.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="VehicleContent" type="VBoxContainer" parent="VehiclePanel"]
@@ -163,7 +169,7 @@ theme_override_styles/fill = SubResource("StyleBox_health_fill")
 [node name="MiniMapPanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 offset_left = 24.0
-offset_top = 552.0
+offset_top = 580.0
 offset_right = 334.0
 offset_bottom = 710.0
 theme_override_styles/panel = SubResource("StyleBox_info")
@@ -178,7 +184,7 @@ text = "WILDSIDE  •  M  ocultar"
 
 [node name="MiniMap" type="Control" parent="MiniMapPanel/MiniMapContent"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 102)
+custom_minimum_size = Vector2(0, 74)
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2_minimap")
@@ -195,7 +201,7 @@ visible = false
 offset_left = 348.0
 offset_top = 118.0
 offset_right = 676.0
-offset_bottom = 294.0
+offset_bottom = 322.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="InventoryContent" type="VBoxContainer" parent="InventoryPanel"]
@@ -233,10 +239,71 @@ theme_override_colors/font_color = Color(0.82, 0.72, 1, 1)
 theme_override_font_sizes/font_size = 14
 text = "EVENTOS URBANOS  0"
 
+[node name="WildTeamLabel" type="Label" parent="InventoryPanel/InventoryContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.69, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "EQUIPE WILD  —"
+
 [node name="InventoryHint" type="Label" parent="InventoryPanel/InventoryContent"]
 theme_override_colors/font_color = Color(0.7, 0.76, 0.8, 1)
 theme_override_font_sizes/font_size = 12
 text = "TAB fecha a mochila"
+
+[node name="WildTerminalPanel" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -260.0
+offset_top = -190.0
+offset_right = 260.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBox_info")
+
+[node name="WildTerminalContent" type="VBoxContainer" parent="WildTerminalPanel"]
+theme_override_constants/separation = 12
+
+[node name="WildTerminalTitle" type="Label" parent="WildTerminalPanel/WildTerminalContent"]
+theme_override_colors/font_color = Color(0.78, 0.66, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "TERMINAL WILD"
+horizontal_alignment = 1
+
+[node name="WildTerminalSubtitle" type="Label" parent="WildTerminalPanel/WildTerminalContent"]
+theme_override_colors/font_color = Color(0.72, 0.78, 0.84, 1)
+theme_override_font_sizes/font_size = 14
+text = "Escolha até 2 companheiros ativos"
+horizontal_alignment = 1
+
+[node name="NibRosterLabel" type="Label" parent="WildTerminalPanel/WildTerminalContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.76, 0.66, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "1  NIB       NÃO CAPTURADO"
+
+[node name="VoltRosterLabel" type="Label" parent="WildTerminalPanel/WildTerminalContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.52, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "2  VOLT      NÃO CAPTURADO"
+
+[node name="MurnoRosterLabel" type="Label" parent="WildTerminalPanel/WildTerminalContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.82, 0.68, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "3  MURNO     NÃO CAPTURADO"
+
+[node name="WildTerminalHint" type="Label" parent="WildTerminalPanel/WildTerminalContent"]
+theme_override_colors/font_color = Color(0.48, 0.9, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "1 / 2 / 3 alternar equipe    •    E ou Esc fechar"
+horizontal_alignment = 1
 
 [node name="StorePanel" type="PanelContainer" parent="."]
 unique_name_in_owner = true
