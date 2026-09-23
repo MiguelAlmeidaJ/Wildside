@@ -3,6 +3,8 @@ extends Node2D
 
 func _ready() -> void:
 	var trees := [
+		Vector2(-2580, -1510), Vector2(-2410, -1320), Vector2(-2220, -1515),
+		Vector2(-2050, -1120), Vector2(-1880, -1450),
 		Vector2(-1660, -1510), Vector2(-1470, -1330), Vector2(-1260, -1510),
 		Vector2(-1080, -1510), Vector2(-890, -1370), Vector2(-690, -1515),
 		Vector2(-475, -1320), Vector2(480, -1350), Vector2(680, -1510),
@@ -18,7 +20,7 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	draw_rect(Rect2(-1800, -1600, 3600, 700), Color("#315b3b"))
+	draw_rect(Rect2(-2700, -1600, 4500, 700), Color("#315b3b"))
 	draw_colored_polygon(PackedVector2Array([
 		Vector2(-215, -900), Vector2(215, -900), Vector2(350, -1600), Vector2(-330, -1600)
 	]), Color("#8b7d58"))
