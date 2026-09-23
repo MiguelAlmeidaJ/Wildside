@@ -577,6 +577,9 @@ func _create_world_boundaries() -> void:
 	_create_boundary(Vector2(600, 2230), Vector2(4860, 60))
 	_create_boundary(Vector2(-1830, 300), Vector2(60, 3860))
 	_create_boundary(Vector2(3030, 300), Vector2(60, 3860))
+	# O porto termina na água e não deve abrir acesso ao vazio ao norte.
+	_create_boundary(Vector2(2845, 650), Vector2(30, 3100))
+	_create_boundary(Vector2(2415, -930), Vector2(1230, 60))
 
 
 func _create_boundary(at: Vector2, size: Vector2) -> void:
