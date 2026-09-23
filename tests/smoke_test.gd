@@ -38,6 +38,7 @@ func _run() -> void:
 	var mini_map_panel = game.get_node("UI/HUD/MiniMapPanel")
 	var car = game.get_node("World/Entities/Vehicles/Car")
 	var car_residential = game.get_node("World/Entities/Vehicles/CarResidential")
+	var car_west = game.get_node("World/Entities/Vehicles/CarWest")
 	var motorcycle = game.get_node("World/Entities/Vehicles/MotorcycleCenter")
 	var truck = game.get_node("World/Entities/Vehicles/TruckIndustrial")
 	var parked_blocker = car.get_node("ParkedBlocker/CollisionShape2D")
@@ -53,6 +54,7 @@ func _run() -> void:
 	var davi = game.get_node("World/Entities/NPCs/Davi")
 	var ravi = game.get_node("World/Entities/NPCs/Ravi")
 	var nika = game.get_node("World/Entities/NPCs/Nika")
+	var sara = game.get_node("World/Entities/NPCs/Sara")
 	var phone = game.get_node("World/Props/Payphone")
 	var nib = game.get_node("World/Entities/Creatures/Nib")
 	var volt = game.get_node("World/Entities/Creatures/Volt")
@@ -95,7 +97,7 @@ func _run() -> void:
 	_check(mini_map.main_target_active, "Minimapa precisa receber o objetivo principal inicial")
 	_check(mini_map.main_target == mission.MAYA_POSITION, "Objetivo inicial do minimapa precisa apontar para Maya")
 	_check(race_manager.CHECKPOINT_POSITIONS.size() == race_manager.CHECKPOINT_COUNT, "Minimapa precisa conhecer todos os checkpoints da corrida")
-	_check(car != null, "Car precisa existir")
+	_check(car != null and car_west != null, "Carros estacionados precisam existir no Centro e na Vila Oeste")
 	_check(motorcycle != null and truck != null, "Moto e caminhão precisam existir no mapa")
 	_check(motorcycle.vehicle_kind == "motorcycle" and truck.vehicle_kind == "truck", "Novos veículos precisam carregar perfis próprios")
 	_check(motorcycle.maximum_speed > car.maximum_speed, "Moto precisa ser mais rápida que o carro comum")
@@ -107,9 +109,9 @@ func _run() -> void:
 	await physics_frame
 	_check(car.collision_layer == 0, "Carro estacionado não deve usar o CharacterBody como obstáculo do player")
 	_check(not parked_blocker.disabled, "Carro estacionado precisa manter o bloqueio estático ativo")
-	_check(get_nodes_in_group("interactable").size() >= 28, "Cidade ampliada precisa ter mais cidadãos e interações")
-	_check(get_nodes_in_group("citizens").size() >= 24, "Porto Ferrugem precisa ampliar a população da cidade")
-	_check(get_nodes_in_group("ambient_traffic").size() >= 8, "Porto Ferrugem precisa ampliar o trânsito civil")
+	_check(get_nodes_in_group("interactable").size() >= 33, "Cidade ampliada precisa ter mais cidadãos e interações")
+	_check(get_nodes_in_group("citizens").size() >= 28, "Vila Oeste precisa ampliar a população da cidade")
+	_check(get_nodes_in_group("ambient_traffic").size() >= 10, "Vila Oeste precisa ampliar o trânsito civil")
 	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
 	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
 	_check(wild_terminal != null, "Terminal Wild precisa existir no apartamento")
@@ -129,7 +131,13 @@ func _run() -> void:
 	_check(district_tracker._district_for(Vector2(0, 1400)) == "ZONA SUL", "Zona Sul precisa ser identificada")
 	_check(district_tracker._district_for(Vector2(0, -1300)) == "MATA NORTE", "Mata Norte precisa ser identificada")
 	_check(district_tracker._district_for(Vector2(2300, 600)) == "PORTO FERRUGEM", "Porto Ferrugem precisa ser identificado")
-	_check(player.get_node("Camera2D").limit_right == 3000 and player.get_node("Camera2D").limit_bottom == 2200, "Câmera precisa cobrir a expansão do porto")
+	_check(district_tracker._district_for(Vector2(-2300, 600)) == "VILA OESTE", "Vila Oeste precisa ser identificada")
+	_check(player.get_node("Camera2D").limit_left == -2700 and player.get_node("Camera2D").limit_right == 3000, "Câmera precisa cobrir a expansão oeste")
+	_check(maya._is_pedestrian_space(maya.global_position), "Maya precisa iniciar fora do leito da avenida")
+	_check(davi._is_pedestrian_space(davi.global_position), "Davi precisa iniciar fora do leito da avenida")
+	_check(ravi._is_pedestrian_space(ravi.global_position), "Ravi precisa iniciar fora da faixa de rodagem do porto")
+	_check(sara != null and sara._is_pedestrian_space(sara.global_position), "Vila Oeste precisa ter pedestres posicionados em área segura")
+	_check(absf(car.global_position.y) >= 180.0 and absf(car_residential.global_position.x + 1010.0) >= 200.0, "Carros estacionados precisam sair das faixas de circulação")
 
 	# Vida urbana: Mercado 24H, mochila, consumíveis e corrida de entrega.
 	game_manager.add_money(200)
@@ -706,7 +714,7 @@ func _run() -> void:
 	_check(not volt.visible and murno.visible, "Wild na reserva precisa sumir e Murno ativo precisa aparecer")
 	game_manager.close_wild_terminal()
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.16.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.17.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -714,7 +722,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 10, "Prototype 0.16 precisa usar save version 10")
+	_check(save_manager.SAVE_VERSION == 10, "Prototype 0.17 deve manter save version 10")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
@@ -748,7 +756,7 @@ func _run() -> void:
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
-	_check(save_manager.load_game(), "Save 0.14 precisa ser carregável")
+	_check(save_manager.load_game(), "Save 0.17 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
