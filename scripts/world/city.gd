@@ -204,11 +204,18 @@ func _create_building(rect: Rect2, color: Color, index: int) -> void:
 	inset.z_index = 2
 	body.add_child(inset)
 
-	# Claraboias, caixas d'água e exaustores dão volume ao topo dos prédios.
-	for row in range(2):
-		for col in range(3):
+	# Claraboias se adaptam ao tamanho do prédio para não escapar do telhado.
+	var skylight_columns := clampi(floori(rect.size.x / 130.0), 1, 3)
+	var skylight_rows := clampi(floori(rect.size.y / 180.0), 1, 2)
+	for row in range(skylight_rows):
+		for col in range(skylight_columns):
+			var x_ratio := 0.5 if skylight_columns == 1 else float(col) / float(skylight_columns - 1)
+			var y_ratio := 0.5 if skylight_rows == 1 else float(row) / float(skylight_rows - 1)
 			var window := Polygon2D.new()
-			window.position = Vector2(-inner.x + 65 + col * 105, -inner.y + 62 + row * 105)
+			window.position = Vector2(
+				lerpf(-inner.x + 45.0, inner.x - 45.0, x_ratio),
+				lerpf(-inner.y + 55.0, inner.y - 55.0, y_ratio)
+			)
 			window.polygon = PackedVector2Array([
 				Vector2(-23, -15), Vector2(23, -15), Vector2(23, 15), Vector2(-23, 15)
 			])
