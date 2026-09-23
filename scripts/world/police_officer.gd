@@ -9,6 +9,7 @@ extends CharacterBody2D
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
 var source_car: Node2D
+var response_level := 1
 var arrest_progress := 0.0
 var returning_to_car := false
 
@@ -20,6 +21,13 @@ func _ready() -> void:
 
 func set_source_car(value: Node2D) -> void:
 	source_car = value
+
+
+func set_response_level(value: int) -> void:
+	response_level = clampi(value, 1, 5)
+	move_speed = 205.0 + float(response_level - 1) * 24.0
+	arrest_time = maxf(0.72, 1.45 - float(response_level - 1) * 0.14)
+	contact_range = 520.0 + float(response_level - 1) * 65.0
 
 
 func _physics_process(delta: float) -> void:

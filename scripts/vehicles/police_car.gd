@@ -2,10 +2,11 @@ extends CharacterBody2D
 
 const OFFICER_SCENE := preload("res://scenes/world/police_officer.tscn")
 
-@export_range(1, 2) var required_level := 1
+@export_range(1, 5) var required_level := 1
 @export var chase_speed := 315.0
 @export var contact_range := 720.0
 @export var deploy_distance := 255.0
+@export var ram_damage := 4.0
 
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 
@@ -50,7 +51,7 @@ func _physics_process(delta: float) -> void:
 	for index in get_slide_collision_count():
 		var collider = get_slide_collision(index).get_collider()
 		if collider != null and collider.has_method("apply_damage"):
-			collider.call("apply_damage", 4.0)
+			collider.call("apply_damage", ram_damage + float(required_level - 1) * 1.2)
 
 
 func _deploy_officer() -> void:
@@ -63,6 +64,7 @@ func _deploy_officer() -> void:
 	if not is_instance_valid(officer):
 		return
 	officer.call("set_source_car", self)
+	officer.call("set_response_level", required_level)
 	parent.add_child(officer)
 	officer.global_position = global_position + Vector2.RIGHT.rotated(rotation) * 58.0
 

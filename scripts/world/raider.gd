@@ -32,7 +32,7 @@ func _ready() -> void:
 	add_to_group("hostile")
 	add_to_group("damageable")
 	GameManager.noise_emitted.connect(_on_noise_emitted)
-	if mission_key == "blackout" or activation_stage >= 0:
+	if mission_key == "blackout" or mission_key == "world_event" or activation_stage >= 0:
 		_set_active(false)
 	else:
 		_set_active(not active_after_anomaly_2)
@@ -164,12 +164,50 @@ func _die() -> void:
 	tween.tween_callback(hide)
 
 	GameManager.add_money(reward)
-	if mission_key == "blackout":
-		MissionManager.blackout_raider_defeated()
-	else:
-		MissionManager.raider_defeated()
+	match mission_key:
+		"blackout":
+			MissionManager.blackout_raider_defeated()
+		"world_event":
+			WorldEventManager.enemy_defeated()
+		_:
+			MissionManager.raider_defeated()
 	if is_instance_valid(GameManager.player):
 		GameManager.player.call("show_message", "Inimigo derrotado  •  +$%d" % reward)
+
+
+func activate_world_event(position: Vector2) -> void:
+	mission_key = "world_event"
+	active_after_anomaly_2 = false
+	activation_stage = -1
+	dead = false
+	health = max_health
+	_home = position
+	global_position = position
+	_attack_cooldown_left = 0.0
+	_knockback = Vector2.ZERO
+	_stun_left = 0.0
+	_investigate_left = 0.0
+	sprite.scale = Vector2.ONE
+	sprite.modulate = Color.WHITE
+	if not is_in_group("hostile"):
+		add_to_group("hostile")
+	if not is_in_group("damageable"):
+		add_to_group("damageable")
+	_set_active(true)
+
+
+func deactivate_world_event() -> void:
+	if mission_key != "world_event":
+		return
+	dead = false
+	velocity = Vector2.ZERO
+	_knockback = Vector2.ZERO
+	_stun_left = 0.0
+	_investigate_left = 0.0
+	health = max_health
+	sprite.scale = Vector2.ONE
+	sprite.modulate = Color.WHITE
+	_set_active(false)
 
 
 func _set_active(value: bool) -> void:

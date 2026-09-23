@@ -17,6 +17,8 @@ func _run() -> void:
 	var mission = root.get_node("MissionManager")
 	var side_job = root.get_node("SideJobManager")
 	var race_manager = root.get_node("StreetRaceManager")
+	var time_manager = root.get_node("WorldTimeManager")
+	var event_manager = root.get_node("WorldEventManager")
 	var save_manager = root.get_node("SaveManager")
 	var packed_main: PackedScene = load("res://main.tscn")
 	_check(packed_main != null, "main.tscn precisa carregar")
@@ -57,12 +59,18 @@ func _run() -> void:
 	var cache_south = game.get_node("World/Props/CacheSouth")
 	var cache_north = game.get_node("World/Props/CacheNorth")
 	var police = game.get_node("World/Entities/NPCs/Police1")
+	var police3 = game.get_node("World/Entities/NPCs/Police3")
+	var police4 = game.get_node("World/Entities/NPCs/Police4")
+	var police5 = game.get_node("World/Entities/NPCs/Police5")
 	var district_tracker = game.get_node("DistrictTracker")
 	var raider1 = game.get_node("World/Entities/Enemies/Raider1")
 	var raider2 = game.get_node("World/Entities/Enemies/Raider2")
 	var blackout_raider1 = game.get_node("World/Entities/Enemies/BlackoutRaider1")
 	var blackout_raider2 = game.get_node("World/Entities/Enemies/BlackoutRaider2")
 	var blackout_raider3 = game.get_node("World/Entities/Enemies/BlackoutRaider3")
+	var event_raider1 = game.get_node("World/Entities/Enemies/EventRaider1")
+	var event_raider2 = game.get_node("World/Entities/Enemies/EventRaider2")
+	var event_cargo = game.get_node("World/Props/EventCargo")
 	_check(player != null, "Player precisa existir")
 	_check(car != null, "Car precisa existir")
 	await physics_frame
@@ -75,6 +83,9 @@ func _run() -> void:
 	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
 	_check(garage != null and personal_car != null, "Garagem Cobalto e veículo próprio precisam existir")
 	_check(not personal_car.visible and personal_car.collision_layer == 0, "Veículo próprio deve começar bloqueado e sem colisão")
+	_check(police3 != null and police4 != null and police5 != null, "Procura 3–5 estrelas precisa ter unidades dedicadas")
+	_check(event_cargo != null and event_raider1 != null and event_raider2 != null, "Eventos urbanos precisam ter atores carregados")
+	_check(time_manager.get_phase() == "ENTARDECER", "Cidade precisa começar no entardecer")
 	_check(district_tracker._district_for(Vector2(0, 0)) == "CENTRO DE WILDSIDE", "Centro precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(-1400, 400)) == "BAIRRO RESIDENCIAL", "Residencial precisa ser identificado")
 	_check(district_tracker._district_for(Vector2(1400, 400)) == "DISTRITO INDUSTRIAL", "Industrial precisa ser identificado")
@@ -167,7 +178,38 @@ func _run() -> void:
 	_check(personal_car.global_position == garage.global_position + Vector2(-230, 0), "Garagem precisa recuperar o carro próprio distante")
 	_check(game_manager.money == money_before_recovery - 50, "Recuperação do Cobalto R precisa custar $50")
 
+	# Prototype 0.11: relógio vivo e eventos urbanos independentes de missão.
+	time_manager.set_time(12, 0)
+	_check(time_manager.get_phase() == "DIA", "12:00 precisa usar iluminação de dia")
+	var day_color: Color = time_manager.get_ambient_color()
+	time_manager.set_time(22, 0)
+	_check(time_manager.get_phase() == "NOITE", "22:00 precisa usar iluminação noturna")
+	_check(time_manager.get_ambient_color() != day_color, "Dia e noite precisam produzir iluminação diferente")
+	time_manager.set_time(18, 30)
+
+	event_manager.reset_run()
+	var cargo_money_before := game_manager.money
+	var energy_before_event := game_manager.energy_drinks
+	_check(event_manager.force_event(event_manager.EventType.CARGO, 1), "Evento de carga precisa poder ser iniciado")
+	_check(event_cargo.active and event_cargo.visible, "Carga perdida precisa aparecer no mundo")
+	event_cargo.interact(player)
+	_check(event_manager.current_type == event_manager.EventType.NONE, "Coletar carga precisa encerrar o evento")
+	_check(game_manager.money == cargo_money_before + 100, "Carga do segundo ponto precisa pagar $100")
+	_check(game_manager.energy_drinks == energy_before_event + 1, "Carga do segundo ponto precisa dar energético")
+	_check(event_manager.events_completed == 1, "Evento de carga precisa contar como concluído")
+
+	var raid_money_before := game_manager.money
+	_check(event_manager.force_event(event_manager.EventType.RAIDERS, 2), "Confronto urbano precisa poder ser iniciado")
+	_check(event_raider1.active and event_raider2.active, "Dois Raiders precisam aparecer no confronto urbano")
+	event_raider1.take_damage(999.0, player)
+	_check(event_manager.raiders_defeated == 1, "Primeiro Raider do evento precisa atualizar 1/2")
+	event_raider2.take_damage(999.0, player)
+	_check(event_manager.current_type == event_manager.EventType.NONE, "Segundo Raider precisa concluir o evento")
+	_check(game_manager.money == raid_money_before + event_raider1.reward + event_raider2.reward + event_manager.RAIDERS_COMPLETION_REWARD, "Confronto urbano precisa pagar inimigos e bônus")
+	_check(event_manager.events_completed == 2, "Dois eventos urbanos precisam ficar registrados")
+
 	game_manager.reset_run()
+	event_manager.reset_run()
 	side_job.reset_run()
 	race_manager.reset_run()
 	player.energy_boost_left = 0.0
@@ -216,6 +258,25 @@ func _run() -> void:
 
 	wanted.clear()
 	_check(not wanted.is_visible_to_police, "Limpar procura precisa remover estado VISTO")
+
+	# Escalada completa de procura: 3, 4 e 5 estrelas adicionam respostas mais pesadas.
+	wanted.add_heat(100.0, "Teste 3 estrelas")
+	_check(wanted.wanted_level == 3, "100 heat precisa gerar 3 estrelas")
+	_check(police3.active and not police4.active and not police5.active, "3 estrelas precisam ativar a terceira unidade")
+	wanted.add_heat(40.0, "Teste 4 estrelas")
+	_check(wanted.wanted_level == 4 and police4.active, "140 heat precisa ativar a quarta unidade")
+	wanted.add_heat(40.0, "Teste 5 estrelas")
+	_check(wanted.wanted_level == 5 and police5.active, "180 heat precisa ativar resposta máxima")
+	_check(wanted.get_arrest_bail() == 200, "Cinco estrelas precisam ter fiança máxima de $200")
+	police5._deploy_officer()
+	await process_frame
+	await physics_frame
+	_check(is_instance_valid(police5.officer), "Unidade de cinco estrelas precisa desembarcar agente")
+	if is_instance_valid(police5.officer):
+		_check(police5.officer.response_level == 5, "Agente da resposta máxima precisa receber nível 5")
+		_check(police5.officer.arrest_time < 1.0, "Agente tático precisa prender mais rápido")
+	wanted.clear()
+
 	mission.reset_run()
 	maya.interact(player)
 	_check(mission.stage == mission.Stage.ANSWER_PHONE, "Maya precisa iniciar a missão")
@@ -468,7 +529,7 @@ func _run() -> void:
 	_check(mission.stage == mission.Stage.ANOMALY_3_COMPLETE, "Jade precisa concluir a ANOMALIA #003")
 	_check(game_manager.money == money_before_jade + mission.ANOMALY_3_REWARD, "ANOMALIA #003 precisa pagar $400")
 
-	# Apartamento: descanso, checkpoint e save persistente da versão 0.10.
+	# Apartamento: descanso, checkpoint e save persistente da versão 0.11.
 	wanted.clear()
 	player.health = 25.0
 	player.health_changed.emit(player.health, player.max_health)
@@ -476,7 +537,7 @@ func _run() -> void:
 	_check(player.health == player.max_health, "Apartamento precisa restaurar a vida")
 	_check(player.get_respawn_point() == safehouse.global_position + Vector2(0, 72), "Apartamento precisa atualizar o checkpoint")
 	_check(FileAccess.file_exists("user://wildside_save.json"), "Apartamento precisa criar o save")
-	_check(save_manager.SAVE_VERSION == 6, "Prototype 0.10 precisa usar save version 6")
+	_check(save_manager.SAVE_VERSION == 7, "Prototype 0.11 precisa usar save version 7")
 
 	# Save/load deve restaurar estado urbano, exploração, carro próprio e recordes.
 	game_manager.add_item("medkit", 2)
@@ -486,6 +547,9 @@ func _run() -> void:
 	game_manager.collect_cache("north")
 	race_manager.best_time = 58.5
 	race_manager.wins = 2
+	time_manager.set_time(23, 15)
+	time_manager.day_count = 3
+	event_manager.events_completed = 4
 	personal_car.set_durability(63.0)
 	var saved_money := game_manager.money
 	var saved_position: Vector2 = player.global_position
@@ -498,16 +562,21 @@ func _run() -> void:
 	game_manager.collected_caches.clear()
 	race_manager.best_time = -1.0
 	race_manager.wins = 0
+	time_manager.set_time(8, 0)
+	time_manager.day_count = 1
+	event_manager.events_completed = 0
 	personal_car.set_durability(100.0)
 	player.global_position = Vector2.ZERO
 
-	_check(save_manager.load_game(), "Save 0.10 precisa ser carregável")
+	_check(save_manager.load_game(), "Save 0.11 precisa ser carregável")
 	_check(game_manager.money == saved_money, "Load precisa restaurar dinheiro")
 	_check(game_manager.medkits == 2 and game_manager.energy_drinks == 1, "Load precisa restaurar consumíveis")
 	_check(player.global_position == saved_position, "Load precisa restaurar posição do player")
 	_check(game_manager.personal_vehicle_unlocked, "Load precisa restaurar propriedade do veículo")
 	_check(game_manager.collected_caches.has("center") and game_manager.collected_caches.has("north"), "Load precisa restaurar esconderijos encontrados")
 	_check(is_equal_approx(race_manager.best_time, 58.5) and race_manager.wins == 2, "Load precisa restaurar recorde e vitórias de corrida")
+	_check(time_manager.get_hour() == 23 and time_manager.get_minute() == 15 and time_manager.day_count == 3, "Load precisa restaurar relógio e dia")
+	_check(event_manager.events_completed == 4, "Load precisa restaurar histórico de eventos urbanos")
 	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
 
 	# Derrota do player deve restaurar vida, posição e cobrar até $50.

@@ -18,13 +18,15 @@ func _ready() -> void:
 	MissionManager.reset_run()
 	SideJobManager.reset_run()
 	StreetRaceManager.reset_run()
+	WorldTimeManager.reset_run()
+	WorldEventManager.reset_run()
 
 	hud.set_health(player.health, player.max_health)
 
 	if SaveManager.load_game():
 		hud.show_message("SAVE CARREGADO • você voltou ao último descanso no apartamento.")
 	else:
-		hud.show_message("Saia do apartamento e fale com Maya • Esta noite está diferente.")
+		hud.show_message("Wildside está viva • explore, trabalhe, corra ou siga as Anomalias.")
 
 
 func _process(_delta: float) -> void:

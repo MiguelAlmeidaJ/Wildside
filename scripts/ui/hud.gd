@@ -31,12 +31,17 @@ extends CanvasLayer
 @onready var side_job_title: Label = %SideJobTitle
 @onready var side_job_description: Label = %SideJobDescription
 @onready var cache_label: Label = %CacheLabel
+@onready var event_stats_label: Label = %EventStatsLabel
 @onready var vehicle_panel: PanelContainer = %VehiclePanel
 @onready var vehicle_label: Label = %VehicleLabel
 @onready var vehicle_bar: ProgressBar = %VehicleBar
 @onready var race_panel: PanelContainer = %RacePanel
 @onready var race_title: Label = %RaceTitle
 @onready var race_description: Label = %RaceDescription
+@onready var clock_label: Label = %ClockLabel
+@onready var event_panel: PanelContainer = %EventPanel
+@onready var event_title: Label = %EventTitle
+@onready var event_description: Label = %EventDescription
 
 var _objective_text := ""
 var _objective_target := Vector2.ZERO
@@ -45,6 +50,9 @@ var _district_tween: Tween
 var _side_objective_text := ""
 var _side_objective_target := Vector2.ZERO
 var _side_objective_has_target := false
+var _event_target := Vector2.ZERO
+var _event_has_target := false
+var _event_description_text := ""
 
 
 func _ready() -> void:
@@ -65,6 +73,10 @@ func _ready() -> void:
 	StreetRaceManager.race_progress_changed.connect(_on_race_progress_changed)
 	StreetRaceManager.race_completed.connect(_on_race_completed)
 	SideJobManager.job_completed.connect(_on_side_job_completed)
+	WorldTimeManager.time_changed.connect(_on_time_changed)
+	WorldEventManager.event_changed.connect(_on_world_event_changed)
+	WorldEventManager.event_completed.connect(_on_world_event_completed)
+	WorldEventManager.event_history_changed.connect(_on_event_history_changed)
 	_on_wanted_changed(WantedManager.wanted_level, WantedManager.heat)
 	_on_pursuit_state_changed(WantedManager.is_visible_to_police)
 	set_arrest_progress(0.0)
@@ -74,7 +86,10 @@ func _ready() -> void:
 	_on_inventory_changed(GameManager.medkits, GameManager.snacks, GameManager.energy_drinks)
 	_on_store_state_changed(false, "")
 	_on_cache_progress_changed(GameManager.collected_caches.size(), GameManager.CACHE_TOTAL)
+	_on_event_history_changed(WorldEventManager.events_completed)
 	_on_race_state_changed(StreetRaceManager.state)
+	_on_time_changed(WorldTimeManager.get_hour(), WorldTimeManager.get_minute(), WorldTimeManager.get_phase())
+	event_panel.hide()
 	side_job_panel.hide()
 	inventory_panel.hide()
 	vehicle_panel.hide()
@@ -96,6 +111,12 @@ func _process(_delta: float) -> void:
 	if StreetRaceManager.state == StreetRaceManager.State.READY:
 		var start_distance := GameManager.get_controlled_position().distance_to(StreetRaceManager.START_POSITION)
 		race_description.text = "Vá até a largada na Zona Sul.\n[ %d m ]" % roundi(start_distance / 4.0)
+
+	if _event_has_target:
+		var event_distance := GameManager.get_controlled_position().distance_to(_event_target)
+		event_description.text = "%s\n[ %d m ]" % [_event_description_text, roundi(event_distance / 4.0)]
+	else:
+		event_description.text = _event_description_text
 
 
 func set_prompt(text: String) -> void:
@@ -165,29 +186,40 @@ func _on_objective_changed(title: String, description: String, target: Vector2, 
 
 
 func _on_wanted_changed(level: int, heat: float) -> void:
-	wanted_label.text = "%s%s  %02d" % ["★".repeat(level), "☆".repeat(5 - level), roundi(heat)]
+	wanted_label.text = "%s%s  %03d" % ["★".repeat(level), "☆".repeat(5 - level), roundi(heat)]
 	wanted_label.modulate = Color("#ffcf5c") if level > 0 else Color("#aeb7bd")
+	_update_pursuit_label()
+
+
+func _on_pursuit_state_changed(_seen: bool) -> void:
+	_update_pursuit_label()
+
+
+func _update_pursuit_label() -> void:
+	var level := WantedManager.wanted_level
 	if level <= 0:
 		pursuit_label.text = "SEM PROCURA"
 		pursuit_label.modulate = Color("#aeb7bd")
-	elif WantedManager.is_visible_to_police:
-		pursuit_label.text = "VISTO"
-		pursuit_label.modulate = Color("#ff7b7b")
-	else:
-		pursuit_label.text = "ESCAPANDO"
-		pursuit_label.modulate = Color("#7de3cf")
+		return
 
-
-func _on_pursuit_state_changed(seen: bool) -> void:
-	if WantedManager.wanted_level <= 0:
-		pursuit_label.text = "SEM PROCURA"
-		pursuit_label.modulate = Color("#aeb7bd")
-	elif seen:
-		pursuit_label.text = "VISTO"
-		pursuit_label.modulate = Color("#ff7b7b")
-	else:
-		pursuit_label.text = "ESCAPANDO"
+	if not WantedManager.is_visible_to_police:
+		pursuit_label.text = "ESCAPANDO  •  NÍVEL %d" % level
 		pursuit_label.modulate = Color("#7de3cf")
+		return
+
+	match level:
+		5:
+			pursuit_label.text = "CAÇADA TOTAL"
+			pursuit_label.modulate = Color("#ff5555")
+		4:
+			pursuit_label.text = "RESPOSTA TÁTICA"
+			pursuit_label.modulate = Color("#ff6868")
+		3:
+			pursuit_label.text = "CERCO ATIVO"
+			pursuit_label.modulate = Color("#ff7b7b")
+		_:
+			pursuit_label.text = "VISTO"
+			pursuit_label.modulate = Color("#ff8d8d")
 
 
 func _on_money_changed(total: int) -> void:
@@ -205,6 +237,31 @@ func _on_inventory_changed(medkits: int, snacks: int, energy_drinks: int) -> voi
 		set_energy_boost(float(GameManager.player.get("energy_boost_left")))
 	else:
 		energy_label.text = "J  ENERGÉTICO  x%d  •  10s velocidade" % energy_drinks
+
+
+func _on_time_changed(hour: int, minute: int, phase: String) -> void:
+	clock_label.text = "DIA %d  •  %02d:%02d  •  %s" % [WorldTimeManager.day_count, hour, minute, phase]
+
+
+func _on_world_event_changed(title: String, description: String, target: Vector2, active: bool) -> void:
+	event_panel.visible = active
+	if not active:
+		_event_has_target = false
+		_event_description_text = ""
+		return
+	event_title.text = title
+	_event_description_text = description
+	_event_target = target
+	_event_has_target = true
+
+
+func _on_world_event_completed(title: String, reward: int) -> void:
+	var reward_text := " • +$%d" % reward if reward > 0 else ""
+	show_message("%s%s" % [title, reward_text])
+
+
+func _on_event_history_changed(total: int) -> void:
+	event_stats_label.text = "EVENTOS URBANOS  %d" % total
 
 
 func _on_cache_progress_changed(found: int, total: int) -> void:

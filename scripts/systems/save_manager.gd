@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://wildside_save.json"
-const SAVE_VERSION := 6
+const SAVE_VERSION := 7
 const MIN_SUPPORTED_VERSION := 5
 
 
@@ -42,6 +42,9 @@ func save_game() -> bool:
 		"deliveries_completed": SideJobManager.deliveries_completed,
 		"race_best_time": StreetRaceManager.best_time,
 		"race_wins": StreetRaceManager.wins,
+		"world_time_minutes": WorldTimeManager.game_minutes,
+		"world_day_count": WorldTimeManager.day_count,
+		"world_events_completed": WorldEventManager.events_completed,
 		"player_position": [player_position.x, player_position.y],
 		"respawn_position": [respawn_position.x, respawn_position.y],
 		"nib_captured": bool(nib.get("captured")) if is_instance_valid(nib) else false,
@@ -93,6 +96,15 @@ func load_game() -> bool:
 	StreetRaceManager.elapsed = 0.0
 	StreetRaceManager.best_time = float(data.get("race_best_time", -1.0))
 	StreetRaceManager.wins = int(data.get("race_wins", 0))
+
+	WorldTimeManager.game_minutes = float(data.get("world_time_minutes", WorldTimeManager.START_MINUTES))
+	WorldTimeManager.day_count = int(data.get("world_day_count", 1))
+	WorldTimeManager.call("_emit_time", true)
+
+	WorldEventManager.cancel_event()
+	WorldEventManager.events_completed = int(data.get("world_events_completed", 0))
+	WorldEventManager.event_history_changed.emit(WorldEventManager.events_completed)
+	WorldEventManager.time_until_next = 35.0
 
 	if is_instance_valid(GameManager.player):
 		var player_position_data: Array = data.get("player_position", [])
