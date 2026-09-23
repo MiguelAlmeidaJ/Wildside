@@ -53,8 +53,14 @@ func reset_run() -> void:
 
 func start_random_event() -> bool:
 	var allow_raiders := MissionManager.stage >= MissionManager.Stage.MISSION_2_COMPLETE
+	var raid_chance := 0.35
+	if WorldTimeManager.get_phase() == "NOITE":
+		raid_chance = 0.72
+	elif WorldTimeManager.get_phase() == "ENTARDECER":
+		raid_chance = 0.52
+
 	var type := EventType.CARGO
-	if allow_raiders and _rng.randf() > 0.45:
+	if allow_raiders and _rng.randf() < raid_chance:
 		type = EventType.RAIDERS
 	var anchor_index := _rng.randi_range(0, EVENT_ANCHORS.size() - 1)
 	return force_event(type, anchor_index)
