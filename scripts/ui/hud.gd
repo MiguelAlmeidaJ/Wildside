@@ -183,29 +183,40 @@ func _on_objective_changed(title: String, description: String, target: Vector2, 
 
 
 func _on_wanted_changed(level: int, heat: float) -> void:
-	wanted_label.text = "%s%s  %02d" % ["★".repeat(level), "☆".repeat(5 - level), roundi(heat)]
+	wanted_label.text = "%s%s  %03d" % ["★".repeat(level), "☆".repeat(5 - level), roundi(heat)]
 	wanted_label.modulate = Color("#ffcf5c") if level > 0 else Color("#aeb7bd")
+	_update_pursuit_label()
+
+
+func _on_pursuit_state_changed(_seen: bool) -> void:
+	_update_pursuit_label()
+
+
+func _update_pursuit_label() -> void:
+	var level := WantedManager.wanted_level
 	if level <= 0:
 		pursuit_label.text = "SEM PROCURA"
 		pursuit_label.modulate = Color("#aeb7bd")
-	elif WantedManager.is_visible_to_police:
-		pursuit_label.text = "VISTO"
-		pursuit_label.modulate = Color("#ff7b7b")
-	else:
-		pursuit_label.text = "ESCAPANDO"
-		pursuit_label.modulate = Color("#7de3cf")
+		return
 
-
-func _on_pursuit_state_changed(seen: bool) -> void:
-	if WantedManager.wanted_level <= 0:
-		pursuit_label.text = "SEM PROCURA"
-		pursuit_label.modulate = Color("#aeb7bd")
-	elif seen:
-		pursuit_label.text = "VISTO"
-		pursuit_label.modulate = Color("#ff7b7b")
-	else:
-		pursuit_label.text = "ESCAPANDO"
+	if not WantedManager.is_visible_to_police:
+		pursuit_label.text = "ESCAPANDO  •  NÍVEL %d" % level
 		pursuit_label.modulate = Color("#7de3cf")
+		return
+
+	match level:
+		5:
+			pursuit_label.text = "CAÇADA TOTAL"
+			pursuit_label.modulate = Color("#ff5555")
+		4:
+			pursuit_label.text = "RESPOSTA TÁTICA"
+			pursuit_label.modulate = Color("#ff6868")
+		3:
+			pursuit_label.text = "CERCO ATIVO"
+			pursuit_label.modulate = Color("#ff7b7b")
+		_:
+			pursuit_label.text = "VISTO"
+			pursuit_label.modulate = Color("#ff8d8d")
 
 
 func _on_money_changed(total: int) -> void:
