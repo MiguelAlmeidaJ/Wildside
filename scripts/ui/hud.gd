@@ -394,6 +394,9 @@ func _on_store_state_changed(opened: bool, title: String) -> void:
 	if opened:
 		inventory_panel.hide()
 		store_title.text = title
+		_set_modal_focus(true)
+	elif not GameManager.wild_terminal_open and not inventory_panel.visible:
+		_set_modal_focus(false)
 
 
 func _on_side_job_objective_changed(title: String, description: String, target: Vector2, has_target: bool) -> void:
