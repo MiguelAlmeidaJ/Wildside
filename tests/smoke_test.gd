@@ -296,7 +296,8 @@ func _run() -> void:
 	_check(player.current_vehicle == motorcycle, "Player precisa conseguir roubar a moto")
 	_check(motorcycle.was_taken, "Moto roubada precisa registrar o furto")
 	_check(wanted.wanted_level == 1, "Roubar moto precisa gerar procura")
-	_check(motorcycle.get_interaction_text(player).contains("Entrar"), "Depois do furto a moto precisa deixar de mostrar prompt de roubo")
+	_check(motorcycle.get_interaction_text(player).find("Entrar") >= 0, "Depois do furto a moto precisa deixar de mostrar prompt de roubo")
+	motorcycle.global_position = Vector2(520, 1000)
 	motorcycle.request_exit()
 	await physics_frame
 	_check(player.current_vehicle == null, "Player precisa conseguir sair da moto")
@@ -307,6 +308,7 @@ func _run() -> void:
 	_check(player.current_vehicle == truck, "Player precisa conseguir roubar o caminhão")
 	_check(truck.was_taken, "Caminhão roubado precisa registrar o furto")
 	_check(wanted.heat >= truck.theft_heat, "Roubo do caminhão precisa usar heat próprio")
+	truck.global_position = Vector2(1450, 1000)
 	truck.request_exit()
 	await physics_frame
 	_check(player.current_vehicle == null, "Player precisa conseguir sair do caminhão")
