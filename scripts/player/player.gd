@@ -9,6 +9,9 @@ signal inventory_toggle_requested
 
 enum MotionState { IDLE, WALK, RUN }
 
+const HOSPITAL_RESPAWN_POSITION := Vector2(-1510, 790)
+const HOSPITAL_FEE := 50
+
 @export var walk_speed := 230.0
 @export var run_speed := 360.0
 @export var acceleration := 1500.0
@@ -527,15 +530,32 @@ func heal(amount: float) -> void:
 
 func _defeat() -> void:
 	player_defeated.emit()
-	var penalty := mini(50, GameManager.money)
+
+	var penalty := mini(HOSPITAL_FEE, GameManager.money)
 	if penalty > 0:
 		GameManager.add_money(-penalty)
-	global_position = _spawn_position
+
+	var weapons_confiscated := GameManager.confiscate_weapons()
+	pistol_equipped = false
+	_reload_left = 0.0
+	_shoot_cooldown_left = 0.0
+
+	_arrest_progress = 0.0
+	_arrest_source = null
+	arrest_progress_changed.emit(0.0)
+
+	GameManager.close_store()
+	GameManager.close_wild_terminal()
+	WantedManager.clear()
+
+	global_position = HOSPITAL_RESPAWN_POSITION
 	velocity = Vector2.ZERO
 	health = max_health
-	_invulnerability_left = 1.5
+	_invulnerability_left = 2.0
 	health_changed.emit(health, max_health)
-	show_message("Você apagou e acordou de volta no centro.  -$%d" % penalty)
+
+	var confiscation_text := " • armas confiscadas" if weapons_confiscated else ""
+	show_message("HOSPITAL • alta médica%s • procura zerada • -$%d" % [confiscation_text, penalty])
 
 
 func _play_attack_animation(hit: bool) -> void:
