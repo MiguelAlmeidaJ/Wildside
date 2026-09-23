@@ -283,34 +283,39 @@ position = Vector2(950, 0)
 [node name="Police2" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
 position = Vector2(-950, 0)
 required_level = 2
-chase_speed = 345.0
+chase_speed = 285.0
+contact_range = 690.0
+response_delay = 3.4
 
 [node name="Police3" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
 modulate = Color(0.82, 0.9, 1, 1)
 position = Vector2(0, 950)
 required_level = 3
-chase_speed = 370.0
-contact_range = 790.0
-deploy_distance = 285.0
+chase_speed = 300.0
+contact_range = 730.0
+deploy_distance = 260.0
 ram_damage = 5.0
+response_delay = 3.8
 
 [node name="Police4" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
 modulate = Color(1, 0.78, 0.78, 1)
 position = Vector2(950, 950)
 required_level = 4
-chase_speed = 405.0
-contact_range = 850.0
-deploy_distance = 315.0
-ram_damage = 6.5
+chase_speed = 315.0
+contact_range = 770.0
+deploy_distance = 280.0
+ram_damage = 6.0
+response_delay = 4.2
 
 [node name="Police5" parent="World/Entities/NPCs" instance=ExtResource("9_police")]
 modulate = Color(0.72, 0.72, 0.82, 1)
 position = Vector2(-950, 950)
 required_level = 5
-chase_speed = 445.0
-contact_range = 930.0
-deploy_distance = 345.0
-ram_damage = 8.0
+chase_speed = 330.0
+contact_range = 820.0
+deploy_distance = 300.0
+ram_damage = 7.0
+response_delay = 4.6
 
 [node name="Vehicles" type="Node2D" parent="World/Entities"]
 
