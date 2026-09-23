@@ -278,18 +278,117 @@ func _draw_vertical_curb(x: float, y1: float, y2: float) -> void:
 
 
 func _draw_parking_rows(start: Vector2, count: int, direction: Vector2) -> void:
+	var forward := direction.normalized()
+	var depth := forward.orthogonal()
+	var slot_width := 78.0
+	var slot_depth := 72.0
+	var line_color := Color(0.82, 0.86, 0.88, 0.55)
+	var stop_color := Color(0.58, 0.62, 0.66, 0.58)
+
 	for index in range(count):
-		var origin := start + direction * float(index) * 92.0
-		draw_line(origin, origin + Vector2(0, 105), Color(0.8, 0.84, 0.87, 0.52), 4.0)
+		var origin := start + forward * float(index) * 92.0
+		var outer := origin + depth * slot_depth
+		draw_line(origin, outer, line_color, 3.0)
+		draw_line(
+			origin + forward * slot_width,
+			outer + forward * slot_width,
+			line_color,
+			3.0
+		)
+		draw_line(
+			outer + forward * 18.0,
+			outer + forward * (slot_width - 18.0),
+			stop_color,
+			5.0
+		)
+
+
+func _vertical_road_width_at(x: float) -> float:
+	for road in VERTICAL_ROADS:
+		if x >= road.position.x and x <= road.position.x + road.size.x:
+			return road.size.x
+	return 260.0
+
+
+func _horizontal_road_height_at(y: float) -> float:
+	for road in HORIZONTAL_ROADS:
+		if y >= road.position.y and y <= road.position.y + road.size.y:
+			return road.size.y
+	return 360.0
 
 
 func _draw_crosswalk(center: Vector2) -> void:
-	var crosswalk_color := Color("#dfe5e8")
-	for offset in range(-140, 141, 40):
-		draw_rect(Rect2(center.x + offset, center.y - 205, 22, 55), crosswalk_color)
-		draw_rect(Rect2(center.x + offset, center.y + 150, 22, 55), crosswalk_color)
-		draw_rect(Rect2(center.x - 245, center.y + offset, 55, 22), crosswalk_color)
-		draw_rect(Rect2(center.x + 190, center.y + offset, 55, 22), crosswalk_color)
+	var crosswalk_color := Color(0.88, 0.91, 0.92, 0.92)
+	var stop_line_color := Color(0.94, 0.95, 0.95, 0.62)
+	var vertical_width := _vertical_road_width_at(center.x)
+	var horizontal_height := _horizontal_road_height_at(center.y)
+	var vertical_half := vertical_width * 0.5
+	var horizontal_half := horizontal_height * 0.5
+
+	var stripe_width := 18.0
+	var stripe_gap := 34.0
+	var stripe_depth := 44.0
+
+	# Travessias norte/sul cruzam o eixo vertical e ficam dentro do
+	# limite da avenida horizontal, sem invadir as calçadas.
+	var stripe_x := center.x - vertical_half + 18.0
+	while stripe_x <= center.x + vertical_half - 18.0 - stripe_width:
+		draw_rect(
+			Rect2(
+				stripe_x,
+				center.y - horizontal_half + 14.0,
+				stripe_width,
+				stripe_depth
+			),
+			crosswalk_color
+		)
+		draw_rect(
+			Rect2(
+				stripe_x,
+				center.y + horizontal_half - 14.0 - stripe_depth,
+				stripe_width,
+				stripe_depth
+			),
+			crosswalk_color
+		)
+		stripe_x += stripe_gap
+
+	# Travessias leste/oeste cruzam a avenida horizontal.
+	var stripe_y := center.y - horizontal_half + 18.0
+	while stripe_y <= center.y + horizontal_half - 18.0 - stripe_width:
+		draw_rect(
+			Rect2(
+				center.x - vertical_half + 14.0,
+				stripe_y,
+				stripe_depth,
+				stripe_width
+			),
+			crosswalk_color
+		)
+		draw_rect(
+			Rect2(
+				center.x + vertical_half - 14.0 - stripe_depth,
+				stripe_y,
+				stripe_depth,
+				stripe_width
+			),
+			crosswalk_color
+		)
+		stripe_y += stripe_gap
+
+	# Linhas de retenção deixam o cruzamento visualmente mais legível.
+	draw_line(
+		Vector2(center.x - vertical_half + 8.0, center.y - horizontal_half + 66.0),
+		Vector2(center.x + vertical_half - 8.0, center.y - horizontal_half + 66.0),
+		stop_line_color,
+		4.0
+	)
+	draw_line(
+		Vector2(center.x - vertical_half + 8.0, center.y + horizontal_half - 66.0),
+		Vector2(center.x + vertical_half - 8.0, center.y + horizontal_half - 66.0),
+		stop_line_color,
+		4.0
+	)
 
 
 func _create_building(rect: Rect2, color: Color, index: int) -> void:
