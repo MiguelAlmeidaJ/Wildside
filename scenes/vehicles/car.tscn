@@ -31,7 +31,7 @@ shape = SubResource("RectangleShape_parked")
 [node name="Camera2D" type="Camera2D" parent="."]
 enabled = false
 position_smoothing_enabled = true
-position_smoothing_speed = 6.0
+position_smoothing_speed = 8.0
 limit_left = -1800
 limit_top = -1600
 limit_right = 3000
