@@ -11,6 +11,14 @@ enum State {
 }
 
 const START_POSITION := Vector2(-880, 1500)
+const CHECKPOINT_POSITIONS = [
+	Vector2(-880, 1000),
+	Vector2(-1120, 0),
+	Vector2(-250, -80),
+	Vector2(870, -80),
+	Vector2(1150, 1000),
+	Vector2(250, 1125),
+]
 const CHECKPOINT_COUNT := 6
 const BASE_REWARD := 180
 
