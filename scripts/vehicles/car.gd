@@ -119,7 +119,9 @@ func _physics_process(delta: float) -> void:
 
 
 func get_interaction_priority(_player: CharacterBody2D) -> int:
-	return 55
+	# Veículos vencem conversas ambientais, mas objetivos de missão e
+	# carteiras de civis caídos continuam tendo prioridade maior.
+	return 105
 
 
 func get_interaction_text(_player: CharacterBody2D) -> String:
