@@ -97,6 +97,12 @@ func interact(player: CharacterBody2D) -> void:
 			text = MissionManager.talk_to_bruno()
 		"jade":
 			text = MissionManager.talk_to_jade()
+		"cora":
+			text = MissionManager.talk_to_cora()
+		"port_job":
+			text = SideJobManager.talk_to_malik()
+		"port_pickup":
+			text = SideJobManager.talk_to_dante()
 		"rico":
 			text = SideJobManager.talk_to_rico()
 		"vera":
