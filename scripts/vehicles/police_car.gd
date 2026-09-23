@@ -18,6 +18,7 @@ var active := false
 var responding := false
 var response_left := 0.0
 var officer: CharacterBody2D
+var _officer_redeploy_left := 0.0
 
 
 func _ready() -> void:
@@ -27,6 +28,8 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
+	_officer_redeploy_left = maxf(0.0, _officer_redeploy_left - delta)
+
 	if responding:
 		response_left = maxf(0.0, response_left - delta)
 		if response_left <= 0.0:
@@ -50,7 +53,7 @@ func _physics_process(delta: float) -> void:
 	var player_on_foot := is_instance_valid(player) and not is_instance_valid(player_vehicle)
 
 	if player_on_foot and distance <= deploy_distance:
-		if not is_instance_valid(officer):
+		if not is_instance_valid(officer) and _officer_redeploy_left <= 0.0:
 			_deploy_officer()
 		velocity = velocity.move_toward(Vector2.ZERO, 720.0 * delta)
 		move_and_slide()
@@ -85,6 +88,12 @@ func _deploy_officer() -> void:
 	officer.global_position = global_position + Vector2.RIGHT.rotated(rotation) * 58.0
 
 
+func notify_officer_down(value: Node2D) -> void:
+	if is_instance_valid(officer) and officer == value:
+		officer = null
+	_officer_redeploy_left = 8.0
+
+
 func _on_wanted_changed(level: int, _heat: float) -> void:
 	if level >= required_level:
 		if not active and not responding:
@@ -97,6 +106,7 @@ func _begin_response() -> void:
 	active = false
 	responding = true
 	response_left = response_delay + float(required_level - 1) * 0.55
+	_officer_redeploy_left = 0.0
 	visible = false
 	collision_shape.set_deferred("disabled", true)
 	velocity = Vector2.ZERO
@@ -123,6 +133,7 @@ func _cancel_response() -> void:
 	active = false
 	responding = false
 	response_left = 0.0
+	_officer_redeploy_left = 0.0
 	_hide_unit()
 	if is_instance_valid(officer):
 		officer.queue_free()
