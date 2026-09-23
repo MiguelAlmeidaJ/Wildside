@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3]
+[gd_scene load_steps=30 format=3]
 
 [ext_resource type="Script" path="res://scripts/systems/main.gd" id="1_main"]
 [ext_resource type="PackedScene" path="res://scenes/world/city.tscn" id="2_city"]
@@ -27,6 +27,8 @@
 [ext_resource type="PackedScene" path="res://scenes/world/event_cargo.tscn" id="25_event_cargo"]
 [ext_resource type="PackedScene" path="res://scenes/world/wild_terminal.tscn" id="26_terminal"]
 [ext_resource type="PackedScene" path="res://scenes/world/port_signal.tscn" id="27_port_signal"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/motorcycle.tscn" id="28_motorcycle"]
+[ext_resource type="PackedScene" path="res://scenes/vehicles/truck.tscn" id="29_truck"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_main")
@@ -172,6 +174,9 @@ ambient_lines = PackedStringArray("Ainda faltam duas horas.", "Café. Eu preciso
 [node name="CitizenD" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(1460, 760)
 citizen_name = "Operário"
+fight_chance = 0.85
+max_health = 82.0
+attack_damage = 11.0
 appearance_variant = 1
 dialogue = "Esses galpões estão dando problema desde o apagão."
 appearance_tint = Color(0.82, 0.88, 0.78, 1)
@@ -235,6 +240,11 @@ ambient_lines = PackedStringArray("Scanner falhou de novo.", "Esses contêineres
 [node name="Ravi" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(2520, 1110)
 citizen_name = "Ravi"
+fight_chance = 1.0
+max_health = 90.0
+attack_damage = 12.0
+wallet_min = 18
+wallet_max = 46
 appearance_variant = 3
 dialogue = "Se ouvir metal batendo sem vento, não vai procurar de onde veio."
 appearance_tint = Color(0.86, 1, 0.86, 1)
@@ -260,6 +270,8 @@ ambient_lines = PackedStringArray("A maré está estranha.", "Peixe sumiu do can
 [node name="Bia" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
 position = Vector2(2460, -120)
 citizen_name = "Bia"
+fight_chance = 0.72
+attack_damage = 10.0
 appearance_variant = 2
 dialogue = "Trabalho na conferência. Se um contêiner não tem etiqueta, ele não devia estar aqui."
 appearance_tint = Color(0.82, 0.94, 0.9, 1)
@@ -305,18 +317,41 @@ ram_damage = 8.0
 [node name="Car" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(-90, 65)
 rotation = 0.18
+vehicle_name = "Vega Sedan"
 
 [node name="CarResidential" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(-1010, 610)
 rotation = 1.5708
+vehicle_name = "Orion Hatch"
 
 [node name="CarIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(1010, 560)
 rotation = -1.5708
+vehicle_name = "Falcon LX"
 
 [node name="CarPort" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 position = Vector2(2050, 1215)
 rotation = 1.5708
+vehicle_name = "Doca Compact"
+
+
+[node name="MotorcycleCenter" parent="World/Entities/Vehicles" instance=ExtResource("28_motorcycle")]
+position = Vector2(610, 1125)
+rotation = 1.5708
+
+[node name="MotorcyclePort" parent="World/Entities/Vehicles" instance=ExtResource("28_motorcycle")]
+position = Vector2(2680, 875)
+rotation = -1.5708
+vehicle_name = "Raptor 250 • Porto"
+
+[node name="TruckIndustrial" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
+position = Vector2(1510, 1125)
+rotation = 1.5708
+
+[node name="TruckPort" parent="World/Entities/Vehicles" instance=ExtResource("29_truck")]
+position = Vector2(2040, 1880)
+rotation = 1.5708
+vehicle_name = "Atlas Cargo • Porto"
 
 [node name="PersonalCar" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
 modulate = Color(0.58, 0.96, 0.88, 1)
