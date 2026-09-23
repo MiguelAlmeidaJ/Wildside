@@ -64,6 +64,7 @@ func _run() -> void:
 	var blackout_anomaly = game.get_node("World/Props/BlackoutAnomaly")
 	var market = game.get_node("World/Props/Market24")
 	var safehouse = game.get_node("World/Props/Safehouse")
+	var hospital = game.get_node("World/Props/Hospital")
 	var wild_terminal = game.get_node("World/Props/WildTerminal")
 	var port_signal = game.get_node("World/Props/PortSignal")
 	var garage = game.get_node("World/Props/GarageCobalto")
@@ -117,7 +118,7 @@ func _run() -> void:
 	_check(get_nodes_in_group("citizens").size() >= 28, "Vila Oeste precisa ampliar a população da cidade")
 	_check(get_nodes_in_group("ambient_traffic").size() >= 10, "Vila Oeste precisa ampliar o trânsito civil")
 	_check(jade != null and murno != null and blackout_anomaly != null, "ANOMALIA #003 precisa carregar Jade, Murno e a distorção")
-	_check(market != null and safehouse != null, "Mercado 24H e apartamento precisam existir")
+	_check(market != null and safehouse != null and hospital != null, "Mercado 24H, apartamento e hospital precisam existir")
 	_check(wild_terminal != null, "Terminal Wild precisa existir no apartamento")
 	_check(cora != null and malik != null and dante != null and port_signal != null, "Porto Ferrugem precisa carregar contatos e relé")
 	_check(port_raider1 != null and port_raider2 != null and port_raider3 != null, "ANOMALIA #004 precisa carregar três Raiders dedicados")
@@ -843,13 +844,21 @@ func _run() -> void:
 	_check(game_manager.is_wild_captured("volt"), "Load precisa manter Wilds da reserva na coleção")
 	_check(is_equal_approx(personal_car.durability, 63.0), "Load precisa restaurar durabilidade do veículo próprio")
 
-	# Derrota do player deve restaurar vida, posição e cobrar até $50.
+	# Derrota: hospital, procura zerada, armas confiscadas e taxa fixa de até $50.
+	if not game_manager.pistol_unlocked:
+		game_manager.grant_pistol(8, 24)
+	player.equip_pistol(true)
+	wanted.add_heat(180.0, "Teste de hospital")
+	_check(wanted.wanted_level == 5, "Teste de derrota precisa começar com procura ativa")
 	var money_before_defeat = game_manager.money
 	player._invulnerability_left = 0.0
 	player.take_damage(999.0, raider2)
-	_check(player.health == player.max_health, "Derrota precisa restaurar a vida")
-	_check(player.global_position == player._spawn_position, "Derrota precisa levar o player ao ponto inicial")
-	_check(game_manager.money == money_before_defeat - mini(50, money_before_defeat), "Derrota precisa aplicar penalidade de até $50")
+	_check(player.health == player.max_health, "Hospital precisa restaurar a vida")
+	_check(player.global_position == player.HOSPITAL_RESPAWN_POSITION, "Derrota precisa levar o player ao Hospital Central")
+	_check(wanted.wanted_level == 0 and is_zero_approx(wanted.heat), "Morrer precisa zerar estrelas e heat")
+	_check(not game_manager.pistol_unlocked and game_manager.pistol_magazine == 0 and game_manager.pistol_reserve == 0, "Hospital precisa confiscar armas e munição")
+	_check(not player.pistol_equipped, "Arma confiscada não pode continuar equipada")
+	_check(game_manager.money == money_before_defeat - mini(player.HOSPITAL_FEE, money_before_defeat), "Hospital precisa cobrar até $50")
 
 	# Polícia a pé e prisão.
 	wanted.add_heat(20.0, "Teste de prisão")
