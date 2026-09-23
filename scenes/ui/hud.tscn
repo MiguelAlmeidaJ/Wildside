@@ -192,7 +192,7 @@ script = ExtResource("2_minimap")
 [node name="MiniMapLegend" type="Label" parent="MiniMapPanel/MiniMapContent"]
 theme_override_colors/font_color = Color(0.72, 0.78, 0.82, 1)
 theme_override_font_sizes/font_size = 11
-text = "◆ objetivo   ● polícia   ■ locais"
+text = "◆ objetivo   ● polícia   ◆ militar   ■ locais"
 horizontal_alignment = 1
 
 [node name="InventoryPanel" type="PanelContainer" parent="."]
