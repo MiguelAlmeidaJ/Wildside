@@ -341,10 +341,12 @@ func _on_race_completed(reward: int, elapsed: float, best_time: float) -> void:
 
 
 func _on_wild_roster_changed(captured: Array[String], active: Array[String]) -> void:
-	var active_names: Array[String] = []
-	for wild_id in active:
-		active_names.append(wild_id.capitalize())
-	wild_team_label.text = "EQUIPE WILD  %s" % (" + ".join(active_names) if not active_names.is_empty() else "—")
+	var team_text := "—"
+	if active.size() == 1:
+		team_text = active[0].capitalize()
+	elif active.size() >= 2:
+		team_text = "%s + %s" % [active[0].capitalize(), active[1].capitalize()]
+	wild_team_label.text = "EQUIPE WILD  %s" % team_text
 
 	nib_roster_label.text = _wild_roster_text("1", "NIB", "nib", captured, active)
 	volt_roster_label.text = _wild_roster_text("2", "VOLT", "volt", captured, active)
@@ -353,10 +355,10 @@ func _on_wild_roster_changed(captured: Array[String], active: Array[String]) -> 
 
 func _wild_roster_text(key: String, name: String, wild_id: String, captured: Array[String], active: Array[String]) -> String:
 	if not captured.has(wild_id):
-		return "%s  %-8s  NÃO CAPTURADO" % [key, name]
+		return "%s  %s  •  NÃO CAPTURADO" % [key, name]
 	if active.has(wild_id):
-		return "%s  %-8s  ATIVO" % [key, name]
-	return "%s  %-8s  RESERVA" % [key, name]
+		return "%s  %s  •  ATIVO" % [key, name]
+	return "%s  %s  •  RESERVA" % [key, name]
 
 
 func _on_wild_terminal_changed(opened: bool) -> void:
