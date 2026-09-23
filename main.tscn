@@ -315,7 +315,7 @@ position = Vector2(1010, 560)
 rotation = -1.5708
 
 [node name="CarPort" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
-position = Vector2(2200, 1240)
+position = Vector2(2050, 1215)
 rotation = 1.5708
 
 [node name="PersonalCar" parent="World/Entities/Vehicles" instance=ExtResource("5_car")]
