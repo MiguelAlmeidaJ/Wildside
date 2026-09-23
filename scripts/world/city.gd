@@ -1,6 +1,6 @@
 extends Node2D
 
-const CITY_RECT := Rect2(-1800.0, -900.0, 4800.0, 3100.0)
+const CITY_RECT := Rect2(-2700.0, -900.0, 5700.0, 3100.0)
 const BUILDINGS := [
 	[Rect2(-1720.0, -820.0, 420.0, 540.0), Color("#355070")],
 	[Rect2(-720.0, -820.0, 400.0, 540.0), Color("#6d597a")],
@@ -20,6 +20,12 @@ const BUILDINGS := [
 	[Rect2(2440.0, 280.0, 340.0, 440.0), Color("#7a5a3f")],
 	[Rect2(1840.0, 1280.0, 360.0, 440.0), Color("#405c75")],
 	[Rect2(2440.0, 1280.0, 340.0, 440.0), Color("#805947")],
+	# Vila Oeste — expansão 0.17.
+	[Rect2(-2620.0, -820.0, 210.0, 540.0), Color("#49677b")],
+	[Rect2(-2090.0, -820.0, 250.0, 540.0), Color("#7b5c50")],
+	[Rect2(-2620.0, 280.0, 210.0, 440.0), Color("#55715e")],
+	[Rect2(-2090.0, 280.0, 250.0, 440.0), Color("#6b6284")],
+	[Rect2(-2090.0, 1280.0, 250.0, 440.0), Color("#6d704c")],
 ]
 
 const ROAD_COLOR := Color("#252d38")
@@ -37,11 +43,12 @@ func _ready() -> void:
 	for index in range(BUILDINGS.size()):
 		_create_building(BUILDINGS[index][0], BUILDINGS[index][1], index)
 
-	_create_obstacle(Vector2(-520, -95), Color("#f6bd60"))
-	_create_obstacle(Vector2(520, 95), Color("#84a59d"))
-	_create_obstacle(Vector2(-1010, 520), Color("#f28482"))
-	_create_obstacle(Vector2(1010, 1450), Color("#90be6d"))
-	_create_obstacle(Vector2(2250, 910), Color("#f4a261"))
+	# Pequenos marcos ficam nas calçadas, não no leito das avenidas.
+	_create_obstacle(Vector2(-650, 235), Color("#f6bd60"))
+	_create_obstacle(Vector2(650, 235), Color("#84a59d"))
+	_create_obstacle(Vector2(-1260, 520), Color("#f28482"))
+	_create_obstacle(Vector2(1240, 1450), Color("#90be6d"))
+	_create_obstacle(Vector2(2550, 720), Color("#f4a261"))
 
 	_create_city_props()
 	_create_district_signs()
@@ -55,6 +62,7 @@ func _draw() -> void:
 	draw_rect(CITY_RECT, Color("#5d8558"))
 
 	# Cada distrito recebe um tom discreto para ficar reconhecível até sem HUD.
+	draw_rect(Rect2(-2700, -900, 900, 3100), Color(0.16, 0.25, 0.30, 0.28))
 	draw_rect(Rect2(-1800, -900, 980, 1700), Color(0.12, 0.24, 0.38, 0.24))
 	draw_rect(Rect2(-820, -900, 1640, 1700), Color(0.24, 0.18, 0.32, 0.17))
 	draw_rect(Rect2(820, -900, 980, 1700), Color(0.39, 0.24, 0.12, 0.24))
@@ -63,34 +71,37 @@ func _draw() -> void:
 	draw_rect(Rect2(2840, -900, 160, 3100), Color("#17394c"))
 
 	# Ruas principais.
-	draw_rect(Rect2(-1800, -180, 4800, 360), ROAD_COLOR)
-	draw_rect(Rect2(-1800, 820, 4800, 360), ROAD_COLOR)
+	draw_rect(Rect2(-2700, -180, 5700, 360), ROAD_COLOR)
+	draw_rect(Rect2(-2700, 820, 5700, 360), ROAD_COLOR)
 	draw_rect(Rect2(-220, -900, 440, 3100), ROAD_COLOR)
 	draw_rect(Rect2(-1200, -900, 380, 3100), ROAD_COLOR)
 	draw_rect(Rect2(820, -900, 380, 3100), ROAD_COLOR)
 	draw_rect(Rect2(2200, -900, 240, 3100), ROAD_COLOR)
+	draw_rect(Rect2(-2380, -900, 260, 3100), ROAD_COLOR)
 	draw_rect(Rect2(1800, 1780, 1040, 300), ROAD_COLOR)
 
 	# Bordas do asfalto ajudam a separar rua/calçada.
-	draw_rect(Rect2(-1800, -188, 4800, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(-1800, 180, 4800, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(-1800, 812, 4800, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(-1800, 1180, 4800, 8), ROAD_EDGE_COLOR)
+	draw_rect(Rect2(-2700, -188, 5700, 8), ROAD_EDGE_COLOR)
+	draw_rect(Rect2(-2700, 180, 5700, 8), ROAD_EDGE_COLOR)
+	draw_rect(Rect2(-2700, 812, 5700, 8), ROAD_EDGE_COLOR)
+	draw_rect(Rect2(-2700, 1180, 5700, 8), ROAD_EDGE_COLOR)
 	draw_rect(Rect2(1800, 1772, 1040, 8), ROAD_EDGE_COLOR)
 	draw_rect(Rect2(1800, 2080, 1040, 8), ROAD_EDGE_COLOR)
 
 	# Calçadas horizontais.
 	for y in [-280, 180, 720, 1180]:
-		draw_rect(Rect2(-1800, y, 4800, 100), SIDEWALK_COLOR)
-		draw_line(Vector2(-1800, y), Vector2(2840, y), SIDEWALK_EDGE, 3.0)
+		draw_rect(Rect2(-2700, y, 5700, 100), SIDEWALK_COLOR)
+		draw_line(Vector2(-2700, y), Vector2(2840, y), SIDEWALK_EDGE, 3.0)
+		for x in range(-2660, 2800, 84):
+			draw_line(Vector2(x, y + 4), Vector2(x + 34, y + 4), Color(0.76, 0.8, 0.82, 0.26), 2.0)
 
 	# Calçadas verticais.
-	for x in [-1300, -820, -320, 220, 720, 1200]:
+	for x in [-2480, -2120, -1300, -820, -320, 220, 720, 1200]:
 		draw_rect(Rect2(x, -900, 100, 3100), SIDEWALK_COLOR)
 		draw_line(Vector2(x, -900), Vector2(x, 2200), SIDEWALK_EDGE, 3.0)
 
 	# Faixas tracejadas.
-	for x in range(-1750, 2801, 120):
+	for x in range(-2650, 2801, 120):
 		draw_rect(Rect2(x, -5, 65, 10), LANE_COLOR)
 		draw_rect(Rect2(x, 995, 65, 10), LANE_COLOR)
 
@@ -99,11 +110,14 @@ func _draw() -> void:
 		draw_rect(Rect2(-1015, y, 10, 65), LANE_COLOR)
 		draw_rect(Rect2(1005, y, 10, 65), LANE_COLOR)
 		draw_rect(Rect2(2315, y, 10, 65), LANE_COLOR)
+		draw_rect(Rect2(-2255, y, 10, 65), LANE_COLOR)
 
 	for x in range(1840, 2781, 120):
 		draw_rect(Rect2(x, 1925, 65, 10), LANE_COLOR)
 
 	# Estacionamentos e marcações industriais.
+	_draw_parking_rows(Vector2(-2580, 215), 3, Vector2.RIGHT)
+	_draw_parking_rows(Vector2(-2050, 715), 3, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(-1510, 865), 4, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(1280, 865), 4, Vector2.RIGHT)
 	_draw_parking_rows(Vector2(1280, -135), 4, Vector2.RIGHT)
@@ -113,11 +127,24 @@ func _draw() -> void:
 
 	_draw_crosswalk(Vector2.ZERO)
 	_draw_crosswalk(Vector2(0, 1000))
+	_draw_crosswalk(Vector2(-2250, 0))
+	_draw_crosswalk(Vector2(-2250, 1000))
 	_draw_crosswalk(Vector2(-1010, 0))
 	_draw_crosswalk(Vector2(1010, 0))
 	_draw_crosswalk(Vector2(2320, 0))
 	_draw_crosswalk(Vector2(2320, 1000))
 	_draw_crosswalk(Vector2(2320, 1930))
+
+	# Praça da Vila Oeste: quebra o padrão de blocos e cria um respiro visual.
+	draw_rect(Rect2(-2640, 1280, 230, 440), Color("#6f9464"))
+	draw_rect(Rect2(-2550, 1280, 48, 440), Color("#c5bda9"))
+	draw_rect(Rect2(-2640, 1468, 230, 48), Color("#c5bda9"))
+	draw_circle(Vector2(-2526, 1492), 38.0, Color(0.34, 0.55, 0.36, 0.35))
+
+	# Detalhes discretos do asfalto reduzem a sensação de grandes chapas vazias.
+	for patch in [Vector2(-1580, 45), Vector2(-680, -42), Vector2(560, 48), Vector2(1510, -38), Vector2(2050, 1038), Vector2(-2230, 620)]:
+		draw_circle(patch, 24.0, Color(0.08, 0.10, 0.13, 0.16))
+		draw_line(patch + Vector2(-18, 2), patch + Vector2(14, -7), Color(0.42, 0.46, 0.5, 0.22), 3.0)
 
 	# Faixa de segurança do cais e borda da água.
 	for y in range(-820, 2101, 90):
@@ -247,21 +274,24 @@ func _create_city_props() -> void:
 		Vector2(-1420, 1180), Vector2(-600, 1180), Vector2(600, 1180), Vector2(1420, 1180),
 		Vector2(-1260, 520), Vector2(760, 500), Vector2(1240, 520),
 		Vector2(1900, -240), Vector2(2440, -240), Vector2(1900, 720), Vector2(2440, 720),
-		Vector2(1900, 1180), Vector2(2440, 1180), Vector2(2050, 1740), Vector2(2600, 1740)
+		Vector2(1900, 1180), Vector2(2440, 1180), Vector2(2050, 1740), Vector2(2600, 1740),
+		Vector2(-2520, -240), Vector2(-2040, 240), Vector2(-2520, 720), Vector2(-2040, 1180)
 	]
 	for position in lamps:
 		_create_lamp(position)
 
 	var benches := [
 		Vector2(-470, 245), Vector2(455, 245), Vector2(-1480, 745),
-		Vector2(-610, 745), Vector2(610, 1210), Vector2(-510, 1210)
+		Vector2(-610, 745), Vector2(610, 1210), Vector2(-510, 1210),
+		Vector2(-2600, 1405), Vector2(-2445, 1585)
 	]
 	for position in benches:
 		_create_bench(position)
 
 	var planters := [
 		Vector2(-730, 235), Vector2(730, 235), Vector2(-730, 1215),
-		Vector2(730, 1215), Vector2(-1280, 760)
+		Vector2(730, 1215), Vector2(-1280, 760),
+		Vector2(-2580, 1325), Vector2(-2460, 1325), Vector2(-2580, 1660), Vector2(-2460, 1660)
 	]
 	for position in planters:
 		_create_planter(position)
@@ -287,6 +317,48 @@ func _create_city_props() -> void:
 		_create_port_crane(position)
 	for position in [Vector2(2740, 350), Vector2(2740, 680), Vector2(2740, 1450), Vector2(2740, 1880)]:
 		_create_bollard(position)
+
+	# Arborização e mobiliário novo ajudam a leitura das calçadas.
+	for position in [
+		Vector2(-2560, 235), Vector2(-1980, 235), Vector2(-2560, 760), Vector2(-1980, 760),
+		Vector2(-1540, 235), Vector2(-650, 760), Vector2(560, 235), Vector2(1450, 235),
+		Vector2(-2560, 1215), Vector2(-1980, 1215)
+	]:
+		_create_tree(position)
+
+
+func _create_tree(at: Vector2) -> void:
+	var node := StaticBody2D.new()
+	node.position = at
+	node.z_index = 4
+	node.collision_layer = 1
+	node.collision_mask = 0
+	_add_rect_collision(node, Vector2(24, 24))
+
+	var shadow := Polygon2D.new()
+	shadow.position = Vector2(8, 10)
+	shadow.polygon = PackedVector2Array([
+		Vector2(0, -22), Vector2(22, -6), Vector2(16, 18), Vector2(-10, 24), Vector2(-24, 2)
+	])
+	shadow.color = Color(0.02, 0.05, 0.03, 0.28)
+	node.add_child(shadow)
+
+	var trunk := Polygon2D.new()
+	trunk.polygon = PackedVector2Array([
+		Vector2(-5, -2), Vector2(5, -2), Vector2(6, 18), Vector2(-6, 18)
+	])
+	trunk.color = Color("#6d5138")
+	node.add_child(trunk)
+
+	var crown := Polygon2D.new()
+	crown.position = Vector2(0, -16)
+	crown.polygon = PackedVector2Array([
+		Vector2(0, -30), Vector2(25, -17), Vector2(29, 7), Vector2(10, 27),
+		Vector2(-15, 25), Vector2(-30, 5), Vector2(-24, -18)
+	])
+	crown.color = Color("#3f7651")
+	node.add_child(crown)
+	add_child(node)
 
 
 func _create_lamp(at: Vector2) -> void:
@@ -501,6 +573,7 @@ func _add_rect_collision(body: StaticBody2D, size: Vector2) -> void:
 
 
 func _create_district_signs() -> void:
+	_create_sign(Vector2(-2580, 210), "VILA OESTE", Color("#8dc6c8"))
 	_create_sign(Vector2(-1530, 210), "RESIDENCIAL", Color("#75a9db"))
 	_create_sign(Vector2(-130, 210), "CENTRO", Color("#8fe1cf"))
 	_create_sign(Vector2(1260, 210), "INDUSTRIAL", Color("#e2a761"))
@@ -510,6 +583,7 @@ func _create_district_signs() -> void:
 	_create_shop_sign(Vector2(-675, 675), "MERCADO 24H", Color("#ffd46a"))
 	_create_shop_sign(Vector2(335, 675), "ARCADE", Color("#79d8ff"))
 	_create_shop_sign(Vector2(1315, 675), "COBALTO", Color("#6df1d7"))
+	_create_shop_sign(Vector2(-2605, 1690), "PRAÇA DO OESTE", Color("#9ed39a"))
 	_create_shop_sign(Vector2(-675, 1690), "NOITE ALTA", Color("#d69bff"))
 	_create_shop_sign(Vector2(1845, 1690), "ARMAZÉM 7", Color("#f0a65b"))
 	_create_shop_sign(Vector2(2445, 1690), "CAIS LESTE", Color("#6bd7e8"))
@@ -573,9 +647,9 @@ func _create_obstacle(at: Vector2, color: Color) -> void:
 
 
 func _create_world_boundaries() -> void:
-	_create_boundary(Vector2(600, -1630), Vector2(4860, 60))
-	_create_boundary(Vector2(600, 2230), Vector2(4860, 60))
-	_create_boundary(Vector2(-1830, 300), Vector2(60, 3860))
+	_create_boundary(Vector2(150, -1630), Vector2(5760, 60))
+	_create_boundary(Vector2(150, 2230), Vector2(5760, 60))
+	_create_boundary(Vector2(-2730, 300), Vector2(60, 3860))
 	_create_boundary(Vector2(3030, 300), Vector2(60, 3860))
 	# O porto termina na água e não deve abrir acesso ao vazio ao norte.
 	_create_boundary(Vector2(2845, 650), Vector2(30, 3100))
