@@ -198,8 +198,6 @@ func collect_cache(cache_id: String) -> bool:
 		return false
 	collected_caches.append(cache_id)
 	cache_progress_changed.emit(collected_caches.size(), CACHE_TOTAL)
-	wild_roster_changed.emit(captured_wilds, active_wilds)
-	wild_terminal_changed.emit(false)
 	return true
 
 
@@ -301,4 +299,6 @@ func reset_run() -> void:
 	store_state_changed.emit(false, "")
 	vehicle_ownership_changed.emit(personal_vehicle_unlocked)
 	cache_progress_changed.emit(collected_caches.size(), CACHE_TOTAL)
+	wild_roster_changed.emit(captured_wilds, active_wilds)
+	wild_terminal_changed.emit(false)
 
