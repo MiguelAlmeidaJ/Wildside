@@ -32,7 +32,7 @@ func _ready() -> void:
 	add_to_group("hostile")
 	add_to_group("damageable")
 	GameManager.noise_emitted.connect(_on_noise_emitted)
-	if mission_key == "blackout" or activation_stage >= 0:
+	if mission_key == "blackout" or mission_key == "world_event" or activation_stage >= 0:
 		_set_active(false)
 	else:
 		_set_active(not active_after_anomaly_2)
