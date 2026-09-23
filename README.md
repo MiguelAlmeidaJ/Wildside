@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.16 · Godot 4.7.x**
+**Prototype 0.17 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -222,22 +222,40 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 10 mantém compatibilidade com os saves anteriores.
 
 
+### Cidade Mais Viva — Prototype 0.17
+
+- o mapa cresce aproximadamente 900 px para oeste e passa a chegar a `x=-2700`;
+- nasce o distrito `VILA OESTE`, conectado às duas avenidas principais e a um novo eixo norte–sul;
+- Vila Oeste recebe cinco novos prédios, praça arborizada, bancos, postes, calçadas, sinalização e estacionamento;
+- Mata Norte também foi estendida para acompanhar a nova borda do mapa, evitando áreas vazias acima do novo distrito;
+- quatro moradores novos — Sara, Joel, Mina e Teo — dão vida ao bairro;
+- duas novas rotas de trânsito usam Vila Oeste, elevando o tráfego civil para dez veículos ativos;
+- carros estacionados, motos e caminhões foram movidos para bolsões de estacionamento, áreas de calçada larga e pátios, deixando as faixas de circulação livres;
+- Maya, Davi, Ravi, Bia, Cora, Malik e outros personagens foram reposicionados para calçadas e áreas seguras;
+- NPCs que podem caminhar agora rejeitam destinos dentro das avenidas e eixos viários;
+- obstáculos decorativos que ficavam sobre o asfalto foram movidos para calçadas;
+- ruas recebem mais textura visual, remendos de asfalto, marcações de estacionamento e novos detalhes de calçada;
+- árvores e mobiliário urbano foram espalhados pelos bairros antigos e pela expansão;
+- o minimapa, a câmera, a polícia e os eventos urbanos passam a reconhecer Vila Oeste;
+- save version 10 continua válido, pois a atualização altera o mundo e não a estrutura do progresso salvo.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
 
 - Movimento com aceleração, desaceleração, corrida, direção visual e estados idle/walk/run.
 - Câmera suave com look-ahead e limites compatíveis com a área ampliada.
-- Cidade ampliada para 18 quarteirões, quatro eixos verticais, duas avenidas principais e uma via de cais.
+- Cidade ampliada para 23 quarteirões, cinco eixos verticais, duas avenidas principais, uma via de cais e a nova Vila Oeste.
 - `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas receberam marcações, estacionamento e bordas mais legíveis.
-- Props urbanos distribuídos pelos distritos: postes, bancos, vasos, caçambas, cones, containers, placas de região e letreiros de estabelecimentos.
-- Oito carros civis circulam continuamente em rotas pelas avenidas principais e pelo Porto Ferrugem.
-- Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte e Porto Ferrugem.
+- Props urbanos distribuídos pelos distritos: postes, árvores, bancos, vasos, caçambas, cones, containers, placas de região, estacionamentos e letreiros.
+- Dez carros civis circulam continuamente em rotas pelas avenidas principais, Porto Ferrugem e Vila Oeste.
+- Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte, Porto Ferrugem e Vila Oeste.
 - Transição de bairro exibida no HUD ao cruzar de uma região para outra.
-- Mais cidadãos e veículos estacionados espalhados pelo mapa, incluindo carros roubáveis, motos, caminhões e uma população portuária própria.
-- População ampliada com Jade, Otto, Vera, Rico, Lia, Celso, Cora, Malik, Dante, Noemi, Ravi, Helena, Rui, Bia e outros moradores/trabalhadores.
+- Mais cidadãos e veículos estacionados espalhados pelo mapa, agora posicionados em calçadas, bolsões e pátios em vez de ocupar as faixas de rodagem.
+- População ampliada com Jade, Otto, Vera, Rico, Lia, Celso, Cora, Malik, Dante, Noemi, Ravi, Helena, Rui, Bia, Sara, Joel, Mina, Teo e outros moradores/trabalhadores.
 - Quatro variações visuais de cidadãos evitam que toda a população pareça o mesmo personagem recolorido.
-- NPCs recebem variações visuais e falas ambientais espontâneas enquanto caminham ou esperam na rua.
+- NPCs recebem variações visuais e falas ambientais espontâneas; o wander evita escolher pontos no meio das pistas.
 - Interação local usando `Area2D`, sem varrer todos os objetos da cena a cada frame.
 - Veículos com dirigibilidade arcade progressiva: aceleração, ré, freio, inércia, grip lateral, drift de freio de mão, dano, colisão, câmera dinâmica, velocímetro e som procedural.
 - NPCs com estados `IDLE`, `WANDER`, `TALK`, `FLEE`, `FIGHT` e `DOWNED`; civis podem fugir, revidar, ser derrubados e ter a carteira roubada.
@@ -287,6 +305,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
 - Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
 - Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004, Frete do Cais e Carga Quente.
+- Vila Oeste como novo distrito urbano com praça, cinco prédios, quatro moradores, trânsito próprio e eventos urbanos.
 - Raptor 250 e Atlas Cargo como primeiras classes de veículo além do carro comum, cada uma com física própria.
 - Nika e o desmanche clandestino adicionam um loop de roubo, fuga policial e pagamento variável por integridade.
 
@@ -314,7 +333,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, posicionamento seguro de pedestres/veículos, Vila Oeste, dez carros de trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
