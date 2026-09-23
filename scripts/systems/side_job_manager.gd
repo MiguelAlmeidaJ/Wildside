@@ -19,7 +19,7 @@ const VERA_POSITION := Vector2(-1240, 585)
 const MALIK_POSITION := Vector2(2070, 1215)
 const DANTE_POSITION := Vector2(2720, 1745)
 const NIKA_POSITION := Vector2(1450, 760)
-const HOT_CARGO_POSITION := Vector2(2700, 1700)
+const HOT_CARGO_POSITION := Vector2(2600, 2130)
 const CHOP_SHOP_POSITION := Vector2(1450, 1125)
 const HOT_CARGO_TRUCK_PATH := "World/Entities/Vehicles/HotCargoTruck"
 
