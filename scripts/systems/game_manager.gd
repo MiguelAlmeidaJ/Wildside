@@ -86,6 +86,15 @@ func add_pistol_ammo(amount: int) -> void:
 	weapon_changed.emit(pistol_unlocked, pistol_magazine, pistol_reserve)
 
 
+func confiscate_weapons() -> bool:
+	var had_weapon := pistol_unlocked or pistol_magazine > 0 or pistol_reserve > 0
+	pistol_unlocked = false
+	pistol_magazine = 0
+	pistol_reserve = 0
+	weapon_changed.emit(false, 0, 0)
+	return had_weapon
+
+
 func consume_pistol_round() -> bool:
 	if not pistol_unlocked or pistol_magazine <= 0:
 		return false
