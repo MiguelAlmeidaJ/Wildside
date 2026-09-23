@@ -34,6 +34,22 @@ const SIDEWALK_COLOR := Color("#9aa5ac")
 const SIDEWALK_EDGE := Color("#c5cdd1")
 const LANE_COLOR := Color("#e8c65e")
 const WINDOW_COLOR := Color("#f6d98d")
+const SIDEWALK_WIDTH := 100.0
+const CURB_WIDTH := 8.0
+
+const HORIZONTAL_ROADS = [
+	Rect2(-2700.0, -180.0, 5700.0, 360.0),
+	Rect2(-2700.0, 820.0, 5700.0, 360.0),
+	Rect2(1800.0, 1780.0, 1040.0, 300.0),
+]
+
+const VERTICAL_ROADS = [
+	Rect2(-2380.0, -900.0, 260.0, 3100.0),
+	Rect2(-1200.0, -900.0, 380.0, 3100.0),
+	Rect2(-220.0, -900.0, 440.0, 3100.0),
+	Rect2(820.0, -900.0, 380.0, 3100.0),
+	Rect2(2200.0, -900.0, 240.0, 3100.0),
+]
 
 var _lamp_glows: Array[Polygon2D] = []
 var _lamp_bulbs: Array[Polygon2D] = []
@@ -80,25 +96,24 @@ func _draw() -> void:
 	draw_rect(Rect2(-2380, -900, 260, 3100), ROAD_COLOR)
 	draw_rect(Rect2(1800, 1780, 1040, 300), ROAD_COLOR)
 
-	# Bordas do asfalto ajudam a separar rua/calçada.
-	draw_rect(Rect2(-2700, -188, 5700, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(-2700, 180, 5700, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(-2700, 812, 5700, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(-2700, 1180, 5700, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(1800, 1772, 1040, 8), ROAD_EDGE_COLOR)
-	draw_rect(Rect2(1800, 2080, 1040, 8), ROAD_EDGE_COLOR)
+	# Meio-fio e calçadas são recortados nas interseções. Assim nenhuma
+	# faixa cinza atravessa o asfalto quando duas avenidas se encontram.
+	for curb_y in [-188.0, 180.0, 812.0, 1180.0]:
+		_draw_horizontal_curb(curb_y, -2700.0, 3000.0)
+	_draw_horizontal_curb(1772.0, 1800.0, 2840.0)
+	_draw_horizontal_curb(2080.0, 1800.0, 2840.0)
 
-	# Calçadas horizontais.
-	for y in [-280, 180, 720, 1180]:
-		draw_rect(Rect2(-2700, y, 5700, 100), SIDEWALK_COLOR)
-		draw_line(Vector2(-2700, y), Vector2(2840, y), SIDEWALK_EDGE, 3.0)
-		for x in range(-2660, 2800, 84):
-			draw_line(Vector2(x, y + 4), Vector2(x + 34, y + 4), Color(0.76, 0.8, 0.82, 0.26), 2.0)
+	# Calçadas horizontais: somente nas bordas dos quarteirões.
+	for y in [-280.0, 180.0, 720.0, 1180.0]:
+		_draw_horizontal_sidewalk_strip(y, -2700.0, 3000.0)
 
-	# Calçadas verticais.
-	for x in [-2480, -2120, -1300, -820, -320, 220, 720, 1200]:
-		draw_rect(Rect2(x, -900, 100, 3100), SIDEWALK_COLOR)
-		draw_line(Vector2(x, -900), Vector2(x, 2200), SIDEWALK_EDGE, 3.0)
+	# Calçadas verticais: interrompidas nas avenidas horizontais.
+	for x in [-2480.0, -2120.0, -1300.0, -820.0, -320.0, 220.0, 720.0, 1200.0]:
+		_draw_vertical_sidewalk_strip(x, -900.0, 2200.0)
+
+	# Meio-fio vertical acompanha os grandes eixos sem fechar cruzamentos.
+	for curb_x in [-2388.0, -2120.0, -1208.0, -820.0, -228.0, 220.0, 812.0, 1200.0, 2192.0, 2440.0]:
+		_draw_vertical_curb(curb_x, -900.0, 2200.0)
 
 	# Faixas tracejadas.
 	for x in range(-2650, 2801, 120):
@@ -154,6 +169,112 @@ func _draw() -> void:
 	for y in range(-820, 2101, 90):
 		draw_rect(Rect2(2800, y, 28, 52), Color(0.95, 0.72, 0.22, 0.75))
 	draw_line(Vector2(2835, -900), Vector2(2835, 2200), Color(0.78, 0.88, 0.9, 0.8), 5.0)
+
+
+func _subtract_segments(segments: Array, cut_min: float, cut_max: float) -> Array:
+	var result: Array = []
+	for segment in segments:
+		var start: float = float(segment.x)
+		var finish: float = float(segment.y)
+
+		if cut_max <= start or cut_min >= finish:
+			result.append(Vector2(start, finish))
+			continue
+
+		if cut_min > start:
+			result.append(Vector2(start, cut_min))
+		if cut_max < finish:
+			result.append(Vector2(cut_max, finish))
+
+	return result
+
+
+func _horizontal_segments(y: float, height: float, x1: float, x2: float) -> Array:
+	var segments: Array = [Vector2(x1, x2)]
+	for road in VERTICAL_ROADS:
+		if y + height <= road.position.y or y >= road.position.y + road.size.y:
+			continue
+		segments = _subtract_segments(
+			segments,
+			road.position.x,
+			road.position.x + road.size.x
+		)
+	return segments
+
+
+func _vertical_segments(x: float, width: float, y1: float, y2: float) -> Array:
+	var segments: Array = [Vector2(y1, y2)]
+	for road in HORIZONTAL_ROADS:
+		if x + width <= road.position.x or x >= road.position.x + road.size.x:
+			continue
+		segments = _subtract_segments(
+			segments,
+			road.position.y,
+			road.position.y + road.size.y
+		)
+	return segments
+
+
+func _draw_horizontal_sidewalk_strip(y: float, x1: float, x2: float) -> void:
+	var tile_color := Color(0.76, 0.80, 0.82, 0.24)
+	for segment in _horizontal_segments(y, SIDEWALK_WIDTH, x1, x2):
+		var left: float = float(segment.x)
+		var right: float = float(segment.y)
+		if right - left < 4.0:
+			continue
+
+		draw_rect(Rect2(left, y, right - left, SIDEWALK_WIDTH), SIDEWALK_COLOR)
+		draw_line(Vector2(left, y), Vector2(right, y), SIDEWALK_EDGE, 3.0)
+		draw_line(Vector2(left, y + SIDEWALK_WIDTH), Vector2(right, y + SIDEWALK_WIDTH), SIDEWALK_EDGE.darkened(0.18), 2.0)
+
+		var tile_x := left + 22.0
+		while tile_x < right - 12.0:
+			draw_line(
+				Vector2(tile_x, y + 8.0),
+				Vector2(tile_x + 28.0, y + 8.0),
+				tile_color,
+				2.0
+			)
+			tile_x += 78.0
+
+
+func _draw_vertical_sidewalk_strip(x: float, y1: float, y2: float) -> void:
+	var tile_color := Color(0.76, 0.80, 0.82, 0.22)
+	for segment in _vertical_segments(x, SIDEWALK_WIDTH, y1, y2):
+		var top: float = float(segment.x)
+		var bottom: float = float(segment.y)
+		if bottom - top < 4.0:
+			continue
+
+		draw_rect(Rect2(x, top, SIDEWALK_WIDTH, bottom - top), SIDEWALK_COLOR)
+		draw_line(Vector2(x, top), Vector2(x, bottom), SIDEWALK_EDGE, 3.0)
+		draw_line(Vector2(x + SIDEWALK_WIDTH, top), Vector2(x + SIDEWALK_WIDTH, bottom), SIDEWALK_EDGE.darkened(0.18), 2.0)
+
+		var tile_y := top + 22.0
+		while tile_y < bottom - 12.0:
+			draw_line(
+				Vector2(x + 8.0, tile_y),
+				Vector2(x + 8.0, tile_y + 28.0),
+				tile_color,
+				2.0
+			)
+			tile_y += 78.0
+
+
+func _draw_horizontal_curb(y: float, x1: float, x2: float) -> void:
+	for segment in _horizontal_segments(y, CURB_WIDTH, x1, x2):
+		var left: float = float(segment.x)
+		var right: float = float(segment.y)
+		if right - left >= 4.0:
+			draw_rect(Rect2(left, y, right - left, CURB_WIDTH), ROAD_EDGE_COLOR)
+
+
+func _draw_vertical_curb(x: float, y1: float, y2: float) -> void:
+	for segment in _vertical_segments(x, CURB_WIDTH, y1, y2):
+		var top: float = float(segment.x)
+		var bottom: float = float(segment.y)
+		if bottom - top >= 4.0:
+			draw_rect(Rect2(x, top, CURB_WIDTH, bottom - top), ROAD_EDGE_COLOR)
 
 
 func _draw_parking_rows(start: Vector2, count: int, direction: Vector2) -> void:
