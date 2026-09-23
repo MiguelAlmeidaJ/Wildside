@@ -195,7 +195,7 @@ ambient_lines = PackedStringArray("Endereço 42-B...", "Tomara que essa rua este
 
 
 [node name="Cora" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2260, 680)
+position = Vector2(2500, 760)
 citizen_name = "Cora"
 appearance_variant = 2
 dialogue = "Eu cuido das comunicações do cais. Quando um relé fala sozinho, eu escuto."
@@ -205,7 +205,7 @@ appearance_tint = Color(0.88, 0.94, 1, 1)
 ambient_chatter = false
 
 [node name="Malik" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2140, 1510)
+position = Vector2(2500, 1215)
 citizen_name = "Malik"
 appearance_variant = 3
 dialogue = "Porto não para por causa de papelada. Mas papelada para o porto."
@@ -215,7 +215,7 @@ appearance_tint = Color(0.92, 0.84, 0.72, 1)
 ambient_lines = PackedStringArray("Turno troca em vinte minutos.", "Cadê aquele manifesto?")
 
 [node name="Dante" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(2680, 1540)
+position = Vector2(2720, 1745)
 citizen_name = "Dante"
 appearance_variant = 1
 dialogue = "Eu fico com a papelada que ninguém quer carregar."
@@ -225,7 +225,7 @@ appearance_tint = Color(0.78, 0.9, 1, 1)
 ambient_lines = PackedStringArray("Maré baixando.", "Mais um turno no fim do cais.")
 
 [node name="Noemi" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(1900, 520)
+position = Vector2(1900, 760)
 citizen_name = "Noemi"
 appearance_variant = 2
 dialogue = "Depois do apagão, metade dos sensores do porto começou a acusar carga fantasma."
@@ -241,7 +241,7 @@ appearance_tint = Color(0.86, 1, 0.86, 1)
 ambient_lines = PackedStringArray("Guindaste três ainda parado.", "Tem coisa errada nesse píer.")
 
 [node name="Helena" parent="World/Entities/NPCs" instance=ExtResource("6_npc")]
-position = Vector2(1880, 1360)
+position = Vector2(1900, 1215)
 citizen_name = "Helena"
 appearance_variant = 1
 dialogue = "A cidade termina aqui, mas os problemas chegam pelo mar."
@@ -415,7 +415,7 @@ reward = 35
 
 [node name="PortRaider1" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 modulate = Color(0.9, 0.72, 0.58, 1)
-position = Vector2(2460, 390)
+position = Vector2(2480, 1010)
 active_after_anomaly_2 = false
 activation_stage = 23
 mission_key = "port"
@@ -424,7 +424,7 @@ reward = 40
 
 [node name="PortRaider2" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 modulate = Color(0.78, 0.88, 1, 1)
-position = Vector2(2670, 520)
+position = Vector2(2720, 1110)
 active_after_anomaly_2 = false
 activation_stage = 23
 mission_key = "port"
@@ -434,7 +434,7 @@ reward = 45
 
 [node name="PortRaider3" parent="World/Entities/Enemies" instance=ExtResource("15_raider")]
 modulate = Color(1, 0.66, 0.55, 1)
-position = Vector2(2550, 690)
+position = Vector2(2600, 1250)
 active_after_anomaly_2 = false
 activation_stage = 23
 mission_key = "port"
@@ -492,7 +492,7 @@ position = Vector2(270, 510)
 position = Vector2(365, 510)
 
 [node name="PortSignal" parent="World/Props" instance=ExtResource("27_port_signal")]
-position = Vector2(2580, 430)
+position = Vector2(2740, 1215)
 
 [node name="EventCargo" parent="World/Props" instance=ExtResource("25_event_cargo")]
 position = Vector2(-2200, -2200)
