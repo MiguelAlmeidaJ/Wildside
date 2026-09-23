@@ -90,7 +90,7 @@ func load_game() -> bool:
 
 	var saved_captured_wilds: Array[String] = []
 	var captured_data: Array = data.get("captured_wilds", [])
-	if not captured_data.is_empty():
+	if data.has("captured_wilds"):
 		for wild_value in captured_data:
 			var wild_id := str(wild_value)
 			if not wild_id.is_empty() and not saved_captured_wilds.has(wild_id):
@@ -105,7 +105,7 @@ func load_game() -> bool:
 
 	var saved_active_wilds: Array[String] = []
 	var active_data: Array = data.get("active_wilds", [])
-	if not active_data.is_empty():
+	if data.has("active_wilds"):
 		for wild_value in active_data:
 			var wild_id := str(wild_value)
 			if saved_captured_wilds.has(wild_id) and not saved_active_wilds.has(wild_id) and saved_active_wilds.size() < GameManager.MAX_ACTIVE_WILDS:
