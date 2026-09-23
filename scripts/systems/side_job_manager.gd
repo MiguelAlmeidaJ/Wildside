@@ -200,10 +200,10 @@ func _deactivate_hot_cargo_vehicle() -> void:
 
 
 func _fail_hot_cargo(message: String) -> void:
-	WantedManager.reduce_heat(20.0)
 	stage = Stage.IDLE
 	objective_changed.emit("", "", Vector2.ZERO, false)
-	_deactivate_hot_cargo_vehicle()
+	WantedManager.reduce_heat(20.0)
+	call_deferred("_deactivate_hot_cargo_vehicle")
 	if is_instance_valid(GameManager.player):
 		GameManager.player.call("show_message", message)
 
