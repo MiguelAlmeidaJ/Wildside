@@ -1,6 +1,6 @@
 # Wildside
 
-**Prototype 0.17.1 · Godot 4.7.x**
+**Prototype 0.18 · Godot 4.7.x**
 
 Vertical slice 2D top-down que combina exploração urbana, crime, perseguição, captura de criaturas e uma rotina urbana própria entre as missões principais.
 
@@ -253,6 +253,26 @@ Wildside agora muda e reage mesmo quando o jogador não está executando uma mis
 - save version 10 continua válido.
 
 
+### Confronto com a Lei — Prototype 0.18
+
+- faixas de pedestre deixam de ocupar o miolo dos cruzamentos e passam para os quatro acessos, antes da área de conversão dos veículos;
+- o smoke test verifica que nenhuma faixa invade a caixa central do cruzamento;
+- policiais a pé agora possuem vida, barra de HP, knockback e stun;
+- socos, tiros e atropelamentos podem ferir e abater policiais;
+- agredir um policial adiciona `35` de heat e abatê-lo adiciona mais `55`;
+- uma viatura espera antes de desembarcar outro agente depois que um policial é abatido, evitando reposição instantânea;
+- a partir de 4 estrelas começa a `INTERVENÇÃO MILITAR`;
+- dois militares são despachados em 4 estrelas e um terceiro reforço entra em 5 estrelas;
+- militares chegam por pontos de acesso viários distantes, em vez de aparecerem junto do crime;
+- soldados usam combate à distância, verificam linha de visão e disparam contra o jogador;
+- se o jogador estiver em um veículo, os disparos militares danificam o veículo;
+- militares possuem mais vida que policiais e podem ser atingidos por socos, pistola, Wilds e veículos;
+- atacar militares adiciona `45` de heat; abatê-los adiciona `70`, tornando muito fácil escalar para 5 estrelas;
+- enquanto a procura continuar alta, um militar abatido pode ser substituído por reforço depois de um intervalo;
+- o HUD passa a mostrar `INTERVENÇÃO MILITAR` em 4 estrelas e `CAÇADA MILITAR` em 5;
+- save version 10 continua válido porque polícia e resposta militar são estados temporários da perseguição.
+
+
 Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala completa de 0–5 estrelas. Quanto maior a procura, maior a presença policial, mais difícil é quebrar contato e maior a fiança em caso de prisão.
 
 ## Sistemas implementados
@@ -260,7 +280,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Movimento com aceleração, desaceleração, corrida, direção visual e estados idle/walk/run.
 - Câmera suave com look-ahead e limites compatíveis com a área ampliada.
 - Cidade ampliada para 23 quarteirões, cinco eixos verticais, duas avenidas principais, uma via de cais e a nova Vila Oeste.
-- `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas agora têm calçadas segmentadas, cruzamentos limpos, faixas de pedestre proporcionais, estacionamento e bordas mais legíveis.
+- `Cidade Viva`: prédios ganharam claraboias, entradas, toldos, volumes de telhado e sombras; ruas agora têm calçadas segmentadas, cruzamentos limpos, faixas de pedestre posicionadas fora do miolo das interseções, estacionamento e bordas mais legíveis.
 - Props urbanos distribuídos pelos distritos: postes, árvores, bancos, vasos, caçambas, cones, containers, placas de região, estacionamentos e letreiros.
 - Dez carros civis circulam continuamente em rotas pelas avenidas principais, Porto Ferrugem e Vila Oeste.
 - Regiões reconhecíveis: Centro de Wildside, Bairro Residencial, Distrito Industrial, Zona Sul, Mata Norte, Porto Ferrugem e Vila Oeste.
@@ -299,8 +319,9 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - Heat, estrelas de procura e até duas viaturas em perseguição.
 - Perseguição agora distingue `VISTO` e `ESCAPANDO`: o heat não cai enquanto uma unidade mantém contato e passa a cair mais rápido depois que você quebra a perseguição.
 - Viaturas não se teleportam continuamente durante a fuga; é possível abrir distância de verdade.
-- Ao alcançar o jogador a pé, a viatura pode parar e desembarcar um policial que persegue e inicia uma barra de prisão.
+- Ao alcançar o jogador a pé, a viatura pode parar e desembarcar um policial que persegue e inicia uma barra de prisão; policiais agora também podem ser enfrentados e abatidos.
 - Se a barra de prisão completar, a procura zera, o player volta ao ponto inicial e paga até `$75` de fiança.
+- A partir de 4 estrelas, unidades militares armadas entram na resposta, atiram à distância e recebem reforços enquanto a caçada permanece ativa.
 - Trocar para um veículo diferente durante a fuga reduz `15` de heat, com cooldown para impedir abuso.
 - Gerenciadores globais pequenos para jogo, missões, atividade secundária, procura, save e áudio.
 - Inventário funcional de consumíveis com mochila visual e atalhos de uso.
@@ -314,7 +335,7 @@ Roubar veículo, atropelar cidadãos e crimes reportados alimentam uma escala co
 - HUD de integridade do veículo, progresso de exploração e atividade de corrida.
 - Ciclo contínuo de dia/noite com relógio, fases visuais e postes que respondem ao horário.
 - Eventos urbanos dinâmicos de carga perdida e confronto com Raiders, independentes da campanha e agora distribuídos também pelo porto.
-- Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas; roubo de veículo, agressão, atropelamento, disparos e roubo de pedestres alimentam o heat.
+- Sistema de procura completo de 0–5 estrelas com cinco viaturas escalonadas; roubo de veículo, agressão, atropelamento, disparos, ataques a policiais e roubo de pedestres alimentam o heat.
 - Minimapa funcional com posição do jogador, serviços, objetivos, corrida, eventos urbanos, carro próprio, polícia e toda a expansão portuária.
 - Terminal Wild com coleção persistente, equipe ativa de 2 slots e troca entre Nib, Volt e Murno.
 - Porto Ferrugem com nova malha viária, população, tráfego, ANOMALIA #004, Frete do Cais e Carga Quente.
@@ -346,7 +367,7 @@ A cidade procedural continua útil para esta slice. O crescimento do mapa deve a
 godot --headless --path . --audio-driver Dummy --script res://tests/smoke_test.gd
 ```
 
-O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, posicionamento seguro de pedestres/veículos, Vila Oeste, dez carros de trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
+O teste cobre movimento, nova dirigibilidade, roubo de carro/moto/caminhão, Carga Quente, pagamento por integridade, reação e roubo de civis, posicionamento seguro de pedestres/veículos, faixas fora dos cruzamentos, combate contra policiais, intervenção militar em 4–5 estrelas, tiro militar, Vila Oeste, dez carros de trânsito, população, Mercado 24H, mochila, consumíveis, minimapa e rastreamento de objetivos, Corrida Noturna, Frete do Cais, Corrida de Rua, garagem, carro próprio, reparos, esconderijos, ciclo dia/noite, eventos urbanos, procura 0–5 estrelas, resposta policial escalonada, Terminal Wild, formação de equipe, Murno como companheiro, Porto Ferrugem, safehouse/save, persistência de relógio/eventos/recordes/exploração/equipe, regiões, as quatro anomalias, economia, Wilds, armas, combate, habilidades, recompensas e respawn.
 
 ## Critério de conclusão
 
