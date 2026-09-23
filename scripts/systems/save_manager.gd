@@ -103,6 +103,7 @@ func load_game() -> bool:
 
 	WorldEventManager.cancel_event()
 	WorldEventManager.events_completed = int(data.get("world_events_completed", 0))
+	WorldEventManager.event_history_changed.emit(WorldEventManager.events_completed)
 	WorldEventManager.time_until_next = 35.0
 
 	if is_instance_valid(GameManager.player):
