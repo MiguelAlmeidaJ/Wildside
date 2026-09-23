@@ -1,7 +1,7 @@
 extends Node
 
 const SAVE_PATH := "user://wildside_save.json"
-const SAVE_VERSION := 9
+const SAVE_VERSION := 10
 const MIN_SUPPORTED_VERSION := 5
 
 
@@ -41,6 +41,7 @@ func save_game() -> bool:
 		"port_raiders_defeated": MissionManager.port_raiders_defeated,
 		"side_job_stage": SideJobManager.stage,
 		"deliveries_completed": SideJobManager.deliveries_completed,
+		"hot_cargo_completed": SideJobManager.hot_cargo_completed,
 		"race_best_time": StreetRaceManager.best_time,
 		"race_wins": StreetRaceManager.wins,
 		"world_time_minutes": WorldTimeManager.game_minutes,
@@ -122,8 +123,13 @@ func load_game() -> bool:
 	MissionManager.raiders_defeated = int(data.get("raiders_defeated", 0))
 	MissionManager.blackout_raiders_defeated = int(data.get("blackout_raiders_defeated", 0))
 	MissionManager.port_raiders_defeated = int(data.get("port_raiders_defeated", 0))
-	SideJobManager.stage = int(data.get("side_job_stage", SideJobManager.Stage.IDLE))
+	var saved_side_stage := int(data.get("side_job_stage", SideJobManager.Stage.IDLE))
+	if saved_side_stage >= SideJobManager.Stage.HOT_CARGO_STEAL:
+		saved_side_stage = SideJobManager.Stage.IDLE
+	SideJobManager.stage = saved_side_stage
 	SideJobManager.deliveries_completed = int(data.get("deliveries_completed", 0))
+	SideJobManager.hot_cargo_completed = int(data.get("hot_cargo_completed", 0))
+	SideJobManager.call("_deactivate_hot_cargo_vehicle")
 
 	StreetRaceManager.state = StreetRaceManager.State.IDLE
 	StreetRaceManager.current_checkpoint = 0
