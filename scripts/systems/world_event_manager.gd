@@ -48,6 +48,8 @@ func _can_tick_events() -> bool:
 		return false
 	if StreetRaceManager.state == StreetRaceManager.State.RACING:
 		return false
+	if SideJobManager.stage != SideJobManager.Stage.IDLE:
+		return false
 
 	var stage: int = int(MissionManager.stage)
 	if (
