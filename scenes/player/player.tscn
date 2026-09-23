@@ -27,7 +27,7 @@ shape = SubResource("CapsuleShape_player")
 [node name="Camera2D" type="Camera2D" parent="."]
 position_smoothing_enabled = true
 position_smoothing_speed = 7.0
-limit_left = -1800
+limit_left = -2700
 limit_top = -1600
 limit_right = 3000
 limit_bottom = 2200
