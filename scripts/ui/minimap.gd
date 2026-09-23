@@ -8,6 +8,7 @@ const MARKET_POSITION := Vector2(-520, 755)
 const SAFEHOUSE_POSITION := Vector2(270, 510)
 const GARAGE_POSITION := Vector2(1240, 760)
 const WORKSHOP_POSITION := Vector2(1240, 620)
+const WILD_TERMINAL_POSITION := Vector2(365, 510)
 
 var main_target := Vector2.ZERO
 var main_target_active := false
@@ -94,6 +95,7 @@ func _draw_pois() -> void:
 	_draw_square(_to_map(MARKET_POSITION), 4.0, Color(1.0, 0.84, 0.32, 1.0))
 	_draw_square(_to_map(GARAGE_POSITION), 4.0, Color(0.35, 0.92, 0.88, 1.0))
 	_draw_square(_to_map(WORKSHOP_POSITION), 3.5, Color(0.76, 0.58, 1.0, 1.0))
+	_draw_square(_to_map(WILD_TERMINAL_POSITION), 3.5, Color(0.72, 0.5, 1.0, 1.0))
 
 
 func _draw_objectives() -> void:
