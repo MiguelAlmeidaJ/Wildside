@@ -15,6 +15,7 @@ const EVENT_ANCHORS: Array[Vector2] = [
 	Vector2(1240, 1210),
 	Vector2(1240, -240),
 	Vector2(2250, 1180),
+	Vector2(-2250, 1215),
 ]
 const RAIDERS_REQUIRED := 2
 const RAIDERS_COMPLETION_REWARD := 150
