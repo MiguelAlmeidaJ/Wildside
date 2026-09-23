@@ -1,7 +1,7 @@
 extends Control
 
 const WORLD_MIN := Vector2(-1800.0, -1600.0)
-const WORLD_MAX := Vector2(1800.0, 1800.0)
+const WORLD_MAX := Vector2(3000.0, 2200.0)
 const PADDING := 8.0
 
 const MARKET_POSITION := Vector2(-520, 755)
@@ -9,6 +9,7 @@ const SAFEHOUSE_POSITION := Vector2(270, 510)
 const GARAGE_POSITION := Vector2(1240, 760)
 const WORKSHOP_POSITION := Vector2(1240, 620)
 const WILD_TERMINAL_POSITION := Vector2(365, 510)
+const PORT_SIGNAL_POSITION := Vector2(2580, 430)
 
 var main_target := Vector2.ZERO
 var main_target_active := false
@@ -70,7 +71,9 @@ func _draw_regions() -> void:
 	_draw_world_rect(Rect2(-1800, -900, 980, 1700), Color(0.12, 0.23, 0.36, 0.7))
 	_draw_world_rect(Rect2(-820, -900, 1640, 1700), Color(0.20, 0.16, 0.27, 0.68))
 	_draw_world_rect(Rect2(820, -900, 980, 1700), Color(0.33, 0.21, 0.12, 0.7))
-	_draw_world_rect(Rect2(-1800, 1180, 3600, 620), Color(0.22, 0.12, 0.29, 0.72))
+	_draw_world_rect(Rect2(-1800, 1180, 3600, 1020), Color(0.22, 0.12, 0.29, 0.72))
+	_draw_world_rect(Rect2(1800, -900, 1200, 3100), Color(0.34, 0.23, 0.12, 0.76))
+	_draw_world_rect(Rect2(2840, -900, 160, 3100), Color(0.08, 0.22, 0.3, 0.92))
 
 
 func _draw_roads() -> void:
@@ -78,11 +81,13 @@ func _draw_roads() -> void:
 	var edge := Color(0.48, 0.54, 0.58, 0.6)
 
 	for segment in [
-		[Vector2(-1800, 0), Vector2(1800, 0)],
-		[Vector2(-1800, 1000), Vector2(1800, 1000)],
-		[Vector2(0, -900), Vector2(0, 1800)],
-		[Vector2(-1010, -900), Vector2(-1010, 1800)],
-		[Vector2(1010, -900), Vector2(1010, 1800)],
+		[Vector2(-1800, 0), Vector2(2840, 0)],
+		[Vector2(-1800, 1000), Vector2(2840, 1000)],
+		[Vector2(0, -900), Vector2(0, 2200)],
+		[Vector2(-1010, -900), Vector2(-1010, 2200)],
+		[Vector2(1010, -900), Vector2(1010, 2200)],
+		[Vector2(2200, -900), Vector2(2200, 2200)],
+		[Vector2(1800, 1930), Vector2(2840, 1930)],
 	]:
 		var a := _to_map(segment[0])
 		var b := _to_map(segment[1])
@@ -96,6 +101,7 @@ func _draw_pois() -> void:
 	_draw_square(_to_map(GARAGE_POSITION), 4.0, Color(0.35, 0.92, 0.88, 1.0))
 	_draw_square(_to_map(WORKSHOP_POSITION), 3.5, Color(0.76, 0.58, 1.0, 1.0))
 	_draw_square(_to_map(WILD_TERMINAL_POSITION), 3.5, Color(0.72, 0.5, 1.0, 1.0))
+	_draw_square(_to_map(PORT_SIGNAL_POSITION), 3.5, Color(0.95, 0.58, 0.25, 1.0))
 
 
 func _draw_objectives() -> void:
