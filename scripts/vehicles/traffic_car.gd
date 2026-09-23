@@ -9,6 +9,7 @@ extends CharacterBody2D
 
 var _points: Array[Vector2] = []
 var _target_index := 0
+var _performance_sleeping := false
 
 
 func _ready() -> void:
@@ -40,6 +41,58 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	if get_slide_collision_count() > 0:
 		velocity *= 0.18
+
+
+func set_performance_sleep(value: bool, player_position: Vector2 = Vector2.ZERO) -> void:
+	if _performance_sleeping == value:
+		return
+	_performance_sleeping = value
+
+	if value:
+		velocity = Vector2.ZERO
+		visible = false
+		set_physics_process(false)
+		return
+
+	_reposition_near_player(player_position)
+	visible = true
+	set_physics_process(not _points.is_empty())
+
+
+func _reposition_near_player(player_position: Vector2) -> void:
+	if _points.is_empty():
+		return
+
+	var candidates: Array[int] = []
+	for index in range(_points.size()):
+		var distance := _points[index].distance_to(player_position)
+		if distance >= 520.0 and distance <= 1050.0:
+			candidates.append(index)
+
+	var chosen_index := -1
+	if not candidates.is_empty():
+		chosen_index = candidates[absi(start_offset) % candidates.size()]
+	else:
+		var best_score := INF
+		for index in range(_points.size()):
+			var distance := _points[index].distance_to(player_position)
+			if distance < 360.0:
+				continue
+			var score := absf(distance - 820.0)
+			if score < best_score:
+				best_score = score
+				chosen_index = index
+
+	if chosen_index < 0:
+		chosen_index = absi(start_offset) % _points.size()
+
+	global_position = _points[chosen_index]
+	_target_index = (chosen_index + 1) % _points.size()
+	velocity = Vector2.ZERO
+
+	var direction := global_position.direction_to(_points[_target_index])
+	if direction != Vector2.ZERO:
+		rotation = direction.angle() + PI / 2.0
 
 
 func _route_points(id: int) -> Array[Vector2]:
