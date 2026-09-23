@@ -120,11 +120,11 @@ func _draw_police() -> void:
 	if WantedManager.wanted_level <= 0:
 		return
 	for unit in get_tree().get_nodes_in_group("police_unit"):
-		if not unit is Node2D or not unit.visible:
+		if not (unit is Node2D) or not unit.visible:
 			continue
 		draw_circle(_to_map(unit.global_position), 3.2, Color(1.0, 0.22, 0.22, 1.0))
 	for officer in get_tree().get_nodes_in_group("law_enforcement"):
-		if not officer is Node2D or not officer.visible:
+		if not (officer is Node2D) or not officer.visible:
 			continue
 		draw_circle(_to_map(officer.global_position), 2.4, Color(1.0, 0.38, 0.38, 1.0))
 
@@ -135,10 +135,12 @@ func _draw_personal_vehicle() -> void:
 	var scene := get_tree().current_scene
 	if scene == null:
 		return
-	var vehicle = scene.get_node_or_null("World/Entities/Vehicles/PersonalCar")
+	var vehicle: Node2D = scene.get_node_or_null("World/Entities/Vehicles/PersonalCar") as Node2D
 	if not is_instance_valid(vehicle) or not vehicle.visible:
 		return
-	var current_vehicle = GameManager.player.get("current_vehicle") if is_instance_valid(GameManager.player) else null
+	var current_vehicle: Node2D = null
+	if is_instance_valid(GameManager.player):
+		current_vehicle = GameManager.player.get("current_vehicle") as Node2D
 	if current_vehicle == vehicle:
 		return
 	_draw_square(_to_map(vehicle.global_position), 3.2, Color(0.35, 0.95, 0.88, 1.0))
@@ -150,7 +152,7 @@ func _draw_player() -> void:
 
 	var position := GameManager.get_controlled_position()
 	var angle := 0.0
-	var current_vehicle = GameManager.player.get("current_vehicle")
+	var current_vehicle: Node2D = GameManager.player.get("current_vehicle") as Node2D
 	if is_instance_valid(current_vehicle):
 		angle = current_vehicle.rotation
 	else:
@@ -158,7 +160,7 @@ func _draw_player() -> void:
 		if facing.length_squared() > 0.01:
 			angle = facing.angle() + PI / 2.0
 
-	var center := _to_map(position)
+	var center: Vector2 = _to_map(position)
 	var points := PackedVector2Array([
 		Vector2(0, -7).rotated(angle) + center,
 		Vector2(5.5, 6).rotated(angle) + center,
@@ -170,8 +172,8 @@ func _draw_player() -> void:
 
 
 func _draw_world_rect(world_rect: Rect2, color: Color) -> void:
-	var top_left := _to_map(world_rect.position)
-	var bottom_right := _to_map(world_rect.position + world_rect.size)
+	var top_left: Vector2 = _to_map(world_rect.position)
+	var bottom_right: Vector2 = _to_map(world_rect.position + world_rect.size)
 	draw_rect(Rect2(top_left, bottom_right - top_left), color, true)
 
 
@@ -189,8 +191,8 @@ func _draw_diamond(center: Vector2, radius: float, color: Color) -> void:
 
 
 func _to_map(world_position: Vector2) -> Vector2:
-	var usable := size - Vector2.ONE * PADDING * 2.0
-	var normalized := Vector2(
+	var usable: Vector2 = size - Vector2.ONE * PADDING * 2.0
+	var normalized: Vector2 = Vector2(
 		inverse_lerp(WORLD_MIN.x, WORLD_MAX.x, world_position.x),
 		inverse_lerp(WORLD_MIN.y, WORLD_MAX.y, world_position.y)
 	)
