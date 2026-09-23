@@ -9,7 +9,7 @@ const SAFEHOUSE_POSITION := Vector2(270, 510)
 const GARAGE_POSITION := Vector2(1240, 760)
 const WORKSHOP_POSITION := Vector2(1240, 620)
 const WILD_TERMINAL_POSITION := Vector2(365, 510)
-const PORT_SIGNAL_POSITION := Vector2(2580, 430)
+const PORT_SIGNAL_POSITION := Vector2(2740, 1215)
 
 var main_target := Vector2.ZERO
 var main_target_active := false
