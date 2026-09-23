@@ -165,7 +165,7 @@ visible = false
 offset_left = 348.0
 offset_top = 118.0
 offset_right = 676.0
-offset_bottom = 270.0
+offset_bottom = 294.0
 theme_override_styles/panel = SubResource("StyleBox_info")
 
 [node name="InventoryContent" type="VBoxContainer" parent="InventoryPanel"]
@@ -196,6 +196,12 @@ unique_name_in_owner = true
 theme_override_colors/font_color = Color(1, 0.76, 0.35, 1)
 theme_override_font_sizes/font_size = 14
 text = "ESCONDERIJOS  0 / 5"
+
+[node name="EventStatsLabel" type="Label" parent="InventoryPanel/InventoryContent"]
+unique_name_in_owner = true
+theme_override_colors/font_color = Color(0.82, 0.72, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "EVENTOS URBANOS  0"
 
 [node name="InventoryHint" type="Label" parent="InventoryPanel/InventoryContent"]
 theme_override_colors/font_color = Color(0.7, 0.76, 0.8, 1)
