@@ -182,7 +182,10 @@ func take_damage(amount: float, source: Node2D = null) -> void:
 	var player_aggression := _is_player_aggression(source)
 	if player_aggression and _crime_cooldown <= 0.0:
 		_crime_cooldown = 5.0
-		WantedManager.add_heat(22.0, "Agressão a pedestre")
+		if is_instance_valid(source) and source.is_in_group("player_vehicle"):
+			WantedManager.add_heat(30.0, "Atropelamento")
+		else:
+			WantedManager.add_heat(22.0, "Agressão a pedestre")
 
 	health = maxf(0.0, health - amount)
 	sprite.modulate = Color(1.5, 0.7, 0.7)
@@ -225,9 +228,6 @@ func react_to_vehicle(impact_speed: float, vehicle: Node2D) -> void:
 		return
 	var damage := clampf((impact_speed - 35.0) * 0.48, 10.0, 95.0)
 	take_damage(damage, vehicle)
-	if impact_speed >= 90.0 and _crime_cooldown <= 0.0:
-		_crime_cooldown = 5.0
-		WantedManager.add_heat(30.0, "Atropelamento")
 
 
 func react_to_danger(source_position: Vector2) -> void:
